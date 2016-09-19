@@ -11,6 +11,8 @@ namespace HelloGame
         public bool IsS { get { return IsPressed(Keys.S); } }
         public bool IsA { get { return IsPressed(Keys.A); } }
         public bool IsD { get { return IsPressed(Keys.D); } }
+        public bool IsSpace { get { return IsPressed(Keys.Space); } }
+        public bool IsJ { get { return IsPressed(Keys.J); } }
 
         private bool IsPressed(Keys key)
         {

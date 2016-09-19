@@ -30,14 +30,14 @@
         {
             this.SuspendLayout();
             // 
-            // Form1
+            // HelloGameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1076, 575);
+            this.ClientSize = new System.Drawing.Size(1599, 827);
             this.DoubleBuffered = true;
             this.KeyPreview = true;
-            this.Name = "Form1";
+            this.Name = "HelloGameForm";
             this.Text = "Form1";
             this.ResumeLayout(false);
 

@@ -8,6 +8,7 @@ namespace HelloGame
         public double ShipAngle { get; set; }
         public double PositionX { get; set; }
         public double PositionY { get; set; }
+
         public Point PositionPoint
         {
             get
@@ -16,5 +17,21 @@ namespace HelloGame
             }
         }
 
+        public void SetPosition(Point point)
+        {
+            PositionX = point.X;
+            PositionY = point.Y;
+        }
+
+        public Real2DVector GetDirection(double bigness)
+        {
+            return  new Real2DVector(ShipAngle, bigness);
+        }
+
+        public Point GetPointInDirection(double bigness)
+        {
+            Real2DVector direction = GetDirection(bigness);
+            return new Point((int)(direction.X + PositionX), (int)(direction.Y + PositionY));
+        }
     }
 }

@@ -7,35 +7,25 @@ namespace HelloGame
     public partial class HelloGameForm : Form
     {
         public KeysInfo KeysMine = new KeysInfo();
-        private List<IThing> _things = new List<IThing>();
+        public readonly Scene scene;
 
         public HelloGameForm()
         {
             InitializeComponent();
 
-            _things.Add(new ThingForce(KeysMine, new Point(100, 100)));
+            scene = new Scene(this);
 
-            Timer timer = new Timer();
-            timer.Interval = 5;
-            timer.Tick += (a, b) =>
-            {
-                foreach (IThing item in _things)
-                {
-                    item.UpdateModel();
-                }
-                Refresh();
-            };
-            timer.Start();
+            var ship = new ThingForce(KeysMine , scene);
+            ship.Spawn(new Point(100, 100), new Real2DVector());
+
+            scene.AddThing(ship);
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
 
-            foreach (IThing item in _things)
-            {
-                item.PaintStuff(e.Graphics); 
-            }
+            scene.PaintStuff(e.Graphics);
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -43,7 +33,6 @@ namespace HelloGame
             base.OnKeyDown(e);
 
             KeysMine.Pressed(e.KeyCode);
-
             Refresh();
         }
 
@@ -52,7 +41,6 @@ namespace HelloGame
             base.OnKeyUp(e);
 
             KeysMine.Released(e.KeyCode);
-
             Refresh();
         }
     }

@@ -45,9 +45,15 @@ namespace HelloGame
             _maxBigness = maxBigness;
         }
 
-        public Real2DVector GetScaled(double by)
+        public Real2DVector(double angle, double bigness, double? maxBigness = null)
         {
-            var result = Copy();
+            _maxBigness = maxBigness;
+            Set(angle, bigness);
+        }
+
+        public Real2DVector GetScaled(double by, bool withRestriction = true)
+        {
+            var result = Copy(withRestriction);
             result.Set(Angle, Bigness * by);
             return result;
         }
@@ -87,11 +93,13 @@ namespace HelloGame
             {
                 X = MathX.SetSign(X, false);
                 Y = MathX.SetSign(Y, true);
-            } else if (newAngleDeg > 180 && newAngleDeg <= 270)
+            }
+            else if (newAngleDeg > 180 && newAngleDeg <= 270)
             {
                 X = MathX.SetSign(X, false);
                 Y = MathX.SetSign(Y, false);
-            } else if (newAngleDeg > 270)
+            }
+            else if (newAngleDeg > 270)
             {
                 X = MathX.SetSign(X, true);
                 Y = MathX.SetSign(Y, false);
@@ -110,6 +118,16 @@ namespace HelloGame
             Set(newAngle, newBigness);
         }
 
+        public static Real2DVector Combine(params Real2DVector[] vectors)
+        {
+            Real2DVector result = new Real2DVector();
+            foreach (Real2DVector vector in vectors)
+            {
+                result.Add(vector);
+            }
+            return result;
+        }
+
         public void Add(Real2DVector vector)
         {
 
@@ -125,14 +143,15 @@ namespace HelloGame
             }
         }
 
-        public Real2DVector Copy()
+        public Real2DVector Copy(bool withRestriction = true)
         {
-            return new Real2DVector(_maxBigness)
+            return new Real2DVector(withRestriction ? _maxBigness : null)
             {
                 X = X,
                 Y = Y
             };
         }
+
 
         public override string ToString()
         {
