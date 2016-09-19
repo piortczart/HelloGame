@@ -120,8 +120,8 @@ namespace HelloGame
                     var laser = new LazerBeamPew();
 
                     Real2DVector inertia = Model.GetDirection(40);
-
                     laser.Spawn(Model.PositionPoint, inertia);
+                    laser.Model.ShipAngle = Model.ShipAngle;
 
                     _scene.AddThing(laser);
                 }
