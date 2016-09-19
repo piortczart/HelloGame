@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace HelloGame.Tests
 {
     [TestClass]
-    public class Real2DVectorTest
+    public class Real2DVector_General_Test
     {
         [TestMethod]
         public void Real2DVector_Change_Simple()
@@ -25,7 +25,7 @@ namespace HelloGame.Tests
 
             Assert.AreEqual(-3, vector.X);
             // The Math.PI is not perfect?
-            Assert.IsTrue(IsAlmostZero(vector.Y));
+            TestX.AssertIsAlmostZero(vector.Y);
         }
 
         [TestMethod]
@@ -34,7 +34,7 @@ namespace HelloGame.Tests
             Real2DVector vector = new Real2DVector();
             vector.Change(Math.PI/2, 3); // Go "up"
 
-            Assert.IsTrue(IsAlmostZero(vector.X));
+            TestX.AssertIsAlmostZero(vector.X);
             // The Math.PI is not perfect?
             Assert.IsTrue(vector.Y == 3);
         }
@@ -57,7 +57,7 @@ namespace HelloGame.Tests
         }
 
         [TestMethod]
-        public void Real2DVector_Add_Simple2()
+        public void Real2DVector_GetScaled_Negative()
         {
             Real2DVector sample = new Real2DVector
             {
@@ -65,36 +65,11 @@ namespace HelloGame.Tests
                 Y = -0.8
             };
 
-            Real2DVector vector = new Real2DVector(5);
-            vector.Add(sample);
-            Trace.WriteLine(vector.ToString());
-            vector.Add(sample);
-            Trace.WriteLine(vector.ToString());
-            vector.Add(sample);
-            Trace.WriteLine(vector.ToString());
-            vector.Add(sample);
-            Trace.WriteLine(vector.ToString());
-            vector.Add(sample);
-            Trace.WriteLine(vector.ToString());
-            vector.Add(sample);
-            Trace.WriteLine(vector.ToString());
-            vector.Add(sample);
-            Trace.WriteLine(vector.ToString());
-            vector.Add(sample);
-            Trace.WriteLine(vector.ToString());
-            vector.Add(sample);
-            Trace.WriteLine(vector.ToString());
-            vector.Add(sample);
-            Trace.WriteLine(vector.ToString());
-            vector.Add(sample);
-            Trace.WriteLine(vector.ToString());
+            var result = sample.GetScaled(0.5);
 
-            Assert.AreEqual(-0.7, vector.X);
+            Assert.IsTrue(MathX.IsAlmostSame(-0.35, result.X));
+            Assert.IsTrue(MathX.IsAlmostSame(-0.4, result.Y));
         }
 
-        public static bool IsAlmostZero(double number)
-        {
-            return number < Math.Pow(1, -10);
-        }
     }
 }

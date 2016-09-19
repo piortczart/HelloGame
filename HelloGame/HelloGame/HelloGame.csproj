@@ -75,6 +75,7 @@
     </Compile>
     <Compile Include="IThing.cs" />
     <Compile Include="KeysInfo.cs" />
+    <Compile Include="MathX.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Real2DVector.cs" />

@@ -12,13 +12,29 @@ namespace HelloGame
         {
             get
             {
-                // tan(a) = Y / X
-                // a = atan(Y/X) ?
-                if (X == 0)
+                if (X == 0 || (X == 0 && Y == 0)) { return 0; }
+
+
+                bool sameSign = (X > 0 && Y > 0) || (X < 0 && Y < 0);
+                var baseAngle = sameSign ? Math.Abs(Math.Atan(Y / X)) : Math.Abs(Math.Atan(X / Y));
+
+                if (X < 0 && Y < 0)
                 {
-                    return 0;
+                    // Bottom left.
+                    return baseAngle + Math.PI;
                 }
-                return Math.Atan(Y/X);
+                else if (X < 0 && Y > 0)
+                {
+                    // Top left.
+                    return baseAngle + Math.PI / 2;
+                }
+                else if (X > 0 && Y < 0)
+                {
+                    // Bottom Right.
+                    return baseAngle + Math.PI * 3 / 2;
+                }
+
+                return baseAngle;
             }
         }
 
@@ -36,21 +52,50 @@ namespace HelloGame
             return result;
         }
 
+        public Real2DVector GetOpposite()
+        {
+            var result = Copy();
+            result.X = -result.X;
+            result.Y = -result.Y;
+            return result;
+        }
+
         public void Set(double newAngle, double bigness)
         {
+            if (newAngle > 2 * Math.PI)
+            {
+                newAngle -= 2 * Math.PI;
+            }
+            else if (newAngle < 0)
+            {
+                newAngle += 2 * Math.PI;
+            }
+
             if (_maxBigness.HasValue && bigness > _maxBigness.Value)
             {
                 bigness = _maxBigness.Value;
             }
 
-            //double angle = Angle;
-
-            // cos(a) = X / bigness
-            // X = cos(a) * bigness
             var newX = GetX(newAngle, bigness);
             X = newX;
             var newY = Math.Sin(newAngle) * bigness;
             Y = newY;
+
+            var newAngleDeg = MathX.RadianToDegree(newAngle);
+
+            if (newAngleDeg > 90 && newAngleDeg <= 180)
+            {
+                X = MathX.SetSign(X, false);
+                Y = MathX.SetSign(Y, true);
+            } else if (newAngleDeg > 180 && newAngleDeg <= 270)
+            {
+                X = MathX.SetSign(X, false);
+                Y = MathX.SetSign(Y, false);
+            } else if (newAngleDeg > 270)
+            {
+                X = MathX.SetSign(X, true);
+                Y = MathX.SetSign(Y, false);
+            }
         }
 
         public double GetX(double angle, double bigness)
@@ -91,7 +136,7 @@ namespace HelloGame
 
         public override string ToString()
         {
-            return String.Format("{0:0.0} {1:0.0} - {2:0.0} {3:0.0}", X, Y, Bigness, Angle);
+            return String.Format("X_{0:0.00} Y_{1:0.00} B_{2:0.0} A_{3:0.0}", X, Y, Bigness, Angle);
         }
     }
 

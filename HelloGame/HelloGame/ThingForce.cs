@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HelloGame
 {
     public class ThingForce : IThing
     {
-        Vector engineVector = new Real2DVector(1);
+        Real2DVector engineVector = new Real2DVector(1);
 
         Real2DVector inertia = new Real2DVector(5);
+        Real2DVector drag = new Real2DVector();
 
         ThingModel model = new ThingModel();
 
@@ -21,15 +19,11 @@ namespace HelloGame
         Stopwatch stopwatch = Stopwatch.StartNew();
         long lastUpdate = 0;
 
-        private List<Real2DVector> _forces = new List<Real2DVector>();
-
         public ThingForce(KeysInfo keysInfo, Point startingPoint)
         {
             _keysInfo = keysInfo;
             model.PositionX = startingPoint.X;
             model.PositionY = startingPoint.Y;
-            _forces.Add(inertia);
-            _forces.Add(engineVector);
         }
 
         private static double GetUpdatedShipAngle(KeysInfo keysInfo, double shipAngle)
@@ -69,15 +63,29 @@ namespace HelloGame
             // a - przyspieszenie (wektorowe)
             inertia.Add(engineVector);
 
-            Real2DVector totalForce = new Real2DVector();
-            foreach (Real2DVector force in _forces)
+            // Drag changes the inertia?
+            var drag = inertia.GetOpposite().GetScaled(0.01);
+
+            if ((drag.X > 0 && inertia.X < 0)
+                || (drag.Y > 0 && inertia.Y < 0))
             {
-                totalForce.Add(force);
+                ;
             }
+
+
+
+            inertia.X += drag.X;
+            inertia.Y += drag.Y;
+
+            Real2DVector totalForce = new Real2DVector();
+                totalForce.Add(inertia);
+                totalForce.Add(engineVector);
 
             model.PositionX += totalForce.X / 10;
             model.PositionY += totalForce.Y / 10;
         }
+
+
 
         private static void UpdateEngineAcc(Real2DVector engineForce, double shipAngle, KeysInfo keys)
         {
