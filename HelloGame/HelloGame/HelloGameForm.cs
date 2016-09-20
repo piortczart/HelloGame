@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using HelloGame.GameObjects;
 using HelloGame.MathStuff;
 
 namespace HelloGame
@@ -16,7 +17,7 @@ namespace HelloGame
 
             scene = new Scene(this);
 
-            var ship = new ThingBaseForce(KeysMine , scene);
+            var ship = new DaShip(KeysMine , scene);
             ship.Spawn(new Point(100, 100), new Real2DVector());
 
             scene.AddThing(ship);

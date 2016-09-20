@@ -8,7 +8,7 @@ namespace HelloGame.MathStuff
         public double Y { get; set; }
         private double? _maxBigness;
 
-        public double Bigness { get { return Math.Pow(X * X + Y * Y, 0.5); } }
+        public double Bigness => Math.Pow(X * X + Y * Y, 0.5);
 
         public double Angle
         {
@@ -53,10 +53,10 @@ namespace HelloGame.MathStuff
             Set(angle, bigness);
         }
 
-        public Real2DVector GetScaled(double by, bool withRestriction = true)
+        public Real2DVector GetScaled(decimal by, bool withRestriction = true)
         {
             var result = Copy(withRestriction);
-            result.Set(Angle, Bigness * by);
+            result.Set(Angle, Bigness * (double)by);
             return result;
         }
 

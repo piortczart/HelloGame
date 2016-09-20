@@ -1,52 +1,28 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
-using HelloGame.GameObjects;
 using HelloGame.MathStuff;
 
-namespace HelloGame
+namespace HelloGame.GameObjects
 {
-    public class Limiter
-    {
-        private static Stopwatch stopwatch = Stopwatch.StartNew();
-        TimeSpan lastEvent = TimeSpan.Zero;
-        TimeSpan _frequency;
-
-        public Limiter(TimeSpan frequency)
-        {
-            _frequency = frequency;
-        }
-
-        public bool CanHappen()
-        {
-            TimeSpan nextEvent = lastEvent.Add(_frequency);
-            if (stopwatch.Elapsed > nextEvent)
-            {
-                lastEvent = stopwatch.Elapsed;
-                return true;
-            }
-            return false;
-        }
-    }
-
-    public class ThingBaseForce : ThingBase
+    public class DaShip : ThingBase
     {
         public KeysInfo KeysInfo { get; set; }
 
-        Stopwatch stopwatch = Stopwatch.StartNew();
-        long lastUpdate = 0;
-        Scene _scene;
+        readonly Scene _scene;
 
-        Limiter bombLimiter = new Limiter(TimeSpan.FromSeconds(1));
-        Limiter laserLimiter = new Limiter(TimeSpan.FromMilliseconds(200));
+        readonly Limiter _bombLimiter = new Limiter(TimeSpan.FromSeconds(1));
+        readonly Limiter _laserLimiter = new Limiter(TimeSpan.FromMilliseconds(200));
 
-        public ThingBaseForce(KeysInfo keysInfo, Scene scene) : base(TimeSpan.Zero)
+        public DaShip(KeysInfo keysInfo, Scene scene) : base(TimeSpan.Zero)
         {
             KeysInfo = keysInfo;
             _scene = scene;
 
             Physics.SelfPropelling = new Real2DVector(1);
             Physics.Interia = new Real2DVector(5);
+
+            Physics.Aerodynamism = 0.5m;
         }
 
         private static double GetUpdatedShipAngle(KeysInfo keysInfo, double shipAngle)
@@ -69,45 +45,25 @@ namespace HelloGame
                 shipAngle += 0.1;
                 if (shipAngle > 2 * Math.PI)
                 {
-                    shipAngle -= 2*Math.PI;
+                    shipAngle -= 2 * Math.PI;
                 }
             }
 
             return shipAngle;
         }
 
-        protected override void UpdateModelInternal()
+        protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate)
         {
-            long now = stopwatch.ElapsedTicks;
-            if (lastUpdate == 0)
-            {
-                lastUpdate = now;
-            }
-            long ticksSinceLast = now - lastUpdate;
-            double secSinceLast = TimeSpan.FromTicks(ticksSinceLast).TotalSeconds;
-
             Model.ShipAngle = GetUpdatedShipAngle(KeysInfo, Model.ShipAngle);
 
             UpdateEngineAcc(Physics.SelfPropelling, Model.ShipAngle, KeysInfo);
 
-            // Inercja (bezwładność) F = m * a
-            // a - przyspieszenie (wektorowe)
-            Physics.Interia.Add(Physics.SelfPropelling);
-
-            // Drag changes the inertia?
-            var drag = Physics.Interia.GetOpposite().GetScaled(0.01);
-            Physics.Interia.Add(drag);
-
-            Real2DVector totalForce = Physics.TotalForce;
-            Model.PositionX += totalForce.X / 10;
-            Model.PositionY += totalForce.Y / 10;
-
             if (KeysInfo.IsJ)
             {
-                if (bombLimiter.CanHappen())
+                if (_bombLimiter.CanHappen())
                 {
                     var bomb = new Bomb();
-                    bomb.Spawn(Model.PositionPoint, Physics.Interia.GetScaled(1.1, false));
+                    bomb.Spawn(Model.PositionPoint, Physics.Interia.GetScaled(1.1m, false));
 
                     _scene.AddThing(bomb);
                 }
@@ -115,7 +71,7 @@ namespace HelloGame
 
             if (KeysInfo.IsSpace)
             {
-                if (laserLimiter.CanHappen())
+                if (_laserLimiter.CanHappen())
                 {
                     var laser = new LazerBeamPew();
 
@@ -150,7 +106,7 @@ namespace HelloGame
             var font = new Font("Courier", 24, GraphicsUnit.Pixel);
             var shipPen = new Pen(Brushes.DarkBlue);
 
-            g.DrawString($"Ship angle: {Model.ShipAngle*57.296d:0}", font, Brushes.Black, new PointF(155, 155));
+            g.DrawString($"Ship angle: {Model.ShipAngle * 57.296d:0}", font, Brushes.Black, new PointF(155, 155));
             g.DrawString($"Engine: {Physics.SelfPropelling.Bigness:0.00}", font, Brushes.Black, new PointF(155, 185));
             g.DrawString($"Inertia: {Physics.Interia}", font, Brushes.Black, new PointF(155, 215));
             g.DrawString($"Engine: {Physics.SelfPropelling}", font, Brushes.Black, new PointF(155, 245));

@@ -17,7 +17,7 @@ namespace HelloGame.GameObjects
             g.DrawLine(pen, Model.PositionPoint, pointInDirection);
         }
 
-        protected override void UpdateModelInternal()
+        protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate)
         {
             Model.PositionX += Physics.Interia.X / 10;
             Model.PositionY += Physics.Interia.Y / 10;

@@ -71,6 +71,7 @@
     <Compile Include="GameObjects\ElapsingThing.cs" />
     <Compile Include="GameObjects\LazerBeamPew.cs" />
     <Compile Include="GameObjects\Bomb.cs" />
+    <Compile Include="GameObjects\Limiter.cs" />
     <Compile Include="HelloGameForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -84,7 +85,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MathStuff\Real2DVector.cs" />
     <Compile Include="Scene.cs" />
-    <Compile Include="GameObjects\ThingBaseForce.cs" />
+    <Compile Include="GameObjects\DaShip.cs" />
     <Compile Include="GameObjects\ThingModel.cs" />
     <EmbeddedResource Include="HelloGameForm.resx">
       <DependentUpon>HelloGameForm.cs</DependentUpon>

@@ -9,7 +9,7 @@ namespace HelloGame.GameObjects
         public bool IsBlownUp { get; set; }
 
         public Bomb()
-            : this(TimeSpan.FromSeconds(4))
+            : this(TimeSpan.FromSeconds(2))
         {
         }
 
@@ -22,16 +22,7 @@ namespace HelloGame.GameObjects
         {
             if (!IsBlownUp)
             {
-                Brush[] brusheses = { Brushes.Black, Brushes.DarkRed, Brushes.Red };
-
-                int percentageStep = 100 / brusheses.Length;
-                int brushIndex = (int)Math.Floor(AgePercentage / percentageStep);
-                if (brushIndex > brusheses.Length - 1)
-                {
-                    brushIndex = brusheses.Length - 1;
-                }
-                var pen = new Pen(brusheses[brushIndex]);
-
+                Pen pen = new Pen(Color.FromArgb((int)(AgePercentage * 2.5), 0, 0));
                 int width = 5;
                 g.DrawArc(pen, new Rectangle((int)Model.PositionX - width / 2, (int)Model.PositionY - width / 2, width, width), 0, 360);
 
@@ -47,7 +38,7 @@ namespace HelloGame.GameObjects
             }
         }
 
-        protected override void UpdateModelInternal()
+        protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate)
         {
             Real2DVector totalForce = new Real2DVector();
             totalForce.Add(Physics.Interia);
