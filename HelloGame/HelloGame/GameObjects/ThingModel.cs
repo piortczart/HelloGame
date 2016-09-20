@@ -1,21 +1,16 @@
 ﻿using System.Drawing;
+using HelloGame.MathStuff;
 
-namespace HelloGame
+namespace HelloGame.GameObjects
 {
     public class ThingModel
     {
-        public const double mass = 1;
+        public const double Mass = 1;
         public double ShipAngle { get; set; }
         public double PositionX { get; set; }
         public double PositionY { get; set; }
 
-        public Point PositionPoint
-        {
-            get
-            {
-                return new Point((int)PositionX, (int)PositionY);
-            }
-        }
+        public Point PositionPoint => new Point((int)PositionX, (int)PositionY);
 
         public void SetPosition(Point point)
         {

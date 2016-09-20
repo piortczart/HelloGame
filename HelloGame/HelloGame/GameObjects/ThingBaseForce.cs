@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using HelloGame.GameObjects;
+using HelloGame.MathStuff;
 
 namespace HelloGame
 {
@@ -27,7 +29,7 @@ namespace HelloGame
         }
     }
 
-    public class ThingForce : AThing
+    public class ThingBaseForce : ThingBase
     {
         public KeysInfo KeysInfo { get; set; }
 
@@ -38,14 +40,13 @@ namespace HelloGame
         Limiter bombLimiter = new Limiter(TimeSpan.FromSeconds(1));
         Limiter laserLimiter = new Limiter(TimeSpan.FromMilliseconds(200));
 
-        public ThingForce(KeysInfo keysInfo, Scene scene) : base(TimeSpan.Zero)
+        public ThingBaseForce(KeysInfo keysInfo, Scene scene) : base(TimeSpan.Zero)
         {
             KeysInfo = keysInfo;
             _scene = scene;
 
             Physics.SelfPropelling = new Real2DVector(1);
             Physics.Interia = new Real2DVector(5);
-            Physics.Drag = new Real2DVector();
         }
 
         private static double GetUpdatedShipAngle(KeysInfo keysInfo, double shipAngle)
@@ -75,7 +76,7 @@ namespace HelloGame
             return shipAngle;
         }
 
-        public override void UpdateModelInternal()
+        protected override void UpdateModelInternal()
         {
             long now = stopwatch.ElapsedTicks;
             if (lastUpdate == 0)
@@ -94,9 +95,8 @@ namespace HelloGame
             Physics.Interia.Add(Physics.SelfPropelling);
 
             // Drag changes the inertia?
-            Physics.Drag = Physics.Interia.GetOpposite().GetScaled(0.01);
-
-            Physics.Interia.Add(Physics.Drag);
+            var drag = Physics.Interia.GetOpposite().GetScaled(0.01);
+            Physics.Interia.Add(drag);
 
             Real2DVector totalForce = Physics.TotalForce;
             Model.PositionX += totalForce.X / 10;
@@ -106,7 +106,7 @@ namespace HelloGame
             {
                 if (bombLimiter.CanHappen())
                 {
-                    var bomb = new Projectile(KeysInfo, this);
+                    var bomb = new Bomb();
                     bomb.Spawn(Model.PositionPoint, Physics.Interia.GetScaled(1.1, false));
 
                     _scene.AddThing(bomb);
@@ -148,13 +148,12 @@ namespace HelloGame
         public override void PaintStuff(Graphics g)
         {
             var font = new Font("Courier", 24, GraphicsUnit.Pixel);
-            var textBrush = Brushes.Black;
             var shipPen = new Pen(Brushes.DarkBlue);
 
-            g.DrawString(String.Format("Ship angle: {0:0}", Model.ShipAngle * 57.296d), font, Brushes.Black, new PointF(155, 155));
-            g.DrawString(String.Format("Engine: {0:0.00}", Physics.SelfPropelling.Bigness), font, Brushes.Black, new PointF(155, 185));
-            g.DrawString(String.Format("Inertia: {0}", Physics.Interia), font, Brushes.Black, new PointF(155, 215));
-            g.DrawString(String.Format("Engine: {0:}", Physics.SelfPropelling), font, Brushes.Black, new PointF(155, 245));
+            g.DrawString($"Ship angle: {Model.ShipAngle*57.296d:0}", font, Brushes.Black, new PointF(155, 155));
+            g.DrawString($"Engine: {Physics.SelfPropelling.Bigness:0.00}", font, Brushes.Black, new PointF(155, 185));
+            g.DrawString($"Inertia: {Physics.Interia}", font, Brushes.Black, new PointF(155, 215));
+            g.DrawString($"Engine: {Physics.SelfPropelling}", font, Brushes.Black, new PointF(155, 245));
 
             // This vector will point where the ship is going.
             //Real2DVector direction = Model.GetDirection(10);

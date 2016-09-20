@@ -1,20 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using HelloGame.GameObjects;
 
 namespace HelloGame
 {
     public class Scene
     {
-        private List<AThing> _things = new List<AThing>();
+        private readonly List<ThingBase> _things = new List<ThingBase>();
 
         public Scene(HelloGameForm form)
         {
-            Timer timer = new Timer();
-            timer.Interval = 5;
+            Timer timer = new Timer {Interval = 5};
             timer.Tick += (a, b) =>
             {
-                foreach (AThing item in _things.ToArray())
+                foreach (ThingBase item in _things.ToArray())
                 {
                     item.UpdateModel();
                     if (item.IsTimeToDie)
@@ -27,14 +27,14 @@ namespace HelloGame
             timer.Start();
         }
 
-        public void AddThing(AThing thing)
+        public void AddThing(ThingBase thingBase)
         {
-            _things.Add(thing);
+            _things.Add(thingBase);
         }
 
         public void PaintStuff(Graphics g)
         {
-            foreach (AThing item in _things)
+            foreach (ThingBase item in _things)
             {
                 item.PaintStuff(g);
             }

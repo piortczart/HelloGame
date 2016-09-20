@@ -5,32 +5,32 @@ namespace HelloGame
 {
     public class KeysInfo
     {
-        public Dictionary<Keys, bool> pressed = new Dictionary<Keys, bool>();
+        private readonly Dictionary<Keys, bool> _pressed = new Dictionary<Keys, bool>();
 
-        public bool IsW { get { return IsPressed(Keys.W); } }
-        public bool IsS { get { return IsPressed(Keys.S); } }
-        public bool IsA { get { return IsPressed(Keys.A); } }
-        public bool IsD { get { return IsPressed(Keys.D); } }
-        public bool IsSpace { get { return IsPressed(Keys.Space); } }
-        public bool IsJ { get { return IsPressed(Keys.J); } }
+        public bool IsW => IsPressed(Keys.W);
+        public bool IsS => IsPressed(Keys.S);
+        public bool IsA => IsPressed(Keys.A);
+        public bool IsD => IsPressed(Keys.D);
+        public bool IsSpace => IsPressed(Keys.Space);
+        public bool IsJ => IsPressed(Keys.J);
 
         private bool IsPressed(Keys key)
         {
-            if (!pressed.ContainsKey(key))
+            if (!_pressed.ContainsKey(key))
             {
-                pressed[key] = false;
+                _pressed[key] = false;
             }
-            return pressed[key];
+            return _pressed[key];
         }
 
         public void Pressed(Keys key)
         {
-            pressed[key] = true;
+            _pressed[key] = true;
         }
 
         public void Released(Keys key)
         {
-            pressed[key] = false;
+            _pressed[key] = false;
         }
     }
 

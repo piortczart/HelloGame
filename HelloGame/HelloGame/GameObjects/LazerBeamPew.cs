@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
 
-namespace HelloGame
+namespace HelloGame.GameObjects
 {
-    public class LazerBeamPew : AThing
+    public class LazerBeamPew : ThingBase
     {
         public LazerBeamPew() : base(TimeSpan.FromSeconds(1))
         {
@@ -13,11 +13,11 @@ namespace HelloGame
         {
             var pen = new Pen(Brushes.Red);
 
-            Point p2 = Model.GetPointInDirection(5);
-            g.DrawLine(pen, Model.PositionPoint, p2);
+            Point pointInDirection = Model.GetPointInDirection(5);
+            g.DrawLine(pen, Model.PositionPoint, pointInDirection);
         }
 
-        public override void UpdateModelInternal()
+        protected override void UpdateModelInternal()
         {
             Model.PositionX += Physics.Interia.X / 10;
             Model.PositionY += Physics.Interia.Y / 10;

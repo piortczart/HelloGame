@@ -1,13 +1,15 @@
 ﻿using System;
 
-namespace HelloGame
+namespace HelloGame.MathStuff
 {
     public class Real2DVector
     {
         public double X { get; set; }
         public double Y { get; set; }
         private double? _maxBigness;
+
         public double Bigness { get { return Math.Pow(X * X + Y * Y, 0.5); } }
+
         public double Angle
         {
             get
@@ -23,12 +25,12 @@ namespace HelloGame
                     // Bottom left.
                     return baseAngle + Math.PI;
                 }
-                else if (X < 0 && Y > 0)
+                if (X < 0 && Y > 0)
                 {
                     // Top left.
                     return baseAngle + Math.PI / 2;
                 }
-                else if (X > 0 && Y < 0)
+                if (X > 0 && Y < 0)
                 {
                     // Bottom Right.
                     return baseAngle + Math.PI * 3 / 2;
@@ -91,18 +93,18 @@ namespace HelloGame
 
             if (newAngleDeg > 90 && newAngleDeg <= 180)
             {
-                X = MathX.SetSign(X, false);
-                Y = MathX.SetSign(Y, true);
+                X = MathX.SetSign(X, MathX.Sign.Negative);
+                Y = MathX.SetSign(Y, MathX.Sign.Positive);
             }
             else if (newAngleDeg > 180 && newAngleDeg <= 270)
             {
-                X = MathX.SetSign(X, false);
-                Y = MathX.SetSign(Y, false);
+                X = MathX.SetSign(X, MathX.Sign.Negative);
+                Y = MathX.SetSign(Y, MathX.Sign.Negative);
             }
             else if (newAngleDeg > 270)
             {
-                X = MathX.SetSign(X, true);
-                Y = MathX.SetSign(Y, false);
+                X = MathX.SetSign(X, MathX.Sign.Positive);
+                Y = MathX.SetSign(Y, MathX.Sign.Negative);
             }
         }
 
@@ -152,10 +154,9 @@ namespace HelloGame
             };
         }
 
-
         public override string ToString()
         {
-            return String.Format("X_{0:0.00} Y_{1:0.00} B_{2:0.0} A_{3:0.0}", X, Y, Bigness, Angle);
+            return $"X_{X:0.00} Y_{Y:0.00} B_{Bigness:0.0} A_{Angle:0.0}";
         }
     }
 

@@ -2,8 +2,17 @@
 
 namespace HelloGame
 {
+    /// <summary>
+    /// Mathematical extensions.
+    /// </summary>
     public static class MathX
     {
+        public enum Sign
+        {
+            Negative,
+            Positive
+        }
+
         public static double DegreeToRadian(double angle)
         {
             return Math.PI * angle / 180.0;
@@ -24,9 +33,12 @@ namespace HelloGame
             return IsAlmostSame(number, 0);
         }
 
-        public static double SetSign(double number, bool positive)
+        /// <summary>
+        /// Make sure the number has the correct sign.
+        /// </summary>
+        public static double SetSign(double number, Sign sign)
         {
-            if ((positive && number < 0) || (!positive && number > 0))
+            if ((sign == Sign.Positive && number < 0) || (sign == Sign.Negative && number > 0))
             {
                 return -number;
             }

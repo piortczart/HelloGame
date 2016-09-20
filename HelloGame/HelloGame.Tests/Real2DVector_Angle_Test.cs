@@ -1,4 +1,5 @@
 ﻿using System;
+using HelloGame.MathStuff;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HelloGame.Tests
