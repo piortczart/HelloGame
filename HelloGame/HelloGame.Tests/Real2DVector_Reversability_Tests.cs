@@ -17,7 +17,7 @@ namespace HelloGame.Tests
             };
 
             var newVector = new Real2DVector();
-            newVector.Set(sample.Angle, sample.Bigness);
+            newVector.Set(sample.Angle, sample.Size);
 
             Assert.IsTrue(MathX.IsAlmostSame(sample.X, newVector.X));
             Assert.IsTrue(MathX.IsAlmostSame(sample.Y, newVector.Y));
@@ -35,7 +35,7 @@ namespace HelloGame.Tests
             decimal deg = MathX.RadianToDegree(sample.Angle);
 
             var newVector = new Real2DVector();
-            newVector.Set(sample.Angle, sample.Bigness);
+            newVector.Set(sample.Angle, sample.Size);
 
             Assert.IsTrue(MathX.IsAlmostSame(sample.X, newVector.X));
             Assert.IsTrue(MathX.IsAlmostSame(sample.Y, newVector.Y));
@@ -51,7 +51,7 @@ namespace HelloGame.Tests
             };
 
             var newVector = new Real2DVector();
-            newVector.Set(sample.Angle, sample.Bigness);
+            newVector.Set(sample.Angle, sample.Size);
 
             Assert.IsTrue(MathX.IsAlmostSame(sample.X, newVector.X));
             Assert.IsTrue(MathX.IsAlmostSame(sample.Y, newVector.Y));
@@ -67,7 +67,7 @@ namespace HelloGame.Tests
             };
 
             var newVector = new Real2DVector();
-            newVector.Set(sample.Angle, sample.Bigness);
+            newVector.Set(sample.Angle, sample.Size);
 
             Assert.IsTrue(MathX.IsAlmostSame(sample.X, newVector.X));
             Assert.IsTrue(MathX.IsAlmostSame(sample.Y, newVector.Y));

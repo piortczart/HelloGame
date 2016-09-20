@@ -6,9 +6,9 @@ namespace HelloGame.MathStuff
     {
         public decimal X { get; set; }
         public decimal Y { get; set; }
-        private decimal? _maxBigness;
+        private decimal? _maxSize;
 
-        public decimal Bigness => (decimal)Math.Pow((double)(X * X + Y * Y), 0.5);
+        public decimal Size => (decimal)Math.Pow((double)(X * X + Y * Y), 0.5);
 
         public decimal Angle
         {
@@ -45,21 +45,21 @@ namespace HelloGame.MathStuff
 
         public decimal AngleDegree { get { return Angle * 57.296m; } }
 
-        public Real2DVector(decimal? maxBigness = null)
+        public Real2DVector(decimal? maxSize = null)
         {
-            _maxBigness = maxBigness;
+            _maxSize = maxSize;
         }
 
-        public Real2DVector(decimal angle, decimal bigness, decimal? maxBigness = null)
+        public Real2DVector(decimal angle, decimal bigness, decimal? maxSize = null)
         {
-            _maxBigness = maxBigness;
+            _maxSize = maxSize;
             Set(angle, bigness);
         }
 
         public Real2DVector GetScaled(decimal by, bool withRestriction = true)
         {
             var result = Copy(withRestriction);
-            result.Set(Angle, Bigness * by);
+            result.Set(Angle, Size * by);
             return result;
         }
 
@@ -71,7 +71,7 @@ namespace HelloGame.MathStuff
             return result;
         }
 
-        public void Set(decimal newAngle, decimal bigness)
+        public void Set(decimal newAngle, decimal size)
         {
             if (newAngle > 2 * (decimal)Math.PI)
             {
@@ -82,14 +82,14 @@ namespace HelloGame.MathStuff
                 newAngle += 2 * (decimal)Math.PI;
             }
 
-            if (_maxBigness.HasValue && bigness > _maxBigness.Value)
+            if (_maxSize.HasValue && size > _maxSize.Value)
             {
-                bigness = _maxBigness.Value;
+                size = _maxSize.Value;
             }
 
-            var newX = GetX(newAngle, bigness);
+            var newX = GetX(newAngle, size);
             X = newX;
-            var newY = (decimal)Math.Sin((double)newAngle) * bigness;
+            var newY = (decimal)Math.Sin((double)newAngle) * size;
             Y = newY;
 
             var newAngleDeg = MathX.RadianToDegree(newAngle);
@@ -124,7 +124,7 @@ namespace HelloGame.MathStuff
 
         public void Change(decimal newAngle, decimal bignessDelta)
         {
-            decimal newBigness = Bigness + bignessDelta;
+            decimal newBigness = Size + bignessDelta;
             Set(newAngle, newBigness);
         }
 
@@ -144,7 +144,7 @@ namespace HelloGame.MathStuff
         public void Add(Real2DVector vector)
         {
 
-            if (_maxBigness.HasValue && Bigness > _maxBigness)
+            if (_maxSize.HasValue && Size > _maxSize)
             {
                 X += vector.X;
                 Y += vector.Y;
@@ -158,7 +158,7 @@ namespace HelloGame.MathStuff
 
         public Real2DVector Copy(bool withRestriction = true)
         {
-            return new Real2DVector(withRestriction ? _maxBigness : null)
+            return new Real2DVector(withRestriction ? _maxSize : null)
             {
                 X = X,
                 Y = Y
@@ -167,7 +167,7 @@ namespace HelloGame.MathStuff
 
         public override string ToString()
         {
-            return $"X_{X:0.00} Y_{Y:0.00} B_{Bigness:0.0} A_{Angle:0.0}";
+            return $"X_{X:0.00} Y_{Y:0.00} B_{Size:0.0} A_{Angle:0.0}";
         }
     }
 

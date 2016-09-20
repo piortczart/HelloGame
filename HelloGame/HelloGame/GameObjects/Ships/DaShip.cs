@@ -57,7 +57,7 @@ namespace HelloGame.GameObjects
                 if (this is PlayerShip)
                 {
                     g.DrawString($"Ship angle: {Physics.Angle * 57.296m:0}", font, Brushes.Black, new PointF(155, 155));
-                    g.DrawString($"Engine: {Physics.SelfPropelling.Bigness:0.00}", font, Brushes.Black, new PointF(155, 185));
+                    g.DrawString($"Engine: {Physics.SelfPropelling.Size:0.00}", font, Brushes.Black, new PointF(155, 185));
                     g.DrawString($"Inertia: {Physics.Interia}", font, Brushes.Black, new PointF(155, 215));
                     g.DrawString($"Engine: {Physics.SelfPropelling}", font, Brushes.Black, new PointF(155, 245));
                 }

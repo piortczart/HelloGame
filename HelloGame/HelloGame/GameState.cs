@@ -78,7 +78,6 @@ namespace HelloGame
             ship.Spawn(new Point(100, 100));
             AddThing(ship);
 
-
             var aiShip = new AiShip(this);
             ship.Spawn(new Point(400, 100));
             AddThing(aiShip);

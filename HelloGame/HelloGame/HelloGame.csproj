@@ -33,24 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentAssertions">
-      <HintPath>..\..\..\..\..\AppData\Local\Temp\Vector-master\RP.Math.Vector3.Tests\bin\Debug\FluentAssertions.dll</HintPath>
-    </Reference>
-    <Reference Include="FluentAssertions.Core">
-      <HintPath>..\..\..\..\..\AppData\Local\Temp\Vector-master\RP.Math.Vector3.Tests\bin\Debug\FluentAssertions.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\AppData\Local\Temp\Vector-master\RP.Math.Vector3.Tests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="RP.Math">
-      <HintPath>..\..\..\..\..\AppData\Local\Temp\Vector-master\RP.Math.Vector3.Tests\bin\Debug\RP.Math.dll</HintPath>
-    </Reference>
-    <Reference Include="RP.Math.Tests">
-      <HintPath>..\..\..\..\..\AppData\Local\Temp\Vector-master\RP.Math.Vector3.Tests\bin\Debug\RP.Math.Tests.dll</HintPath>
-    </Reference>
-    <Reference Include="RP.Math.Vector3">
-      <HintPath>..\..\..\..\..\AppData\Local\Temp\Vector-master\RP.Math.Vector3.Tests\bin\Debug\RP.Math.Vector3.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
