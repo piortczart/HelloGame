@@ -6,8 +6,8 @@ namespace HelloGame.GameObjects
     {
         protected readonly DateTime SpawnedAt;
         public TimeSpan Age => DateTime.Now - SpawnedAt;
-        public bool IsTimeToDie { get; private set; }
-        public TimeSpan TimeToLive { get; }
+        public bool IsTimeToElapse { get; private set; }
+        public TimeSpan TimeToLive { get; private set; }
         public double AgePercentage => 100 * Age.TotalMilliseconds/ TimeToLive.TotalMilliseconds;
 
         protected ElapsingThing(TimeSpan timeToLive)
@@ -16,11 +16,16 @@ namespace HelloGame.GameObjects
             SpawnedAt = DateTime.Now;
         }
 
+        protected void ElapseIn(TimeSpan lifeLeft)
+        {
+            TimeToLive = lifeLeft;
+        }
+
         protected void UpdateElapsing()
         {
             if (TimeToLive.TotalMilliseconds > 0 && Age > TimeToLive)
             {
-                IsTimeToDie = true;
+                IsTimeToElapse = true;
             }
         }
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using HelloGame.MathStuff;
+﻿using HelloGame.MathStuff;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HelloGame.Tests
@@ -12,12 +11,12 @@ namespace HelloGame.Tests
         {
             Real2DVector sample = new Real2DVector
             {
-                X = 0.8,
-                Y = 0.3
+                X = 0.8m,
+                Y = 0.3m
             };
 
             var actual = sample.Angle;
-            var expected = MathX.DegreeToRadian(20.556);
+            var expected = MathX.DegreeToRadian(20.556m);
             TestX.AssertAreAlmostSame(actual, expected);
         }
 
@@ -26,12 +25,12 @@ namespace HelloGame.Tests
         {
             Real2DVector sample = new Real2DVector
             {
-                X = -0.8,
-                Y = -0.3
+                X = -0.8m,
+                Y = -0.3m
             };
 
             var actual = sample.Angle;
-            var expected = MathX.DegreeToRadian(180 + 20.556);
+            var expected = MathX.DegreeToRadian(180m + 20.556m);
             TestX.AssertAreAlmostSame(actual, expected);
         }
 
@@ -41,12 +40,12 @@ namespace HelloGame.Tests
         {
             Real2DVector sample = new Real2DVector
             {
-                X = 0.8,
-                Y = -0.3
+                X = 0.8m,
+                Y = -0.3m
             };
 
             var actual = sample.Angle;
-            var expected = MathX.DegreeToRadian(270 + 69.444);
+            var expected = MathX.DegreeToRadian(270m + 69.444m);
             TestX.AssertAreAlmostSame(actual, expected);
         }
 
@@ -55,12 +54,12 @@ namespace HelloGame.Tests
         {
             Real2DVector sample = new Real2DVector
             {
-                X = -0.8,
-                Y = 0.3
+                X = -0.8m,
+                Y = 0.3m
             };
 
             var actual = sample.Angle;
-            var expected = MathX.DegreeToRadian(90 + 69.444);
+            var expected = MathX.DegreeToRadian(90m + 69.444m);
             TestX.AssertAreAlmostSame(actual, expected);
         }
     }

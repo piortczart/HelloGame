@@ -1,33 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
-using HelloGame.GameObjects;
-using HelloGame.MathStuff;
+﻿using System.Windows.Forms;
 
 namespace HelloGame
 {
     public partial class HelloGameForm : Form
     {
         public KeysInfo KeysMine = new KeysInfo();
-        public readonly Scene scene;
+        GameState game;
 
         public HelloGameForm()
         {
             InitializeComponent();
-
-            scene = new Scene(this);
-
-            var ship = new DaShip(KeysMine , scene);
-            ship.Spawn(new Point(100, 100), new Real2DVector());
-
-            scene.AddThing(ship);
+            game = new GameState(this, KeysMine);
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
 
-            scene.PaintStuff(e.Graphics);
+            game.PaintStuff(e.Graphics);
         }
 
         protected override void OnKeyDown(KeyEventArgs e)

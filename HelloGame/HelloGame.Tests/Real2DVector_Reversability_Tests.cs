@@ -12,8 +12,8 @@ namespace HelloGame.Tests
         {
             Real2DVector sample = new Real2DVector
             {
-                X = -0.7,
-                Y = -0.8
+                X = -0.7m,
+                Y = -0.8m
             };
 
             var newVector = new Real2DVector();
@@ -28,11 +28,11 @@ namespace HelloGame.Tests
         {
             Real2DVector sample = new Real2DVector
             {
-                X = -0.7,
-                Y = 0.8
+                X = -0.7m,
+                Y = 0.8m
             };
 
-            double deg = MathX.RadianToDegree(sample.Angle);
+            decimal deg = MathX.RadianToDegree(sample.Angle);
 
             var newVector = new Real2DVector();
             newVector.Set(sample.Angle, sample.Bigness);
@@ -46,8 +46,8 @@ namespace HelloGame.Tests
         {
             Real2DVector sample = new Real2DVector
             {
-                X = 0.7,
-                Y = -0.8
+                X = 0.7m,
+                Y = -0.8m
             };
 
             var newVector = new Real2DVector();
@@ -62,8 +62,8 @@ namespace HelloGame.Tests
         {
             Real2DVector sample = new Real2DVector
             {
-                X = 0.7,
-                Y = 0.8
+                X = 0.7m,
+                Y = 0.8m
             };
 
             var newVector = new Real2DVector();

@@ -22,7 +22,7 @@ namespace HelloGame.Tests
         public void Real2DVector_Change_Simple2()
         {
             Real2DVector vector = new Real2DVector();
-            vector.Change(Math.PI, 3); // Go "left"
+            vector.Change((decimal)Math.PI, 3); // Go "left"
 
             Assert.AreEqual(-3, vector.X);
             // The Math.PI is not perfect?
@@ -33,7 +33,7 @@ namespace HelloGame.Tests
         public void Real2DVector_Change_Simple3()
         {
             Real2DVector vector = new Real2DVector();
-            vector.Change(Math.PI/2, 3); // Go "up"
+            vector.Change((decimal)Math.PI/2m, 3); // Go "up"
 
             TestX.AssertIsAlmostZero(vector.X);
             // The Math.PI is not perfect?
@@ -45,16 +45,16 @@ namespace HelloGame.Tests
         {
             Real2DVector sample = new Real2DVector
             {
-                X = -5,
-                Y = 10
+                X = -5m,
+                Y = 10m
             };
 
             Real2DVector vector = new Real2DVector();
             vector.Add(sample);
             vector.Add(sample);
 
-            Assert.AreEqual(-10, vector.X);
-            Assert.AreEqual(20, vector.Y);
+            Assert.AreEqual(-10m, vector.X);
+            Assert.AreEqual(20m, vector.Y);
         }
 
         [TestMethod]
@@ -62,14 +62,14 @@ namespace HelloGame.Tests
         {
             Real2DVector sample = new Real2DVector
             {
-                X = -0.7,
-                Y = -0.8
+                X = -0.7m,
+                Y = -0.8m
             };
 
-            var result = sample.GetScaled(0.5);
+            var result = sample.GetScaled(0.5m);
 
-            Assert.IsTrue(MathX.IsAlmostSame(-0.35, result.X));
-            Assert.IsTrue(MathX.IsAlmostSame(-0.4, result.Y));
+            Assert.IsTrue(MathX.IsAlmostSame(-0.35m, result.X));
+            Assert.IsTrue(MathX.IsAlmostSame(-0.4m, result.Y));
         }
 
     }
