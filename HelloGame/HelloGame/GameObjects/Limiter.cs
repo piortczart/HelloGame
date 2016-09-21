@@ -14,12 +14,15 @@ namespace HelloGame.GameObjects
             _frequency = frequency;
         }
 
-        public bool CanHappen()
+        public bool CanHappen(bool willHappen = true)
         {
             TimeSpan nextEvent = _lastEvent.Add(_frequency);
             if (Stopwatch.Elapsed > nextEvent)
             {
-                _lastEvent = Stopwatch.Elapsed;
+                if (willHappen)
+                {
+                    _lastEvent = Stopwatch.Elapsed;
+                }
                 return true;
             }
             return false;

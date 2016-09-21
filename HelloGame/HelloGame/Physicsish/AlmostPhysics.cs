@@ -1,7 +1,7 @@
-﻿using HelloGame.MathStuff;
-using System.Drawing;
+﻿using System.Drawing;
+using HelloGame.MathStuff;
 
-namespace HelloGame
+namespace HelloGame.Physicsish
 {
     public class AlmostPhysics
     {

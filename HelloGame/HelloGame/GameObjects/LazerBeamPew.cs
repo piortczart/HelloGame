@@ -6,13 +6,13 @@ namespace HelloGame.GameObjects
 {
     public class LazerBeamPew : ThingBase
     {
-        private static readonly ThingSettings settings = new ThingSettings
+        private static readonly ThingSettings Settings = new ThingSettings
         {
             Aerodynamism = 0,
             TimeToLive = TimeSpan.FromSeconds(1)
         };
 
-        public LazerBeamPew(ThingBase creator) : base(settings, creator)
+        public LazerBeamPew(ThingBase creator) : base(Settings, creator)
         {
         }
 

@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using HelloGame.MathStuff;
 
 namespace HelloGame.GameObjects
 {
     public class BigMass : ThingBase
     {
-        private Color color = GetRandom();
+        private Color _color = GetRandom();
         private int _size;
         
-        static readonly ThingSettings settings = new ThingSettings()
+        static readonly ThingSettings Settings = new ThingSettings()
         {
             Aerodynamism = int.MaxValue,
             TimeToLive = TimeSpan.Zero
@@ -20,7 +21,7 @@ namespace HelloGame.GameObjects
             return Color.FromArgb(MathX.Random.Next(0, 255), MathX.Random.Next(0, 255), MathX.Random.Next(0, 255));
         }
 
-        public BigMass(int size) : base(settings)
+        public BigMass(int size) : base(Settings)
         {
             _size = size;
             Physics.Mass = size * 10000;
@@ -28,7 +29,7 @@ namespace HelloGame.GameObjects
 
         public override void CollidesWith(ThingBase other)
         {
-            color = GetRandom();
+            _color = GetRandom();
         }
 
         public override void PaintStuff(Graphics g)

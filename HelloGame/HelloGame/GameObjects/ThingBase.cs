@@ -2,6 +2,7 @@
 using System.Drawing;
 using HelloGame.MathStuff;
 using System.Collections.Generic;
+using HelloGame.Physicsish;
 
 namespace HelloGame.GameObjects
 {
@@ -28,9 +29,9 @@ namespace HelloGame.GameObjects
 
         public abstract void PaintStuff(Graphics g);
         protected abstract void UpdateModelInternal(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings);
-        public bool IsDestroyed { get; protected set; }
+        protected bool IsDestroyed { get; private set; }
 
-        public void Destroy()
+        protected void Destroy()
         {
             IsDestroyed = true;
         }

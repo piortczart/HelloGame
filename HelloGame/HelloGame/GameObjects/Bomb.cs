@@ -9,14 +9,14 @@ namespace HelloGame.GameObjects
     {
         public bool IsArmed { get; private set; }
 
-        private static readonly ThingSettings settings = new ThingSettings
+        private static readonly ThingSettings Settings = new ThingSettings
         {
             Aerodynamism = 0.1m,
             TimeToLive = TimeSpan.FromSeconds(3),
             Mass = 5
         };
 
-        public Bomb(ThingBase creator) : base(settings, creator)
+        public Bomb(ThingBase creator) : base(Settings, creator)
         {
             Physics.Interia = new Real2DVector();
         }

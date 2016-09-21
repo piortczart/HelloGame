@@ -2,11 +2,11 @@
 using System.Drawing;
 using HelloGame.MathStuff;
 
-namespace HelloGame.GameObjects
+namespace HelloGame.GameObjects.Ships
 {
     public abstract class DaShip : ThingBase
     {
-        private static readonly ThingSettings settings = new ThingSettings
+        private static readonly ThingSettings Settings = new ThingSettings
         {
             Aerodynamism = 0.1m,
             TimeToLive = TimeSpan.Zero,
@@ -14,13 +14,13 @@ namespace HelloGame.GameObjects
             RadPerSecond = (decimal)Math.PI
         };
 
-        protected readonly GameState _scene;
-        protected readonly Limiter _bombLimiter = new Limiter(TimeSpan.FromSeconds(1));
-        protected readonly Limiter _laserLimiter = new Limiter(TimeSpan.FromMilliseconds(200));
+        protected readonly GameState Scene;
+        protected readonly Limiter BombLimiter = new Limiter(TimeSpan.FromSeconds(1));
+        protected readonly Limiter LaserLimiter = new Limiter(TimeSpan.FromMilliseconds(200));
 
-        protected DaShip(GameState scene) : base(settings)
+        protected DaShip(GameState scene) : base(Settings)
         {
-            _scene = scene;
+            Scene = scene;
 
             Physics.SelfPropelling = new Real2DVector(0.5m);
             Physics.Interia = new Real2DVector(5);
@@ -28,7 +28,7 @@ namespace HelloGame.GameObjects
 
         protected void PewPew()
         {
-            if (_laserLimiter.CanHappen())
+            if (LaserLimiter.CanHappen())
             {
                 var laser = new LazerBeamPew(this);
 
@@ -36,7 +36,7 @@ namespace HelloGame.GameObjects
                 laser.Spawn(Physics.PositionPoint, inertia);
                 laser.Physics.Angle = Physics.Angle;
 
-                _scene.AddThing(laser);
+                Scene.AddThing(laser);
             }
         }
 

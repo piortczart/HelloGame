@@ -5,19 +5,19 @@ namespace HelloGame
     public partial class HelloGameForm : Form
     {
         public KeysInfo KeysMine = new KeysInfo();
-        GameState game;
+        GameState _game;
 
         public HelloGameForm()
         {
             InitializeComponent();
-            game = new GameState(this, KeysMine);
+            _game = new GameState(this, KeysMine);
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
 
-            game.PaintStuff(e.Graphics);
+            _game.PaintStuff(e.Graphics);
         }
 
         protected override void OnKeyDown(KeyEventArgs e)

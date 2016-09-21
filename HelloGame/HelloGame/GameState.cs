@@ -11,9 +11,9 @@ namespace HelloGame
     public class GameState
     {
         KeysInfo _keysMine;
-        DaShip ship;
+        DaShip _ship;
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
-        CollisionDetector collidor = new CollisionDetector();
+        CollisionDetector _collidor = new CollisionDetector();
         private readonly List<ThingBase> _things = new List<ThingBase>();
         private TimeSpan _lastModelUpdate = TimeSpan.Zero;
         HelloGameForm _form;
@@ -48,7 +48,7 @@ namespace HelloGame
             Timer timer = new Timer { Interval = 5 };
             timer.Tick += (a, b) =>
             {
-                if (ship.IsTimeToElapse)
+                if (_ship.IsTimeToElapse)
                 {
                     Restart();
                 }
@@ -64,7 +64,7 @@ namespace HelloGame
                         _things.Remove(item);
                     }
                 }
-                collidor.DetectCollisions(_things);
+                _collidor.DetectCollisions(_things);
                 _form.Refresh();
             };
             timer.Start();
@@ -74,12 +74,12 @@ namespace HelloGame
         {
             RemoveAll();
 
-            ship = new PlayerShip(_keysMine, this);
-            ship.Spawn(new Point(100, 100));
-            AddThing(ship);
+            _ship = new PlayerShip(_keysMine, this);
+            _ship.Spawn(new Point(100, 100));
+            AddThing(_ship);
 
             var aiShip = new AiShip(this);
-            ship.Spawn(new Point(400, 100));
+            _ship.Spawn(new Point(400, 100));
             AddThing(aiShip);
 
             var mass = new BigMass(80);

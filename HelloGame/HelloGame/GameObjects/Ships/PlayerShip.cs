@@ -1,28 +1,28 @@
-﻿using HelloGame.MathStuff;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using HelloGame.MathStuff;
 
-namespace HelloGame.GameObjects
+namespace HelloGame.GameObjects.Ships
 {
     public class PlayerShip : DaShip
     {
-        private KeysInfo _keysInfo { get; set; }
+        private KeysInfo KeysInfo { get; set; }
 
         public PlayerShip(KeysInfo keysInfo, GameState scene) : base(scene)
         {
-            _keysInfo = keysInfo;
+            KeysInfo = keysInfo;
         }
 
         private decimal GetUpdatedShipAngle(decimal shipAngle, TimeSpan timeSinceLastUpdate)
         {
             decimal maxAngleChange = Physics.RadPerSecond * (decimal)timeSinceLastUpdate.TotalSeconds;
 
-            if (_keysInfo.IsA && _keysInfo.IsD)
+            if (KeysInfo.IsA && KeysInfo.IsD)
             {
                 return shipAngle;
             }
 
-            if (_keysInfo.IsA)
+            if (KeysInfo.IsA)
             {
                 shipAngle -= maxAngleChange;
                 if (shipAngle < 0)
@@ -30,7 +30,7 @@ namespace HelloGame.GameObjects
                     shipAngle = 2 * (decimal)Math.PI - shipAngle;
                 }
             }
-            else if (_keysInfo.IsD)
+            else if (KeysInfo.IsD)
             {
                 shipAngle += maxAngleChange;
                 if (shipAngle > 2 * (decimal)Math.PI)
@@ -50,20 +50,20 @@ namespace HelloGame.GameObjects
 
             Physics.Angle = GetUpdatedShipAngle(Physics.Angle, timeSinceLastUpdate);
 
-            UpdateEngineAcc(Physics.SelfPropelling, Physics.Angle, _keysInfo);
+            UpdateEngineAcc(Physics.SelfPropelling, Physics.Angle, KeysInfo);
 
-            if (_keysInfo.IsJ)
+            if (KeysInfo.IsJ)
             {
-                if (_bombLimiter.CanHappen())
+                if (BombLimiter.CanHappen())
                 {
                     var bomb = new Bomb(this);
                     bomb.Spawn(Physics.GetPointInDirection(10), Physics.TotalForce.GetScaled(1.2m, false));
 
-                    _scene.AddThing(bomb);
+                    Scene.AddThing(bomb);
                 }
             }
 
-            if (_keysInfo.IsSpace)
+            if (KeysInfo.IsSpace)
             {
                 PewPew();
             }
