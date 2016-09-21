@@ -2,37 +2,54 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Drawing;
 
 namespace HelloGame.GameObjects.Ships
 {
     public class AiShip : DaShip
     {
-        private readonly Limiter _locatePlayerLimiter = new Limiter(TimeSpan.FromSeconds(5));
+        private readonly Limiter _locatePlayerLimiter = new Limiter(TimeSpan.FromSeconds(2));
+
+        Real2DVector playerPointer = new Real2DVector();
 
         public AiShip(GameState scene) : base(scene)
         {
         }
 
+        protected override void PaintStuffInternal(Graphics g)
+        {
+            //g.DrawLine(ShipPen, Physics.PositionPoint, 
+            //    new Point((int)(Physics.PositionPoint.X + playerPointer.X), (int)(Physics.PositionPoint.Y + playerPointer.Y)));
+
+            //g.DrawString($"Ship angle: {playerPointer.AngleDegree}", font, Brushes.Black, new PointF(155, 295));
+        }
+
         protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)
         {
+            if (IsDestroyed)
+            {
+                return;
+            }
+
             if (_locatePlayerLimiter.CanHappen())
             {
-
                 // Locate a ship.
                 var player = otherThings.FirstOrDefault(s => s is PlayerShip);
                 if (player != null)
                 {
                     // Face him.
-                    var x = player.Physics.PositionX - Physics.PositionX;
-                    var y = player.Physics.PositionY - Physics.PositionY;
-                    var v = new Real2DVector(x, y);
+                    var x = player.Physics.Position.X - Physics.Position.X;
+                    var y = player.Physics.Position.Y - Physics.Position.Y;
 
-                    Physics.Angle = v.Angle;
+                    playerPointer = Real2DVector.GetFromCoords(x, y);
+
+                    Physics.Angle = playerPointer.Angle;
+
+                    PewPew();
                 }
 
             }
 
-            PewPew();
         }
     }
 }

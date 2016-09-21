@@ -17,6 +17,8 @@ namespace HelloGame.GameObjects.Ships
         protected readonly GameState Scene;
         protected readonly Limiter BombLimiter = new Limiter(TimeSpan.FromSeconds(1));
         protected readonly Limiter LaserLimiter = new Limiter(TimeSpan.FromMilliseconds(200));
+        protected Pen ShipPen = new Pen(Brushes.Blue);
+        protected Font font = new Font("Courier", 24, GraphicsUnit.Pixel);
 
         protected DaShip(GameState scene) : base(Settings)
         {
@@ -40,6 +42,10 @@ namespace HelloGame.GameObjects.Ships
             }
         }
 
+        protected virtual void PaintStuffInternal(Graphics g)
+        {
+        }
+
         public override void PaintStuff(Graphics g)
         {
             if (IsDestroyed)
@@ -47,11 +53,10 @@ namespace HelloGame.GameObjects.Ships
                 var shipPen = new Pen(Brushes.Red);
 
                 int width = MathX.Random.Next(5, 10);
-                g.DrawArc(shipPen, new Rectangle((int)Physics.PositionX - width / 2, (int)Physics.PositionY - width / 2, width, width), 0, 360);
+                g.DrawArc(shipPen, new Rectangle((int)Physics.Position.X - width / 2, (int)Physics.Position.Y - width / 2, width, width), 0, 360);
             }
             else
             {
-                var font = new Font("Courier", 24, GraphicsUnit.Pixel);
                 var shipPen = new Pen(Brushes.DarkBlue);
 
                 if (this is PlayerShip)
@@ -68,8 +73,10 @@ namespace HelloGame.GameObjects.Ships
 
                 // This is the circle around the ship.
                 int width = 20;
-                g.DrawArc(shipPen, new Rectangle((int)Physics.PositionX - width / 2, (int)Physics.PositionY - width / 2, width, width), 0, 360);
+                g.DrawArc(shipPen, new Rectangle((int)Physics.Position.X - width / 2, (int)Physics.Position.Y - width / 2, width, width), 0, 360);
             }
+
+            PaintStuffInternal(g);
         }
 
         public override void CollidesWith(ThingBase other)

@@ -36,7 +36,7 @@ namespace HelloGame.GameObjects
         {
             var shipPen = new Pen(Brushes.Red);
 
-            g.DrawArc(shipPen, new Rectangle((int)Physics.PositionX - _size / 2, (int)Physics.PositionY - _size / 2, _size, _size), 0, 360);
+            g.DrawArc(shipPen, new Rectangle((int)Physics.Position.X - _size / 2, (int)Physics.Position.Y - _size / 2, _size, _size), 0, 360);
         }
 
         protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)

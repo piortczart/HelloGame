@@ -50,6 +50,17 @@ namespace HelloGame.MathStuff
             _maxSize = maxSize;
         }
 
+        public static Real2DVector GetFromCoords(decimal x, decimal y, decimal? maxSize = null)
+        {
+            return new Real2DVector
+            {
+                X = x,
+                Y = y,
+                _maxSize = maxSize
+            };
+        }
+
+
         public Real2DVector(decimal angle, decimal bigness, decimal? maxSize = null)
         {
             _maxSize = maxSize;

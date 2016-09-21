@@ -57,8 +57,8 @@ namespace HelloGame.GameObjects
                 if (Physics.Mass == 0)
                 {
                     // No mass? 
-                    Physics.PositionX += totalForce.X;
-                    Physics.PositionY += totalForce.Y;
+                    Physics.Position.X += totalForce.X;
+                    Physics.Position.Y += totalForce.Y;
                 }
                 else
                 {
@@ -67,8 +67,8 @@ namespace HelloGame.GameObjects
                     totalForce.Add(gravity);
 
                     // Move the object.
-                    Physics.PositionX += totalForce.X / Physics.Mass;
-                    Physics.PositionY += totalForce.Y / Physics.Mass;
+                    Physics.Position.X += totalForce.X / Physics.Mass;
+                    Physics.Position.Y += totalForce.Y / Physics.Mass;
                 }
             }
         }
@@ -86,8 +86,8 @@ namespace HelloGame.GameObjects
                 decimal length = 0.01m * Physics.Mass * thing.Physics.Mass / (decimal)Math.Pow((double)distance,2);
                 var grav = new Real2DVector();
 
-                var x = thing.Physics.PositionX - Physics.PositionX;
-                var y = thing.Physics.PositionY - Physics.PositionY;
+                var x = thing.Physics.Position.X - Physics.Position.X;
+                var y = thing.Physics.Position.Y - Physics.Position.Y;
                 grav.X = x;
                 grav.Y = y;
 
@@ -102,11 +102,7 @@ namespace HelloGame.GameObjects
 
         public decimal DistanceTo(ThingBase another)
         {
-            var x1 = Physics.PositionX;
-            var x2 = another.Physics.PositionX;
-            var y1 = Physics.PositionY;
-            var y2 = another.Physics.PositionY;
-            return (decimal)Math.Sqrt(Math.Pow((double)(x1 - x2), 2) + Math.Pow((double)(y1 - y2), 2));
+            return Physics.Position.DistanceTo(another.Physics.Position);
         }
 
         public void Spawn(Point where, Real2DVector initialInertia = null)

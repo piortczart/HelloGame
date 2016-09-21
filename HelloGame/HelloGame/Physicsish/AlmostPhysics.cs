@@ -29,10 +29,9 @@ namespace HelloGame.Physicsish
         public Real2DVector TotalForce => Real2DVector.Combine(SelfPropelling, Interia, Drag);
 
         public decimal Angle { get; set; }
-        public decimal PositionX { get; set; }
-        public decimal PositionY { get; set; }
+        public Position Position { get; set; }
 
-        public Point PositionPoint => new Point((int)PositionX, (int)PositionY);
+        public Point PositionPoint => new Point((int)Position.X, (int)Position.Y);
 
         public AlmostPhysics(decimal aerodynamism)
         {
@@ -43,8 +42,7 @@ namespace HelloGame.Physicsish
 
         public void SetPosition(Point point)
         {
-            PositionX = point.X;
-            PositionY = point.Y;
+            Position = new Position(point.X, point.Y);
         }
 
         public Real2DVector GetDirection(decimal bigness)
@@ -55,7 +53,7 @@ namespace HelloGame.Physicsish
         public Point GetPointInDirection(decimal bigness)
         {
             Real2DVector direction = GetDirection(bigness);
-            return new Point((int)(direction.X + PositionX), (int)(direction.Y + PositionY));
+            return new Point((int)(direction.X + Position.X), (int)(direction.Y + Position.Y));
         }
     }
 }

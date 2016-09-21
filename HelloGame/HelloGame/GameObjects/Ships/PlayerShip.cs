@@ -82,7 +82,7 @@ namespace HelloGame.GameObjects.Ships
             }
             else if (keys.IsS) // S is pressed
             {
-                engineForce.Change(shipAngle, -1.5m);
+                engineForce.Change(shipAngle, -0.5m);
             }
         }
     }

@@ -32,11 +32,11 @@ namespace HelloGame.GameObjects
 
                 if (!IsArmed)
                 {
-                    g.DrawArc(pen, new Rectangle((int)Physics.PositionX - width / 2, (int)Physics.PositionY - width / 2, width, width), 0, 360);
+                    g.DrawArc(pen, new Rectangle((int)Physics.Position.X - width / 2, (int)Physics.Position.Y - width / 2, width, width), 0, 360);
                 }
                 else
                 {
-                    g.FillEllipse(pen.Brush, new Rectangle((int)Physics.PositionX - width / 2, (int)Physics.PositionY - width / 2, width, width));
+                    g.FillEllipse(pen.Brush, new Rectangle((int)Physics.Position.X - width / 2, (int)Physics.Position.Y - width / 2, width, width));
                 }
 
                 if (AgePercentage > 95)
@@ -47,7 +47,7 @@ namespace HelloGame.GameObjects
             else
             {
                 int width = 50;
-                g.FillEllipse(Brushes.Yellow, new Rectangle((int)Physics.PositionX - width / 2, (int)Physics.PositionY - width / 2, width, width));
+                g.FillEllipse(Brushes.Yellow, new Rectangle((int)Physics.Position.X - width / 2, (int)Physics.Position.Y - width / 2, width, width));
             }
         }
 

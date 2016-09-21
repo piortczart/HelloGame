@@ -1,4 +1,6 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace HelloGame
 {
@@ -6,6 +8,8 @@ namespace HelloGame
     {
         public KeysInfo KeysMine = new KeysInfo();
         GameState _game;
+        public CounterInTime paintCounter = new CounterInTime(TimeSpan.FromSeconds(1));
+        protected Font font = new Font("Courier", 24, GraphicsUnit.Pixel);
 
         public HelloGameForm()
         {
@@ -18,6 +22,11 @@ namespace HelloGame
             base.OnPaint(e);
 
             _game.PaintStuff(e.Graphics);
+
+            paintCounter.Add();
+
+        e.Graphics.DrawString($"paints/s: {paintCounter.GetPerTime()}", font, Brushes.Black, new PointF(300, 15));
+
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
