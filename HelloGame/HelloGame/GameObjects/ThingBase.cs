@@ -41,6 +41,8 @@ namespace HelloGame.GameObjects
             UpdateElapsing();
             if (!IsTimeToElapse)
             {
+                decimal timeBoundary = (decimal)timeSinceLastUpdate.TotalMilliseconds *15;
+
                 // Update stuff like propelling.
                 UpdateModelInternal(timeSinceLastUpdate, otherThings);
 
@@ -57,8 +59,8 @@ namespace HelloGame.GameObjects
                 if (Physics.Mass == 0)
                 {
                     // No mass? 
-                    Physics.Position.X += totalForce.X;
-                    Physics.Position.Y += totalForce.Y;
+                    Physics.Position.X += totalForce.X / timeBoundary;
+                    Physics.Position.Y += totalForce.Y / timeBoundary;
                 }
                 else
                 {
@@ -67,8 +69,8 @@ namespace HelloGame.GameObjects
                     totalForce.Add(gravity);
 
                     // Move the object.
-                    Physics.Position.X += totalForce.X / Physics.Mass;
-                    Physics.Position.Y += totalForce.Y / Physics.Mass;
+                    Physics.Position.X += totalForce.X / Physics.Mass / timeBoundary;
+                    Physics.Position.Y += totalForce.Y / Physics.Mass / timeBoundary;
                 }
             }
         }

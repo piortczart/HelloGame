@@ -1,10 +1,12 @@
 ﻿using HelloGame.GameObjects;
 using HelloGame.GameObjects.Ships;
+using HelloGame.MathStuff;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace HelloGame
@@ -13,7 +15,14 @@ namespace HelloGame
     {
         public static void Invoke(this Control control, Action action)
         {
-            control.Invoke((Delegate)action);
+            try
+            {
+                control.Invoke(action);
+            }
+            catch
+            {
+                // Ignore
+            }
         }
     }
 
@@ -64,7 +73,7 @@ namespace HelloGame
         private readonly List<ThingBase> _things = new List<ThingBase>();
         private TimeSpan _lastModelUpdate = TimeSpan.Zero;
         HelloGameForm _form;
-        System.Windows.Forms.Timer timer;
+        Thread t;
 
         public CounterInTime modelUpdateCounter = new CounterInTime(TimeSpan.FromSeconds(1));
 
@@ -73,6 +82,7 @@ namespace HelloGame
             _keysMine = keysMine;
             _form = form;
             Restart();
+            StartGame();
         }
 
         public void AddThing(ThingBase thingBase)
@@ -95,20 +105,14 @@ namespace HelloGame
 
         private void StartGame()
         {
-            Thread t = new Thread(new ThreadStart(UpdateModel));
+            t = new Thread(new ThreadStart(UpdateModel));
             t.IsBackground = false;
             t.Start();
-            //timer = new Timer { Interval = 1 };
-            //timer.Tick += (a, b) =>
-            //{
-              
-            //};
-            //timer.Start();
         }
 
         private void UpdateModel()
         {
-            while (true)
+            while (t.IsAlive)
             {
                 modelUpdateCounter.Add();
 
@@ -122,15 +126,15 @@ namespace HelloGame
                 {
                     TimeSpan sinceLast = now - _lastModelUpdate;
 
-
-                    foreach (ThingBase item in _things.ToArray())
+                    var nonModifiable = new List<ThingBase>(_things);
+                    Parallel.ForEach(nonModifiable, (item) =>
                     {
-                        item.UpdateModel(sinceLast, _things);
+                        item.UpdateModel(sinceLast, nonModifiable);
                         if (item.IsTimeToElapse)
                         {
                             _things.Remove(item);
                         }
-                    }
+                    });
                     _collidor.DetectCollisions(_things);
                 }
                 _lastModelUpdate = now;
@@ -143,8 +147,6 @@ namespace HelloGame
         {
             RemoveAll();
 
-            if (timer != null) { timer.Stop(); }
-
             _ship = new PlayerShip(_keysMine, this);
             _ship.Spawn(new Point(100, 100));
             AddThing(_ship);
@@ -153,11 +155,12 @@ namespace HelloGame
             aiShip.Spawn(new Point(400, 100));
             AddThing(aiShip);
 
-            var mass = new BigMass(80);
-            mass.Spawn(new Point(500, 500));
-            //AddThing(mass);
-
-            StartGame();
+            for(int i=0; i<MathX.Random.Next(1,4); i++)
+            {
+                var mass = new BigMass(MathX.Random.Next(80, 200));
+                mass.Spawn(new Point(MathX.Random.Next(100,500), MathX.Random.Next(400,600)));
+                AddThing(mass);
+            }
         }
     }
 }
