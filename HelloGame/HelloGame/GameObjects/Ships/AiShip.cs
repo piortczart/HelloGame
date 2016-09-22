@@ -1,8 +1,8 @@
-﻿using HelloGame.MathStuff;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Drawing;
+using System.Linq;
+using HelloGame.MathStuff;
 
 namespace HelloGame.GameObjects.Ships
 {
@@ -10,7 +10,7 @@ namespace HelloGame.GameObjects.Ships
     {
         private readonly Limiter _locatePlayerLimiter = new Limiter(TimeSpan.FromSeconds(2));
 
-        Real2DVector playerPointer = new Real2DVector();
+        Real2DVector _playerPointer = new Real2DVector();
 
         public AiShip(GameState scene) : base(scene)
         {
@@ -41,9 +41,9 @@ namespace HelloGame.GameObjects.Ships
                     var x = player.Physics.Position.X - Physics.Position.X;
                     var y = player.Physics.Position.Y - Physics.Position.Y;
 
-                    playerPointer = Real2DVector.GetFromCoords(x, y);
+                    _playerPointer = Real2DVector.GetFromCoords(x, y);
 
-                    Physics.Angle = playerPointer.Angle;
+                    Physics.Angle = _playerPointer.Angle;
 
                     PewPew();
                 }

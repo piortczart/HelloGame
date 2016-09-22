@@ -17,8 +17,7 @@ namespace HelloGame.GameObjects.Ships
         protected readonly GameState Scene;
         protected readonly Limiter BombLimiter = new Limiter(TimeSpan.FromSeconds(1));
         protected readonly Limiter LaserLimiter = new Limiter(TimeSpan.FromMilliseconds(200));
-        protected Pen ShipPen = new Pen(Brushes.Blue);
-        protected Font font = new Font("Courier", 24, GraphicsUnit.Pixel);
+        protected readonly Font Font = new Font("Courier", 24, GraphicsUnit.Pixel);
 
         protected DaShip(GameState scene) : base(Settings)
         {
@@ -61,10 +60,10 @@ namespace HelloGame.GameObjects.Ships
 
                 if (this is PlayerShip)
                 {
-                    g.DrawString($"Ship angle: {Physics.Angle * 57.296m:0}", font, Brushes.Black, new PointF(155, 155));
-                    g.DrawString($"Engine: {Physics.SelfPropelling.Size:0.00}", font, Brushes.Black, new PointF(155, 185));
-                    g.DrawString($"Inertia: {Physics.Interia}", font, Brushes.Black, new PointF(155, 215));
-                    g.DrawString($"Engine: {Physics.SelfPropelling}", font, Brushes.Black, new PointF(155, 245));
+                    g.DrawString($"Ship angle: {Physics.Angle * 57.296m:0}", Font, Brushes.Black, new PointF(155, 155));
+                    g.DrawString($"Engine: {Physics.SelfPropelling.Size:0.00}", Font, Brushes.Black, new PointF(155, 185));
+                    g.DrawString($"Inertia: {Physics.Interia}", Font, Brushes.Black, new PointF(155, 215));
+                    g.DrawString($"Engine: {Physics.SelfPropelling}", Font, Brushes.Black, new PointF(155, 245));
                 }
 
                 // This vector will point where the ship is going.

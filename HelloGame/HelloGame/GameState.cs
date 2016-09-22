@@ -1,81 +1,27 @@
-﻿using HelloGame.GameObjects;
-using HelloGame.GameObjects.Ships;
-using HelloGame.MathStuff;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using HelloGame.GameObjects;
+using HelloGame.GameObjects.Ships;
+using HelloGame.MathStuff;
 
 namespace HelloGame
 {
-    public static class X
-    {
-        public static void Invoke(this Control control, Action action)
-        {
-            try
-            {
-                control.Invoke(action);
-            }
-            catch
-            {
-                // Ignore
-            }
-        }
-    }
-
-    public class CounterInTime
-    {
-        Stopwatch stopwatch = Stopwatch.StartNew();
-
-        TimeSpan _time;
-
-        private int lastCounter = 0;
-        private int coutner = 0;
-
-        private int lastPiece = 0;
-
-        private int currentPiece => (int)Math.Floor(stopwatch.Elapsed.TotalMilliseconds / _time.TotalMilliseconds);
-
-        public CounterInTime(TimeSpan time)
-        {
-            _time = time;
-        }
-
-        public void Add()
-        {
-            if (currentPiece != lastPiece)
-            {
-                lastPiece = currentPiece;
-                lastCounter = coutner;
-                coutner = 0;
-            }
-
-            coutner += 1;
-        }
-
-        public decimal GetPerTime()
-        {
-            return (decimal)(lastCounter / _time.TotalSeconds);
-        }
-    }
-
-
-
     public class GameState
     {
-        KeysInfo _keysMine;
+        readonly KeysInfo _keysMine;
         DaShip _ship;
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
-        CollisionDetector _collidor = new CollisionDetector();
+        readonly CollisionDetector _collidor = new CollisionDetector();
         private readonly List<ThingBase> _things = new List<ThingBase>();
         private TimeSpan _lastModelUpdate = TimeSpan.Zero;
-        HelloGameForm _form;
-        Thread t;
+        readonly HelloGameForm _form;
+        Thread _t;
 
-        public CounterInTime modelUpdateCounter = new CounterInTime(TimeSpan.FromSeconds(1));
+        public CounterInTime ModelUpdateCounter = new CounterInTime(TimeSpan.FromSeconds(1));
 
         public GameState(HelloGameForm form, KeysInfo keysMine)
         {
@@ -105,16 +51,16 @@ namespace HelloGame
 
         private void StartGame()
         {
-            t = new Thread(new ThreadStart(UpdateModel));
-            t.IsBackground = false;
-            t.Start();
+            _t = new Thread(UpdateModel);
+            _t.IsBackground = false;
+            _t.Start();
         }
 
         private void UpdateModel()
         {
-            while (t.IsAlive)
+            while (_t.IsAlive)
             {
-                modelUpdateCounter.Add();
+                ModelUpdateCounter.Add();
 
                 if (_ship.IsTimeToElapse)
                 {
@@ -127,12 +73,15 @@ namespace HelloGame
                     TimeSpan sinceLast = now - _lastModelUpdate;
 
                     var nonModifiable = new List<ThingBase>(_things);
-                    Parallel.ForEach(nonModifiable, (item) =>
+                    Parallel.ForEach(nonModifiable, item =>
                     {
                         item.UpdateModel(sinceLast, nonModifiable);
                         if (item.IsTimeToElapse)
                         {
-                            _things.Remove(item);
+                            if (_things.Contains(item))
+                            {
+                                _things.Remove(item);
+                            }
                         }
                     });
                     _collidor.DetectCollisions(_things);

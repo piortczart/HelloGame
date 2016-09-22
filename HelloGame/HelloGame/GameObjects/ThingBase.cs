@@ -1,19 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using HelloGame.MathStuff;
-using System.Collections.Generic;
 using HelloGame.Physicsish;
 
 namespace HelloGame.GameObjects
 {
-    public class ThingSettings
-    {
-        public TimeSpan TimeToLive { get; set; }
-        public decimal Aerodynamism { get; set; }
-        public decimal Mass { get; set; }
-        public decimal RadPerSecond { get; set; }
-    }
-
     public abstract class ThingBase : ElapsingThing
     {
         public AlmostPhysics Physics { get; }
@@ -41,7 +33,7 @@ namespace HelloGame.GameObjects
             UpdateElapsing();
             if (!IsTimeToElapse)
             {
-                decimal timeBoundary = (decimal)timeSinceLastUpdate.TotalMilliseconds *15;
+                decimal timeBoundary = (decimal)(timeSinceLastUpdate.TotalMilliseconds*35);
 
                 // Update stuff like propelling.
                 UpdateModelInternal(timeSinceLastUpdate, otherThings);

@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using HelloGame.MathStuff;
-using System.Collections.Generic;
 
 namespace HelloGame.GameObjects
 {

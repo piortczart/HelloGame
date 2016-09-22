@@ -7,8 +7,8 @@ namespace HelloGame
     public partial class HelloGameForm : Form
     {
         public KeysInfo KeysMine = new KeysInfo();
-        GameState _game;
-        public CounterInTime paintCounter = new CounterInTime(TimeSpan.FromSeconds(1));
+        readonly GameState _game;
+        public CounterInTime PaintCounter = new CounterInTime(TimeSpan.FromSeconds(1));
         protected Font font = new Font("Courier", 24, GraphicsUnit.Pixel);
 
         public HelloGameForm()
@@ -23,9 +23,9 @@ namespace HelloGame
 
             _game.PaintStuff(e.Graphics);
 
-            paintCounter.Add();
+            PaintCounter.Add();
 
-        e.Graphics.DrawString($"paints/s: {paintCounter.GetPerTime()}", font, Brushes.Black, new PointF(300, 15));
+        e.Graphics.DrawString($"paints/s: {PaintCounter.GetPerTime()}", font, Brushes.Black, new PointF(300, 15));
 
         }
 

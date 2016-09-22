@@ -7,10 +7,9 @@ namespace HelloGame.GameObjects
 {
     public class BigMass : ThingBase
     {
-        private Color _color = GetRandom();
-        private int _size;
+        private readonly int _size;
         
-        static readonly ThingSettings Settings = new ThingSettings()
+        static readonly ThingSettings Settings = new ThingSettings
         {
             Aerodynamism = int.MaxValue,
             TimeToLive = TimeSpan.Zero
@@ -29,7 +28,7 @@ namespace HelloGame.GameObjects
 
         public override void CollidesWith(ThingBase other)
         {
-            _color = GetRandom();
+            GetRandom();
         }
 
         public override void PaintStuff(Graphics g)
