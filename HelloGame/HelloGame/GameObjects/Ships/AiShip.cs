@@ -12,7 +12,7 @@ namespace HelloGame.GameObjects.Ships
 
         Real2DVector _playerPointer = new Real2DVector();
 
-        public AiShip(GameState scene) : base(scene)
+        public AiShip(GameState scene, decimal size = 10) : base(scene, size)
         {
         }
 
@@ -45,7 +45,7 @@ namespace HelloGame.GameObjects.Ships
 
                     Physics.Angle = _playerPointer.Angle;
 
-                    PewPew();
+                    //PewPew();
                 }
 
             }

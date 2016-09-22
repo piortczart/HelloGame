@@ -21,6 +21,11 @@ namespace HelloGame.GameObjects
             TimeToLive = lifeLeft;
         }
 
+        protected void Despawn()
+        {
+            IsTimeToElapse = true;
+        }
+
         protected void UpdateElapsing()
         {
             if (TimeToLive.TotalMilliseconds > 0 && Age > TimeToLive)

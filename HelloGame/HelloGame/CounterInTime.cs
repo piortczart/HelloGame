@@ -3,26 +3,25 @@ using System.Diagnostics;
 
 namespace HelloGame
 {
-    public class CounterInTime
+    public class EventPerSecond
     {
         readonly Stopwatch _stopwatch = Stopwatch.StartNew();
-        TimeSpan _time;
-        private int _lastCounter;
-        private int _coutner;
-        private int _lastPiece;
+        private long _lastCounter;
+        private long _coutner;
+        private long _lastSecond;
 
-        private int CurrentPiece => (int)Math.Floor(_stopwatch.Elapsed.TotalMilliseconds / _time.TotalMilliseconds);
+        private int CurrentSecond => (int)Math.Floor(_stopwatch.Elapsed.TotalSeconds);
 
-        public CounterInTime(TimeSpan time)
+        public EventPerSecond()
         {
-            _time = time;
         }
 
         public void Add()
         {
-            if (CurrentPiece != _lastPiece)
+            // The second has changed.
+            if (CurrentSecond != _lastSecond)
             {
-                _lastPiece = CurrentPiece;
+                _lastSecond = CurrentSecond;
                 _lastCounter = _coutner;
                 _coutner = 0;
             }
@@ -30,9 +29,9 @@ namespace HelloGame
             _coutner += 1;
         }
 
-        public decimal GetPerTime()
+        public long GetPerSecond()
         {
-            return (decimal)(_lastCounter / _time.TotalSeconds);
+            return _lastCounter;
         }
     }
 }

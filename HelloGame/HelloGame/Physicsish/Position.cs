@@ -15,7 +15,12 @@ namespace HelloGame.Physicsish
 
         public decimal DistanceTo(Position position)
         {
-            return (decimal)Math.Sqrt((double)((X - position.X) * (X - position.X) + (Y - position.Y) * (Y - position.Y)));
+            decimal a = (X - position.X) * (X - position.X) + (Y - position.Y) * (Y - position.Y);
+            if (a < -0.00005m)
+            {
+                return 0;
+            }
+            return (decimal)Math.Sqrt((double)a);
         }
     }
 }

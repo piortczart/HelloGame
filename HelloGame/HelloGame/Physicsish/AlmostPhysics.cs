@@ -33,11 +33,14 @@ namespace HelloGame.Physicsish
 
         public Point PositionPoint => new Point((int)Position.X, (int)Position.Y);
 
-        public AlmostPhysics(decimal aerodynamism)
+        public decimal Size { get; set; }
+
+        public AlmostPhysics(decimal aerodynamism, decimal size = 1)
         {
             Interia = new Real2DVector();
             SelfPropelling = new Real2DVector();
             Aerodynamism = aerodynamism;
+            Size = size;
         }
 
         public void SetPosition(Point point)

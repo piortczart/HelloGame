@@ -5,7 +5,7 @@ namespace HelloGame
 {
     public class CollisionDetector
     {
-        public void DetectCollisions(List<ThingBase> things)
+        public void DetectCollisions(SynchronizedCollection<ThingBase> things)
         {
             for (int i = 0; i < things.Count; i++)
             {

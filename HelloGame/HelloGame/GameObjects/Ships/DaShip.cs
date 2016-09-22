@@ -19,10 +19,11 @@ namespace HelloGame.GameObjects.Ships
         protected readonly Limiter LaserLimiter = new Limiter(TimeSpan.FromMilliseconds(200));
         protected readonly Font Font = new Font("Courier", 24, GraphicsUnit.Pixel);
 
-        protected DaShip(GameState scene) : base(Settings)
+        protected DaShip(GameState scene, decimal size) : base(Settings)
         {
             Scene = scene;
 
+            Physics.Size = size;
             Physics.SelfPropelling = new Real2DVector(0.5m);
             Physics.Interia = new Real2DVector(5);
         }
@@ -71,8 +72,7 @@ namespace HelloGame.GameObjects.Ships
                 g.DrawLine(shipPen, Physics.PositionPoint, p2);
 
                 // This is the circle around the ship.
-                int width = 20;
-                g.DrawArc(shipPen, new Rectangle((int)Physics.Position.X - width / 2, (int)Physics.Position.Y - width / 2, width, width), 0, 360);
+                g.DrawArc(shipPen, new Rectangle((int)(Physics.Position.X - Physics.Size / 2), (int)(Physics.Position.Y - Physics.Size / 2), (int)Physics.Size, (int)Physics.Size), 0, 360);
             }
 
             PaintStuffInternal(g);
@@ -96,8 +96,7 @@ namespace HelloGame.GameObjects.Ships
                 }
             }
 
-            Destroy();
-            ElapseIn(TimeSpan.FromSeconds(5));
+            Destroy(TimeSpan.FromSeconds(3));
         }
     }
 }

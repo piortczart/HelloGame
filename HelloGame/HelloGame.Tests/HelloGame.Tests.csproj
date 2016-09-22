@@ -59,9 +59,9 @@
     <Compile Include="Real2DVector_Reversability_Tests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HelloGame\HelloGame.csproj">
+    <ProjectReference Include="..\HelloGame\HelloGame.Client.csproj">
       <Project>{3f6231a9-4f14-4dac-907f-7535e362d22d}</Project>
-      <Name>HelloGame</Name>
+      <Name>HelloGame.Client</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

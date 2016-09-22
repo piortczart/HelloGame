@@ -8,13 +8,18 @@ namespace HelloGame
     {
         public KeysInfo KeysMine = new KeysInfo();
         readonly GameState _game;
-        public CounterInTime PaintCounter = new CounterInTime(TimeSpan.FromSeconds(1));
-        protected Font font = new Font("Courier", 24, GraphicsUnit.Pixel);
+        public EventPerSecond PaintCounter = new EventPerSecond();
+        protected Font font = new Font("Courier", 12, GraphicsUnit.Pixel);
 
         public HelloGameForm()
         {
             InitializeComponent();
             _game = new GameState(this, KeysMine);
+
+            var n = new ClientNetwork();
+            n.Connect();
+            n.SendMyInfo();
+            n.Receive();
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -25,8 +30,7 @@ namespace HelloGame
 
             PaintCounter.Add();
 
-        e.Graphics.DrawString($"paints/s: {PaintCounter.GetPerTime()}", font, Brushes.Black, new PointF(300, 15));
-
+            e.Graphics.DrawString($"paints/s: {PaintCounter.GetPerSecond()}", font, Brushes.Black, new PointF(10, 15));
         }
 
         protected override void OnKeyDown(KeyEventArgs e)

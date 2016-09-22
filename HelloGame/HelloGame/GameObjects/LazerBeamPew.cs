@@ -18,8 +18,7 @@ namespace HelloGame.GameObjects
 
         public override void CollidesWith(ThingBase other)
         {
-            Destroy();
-            ElapseIn(TimeSpan.Zero);
+            Destroy(TimeSpan.Zero);
         }
 
         public override void PaintStuff(Graphics g)

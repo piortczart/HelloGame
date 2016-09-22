@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using HelloGame.GameObjects;
 using HelloGame.GameObjects.Ships;
 using HelloGame.MathStuff;
+using System.Linq;
 
 namespace HelloGame
 {
@@ -16,12 +17,12 @@ namespace HelloGame
         DaShip _ship;
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
         readonly CollisionDetector _collidor = new CollisionDetector();
-        private readonly List<ThingBase> _things = new List<ThingBase>();
         private TimeSpan _lastModelUpdate = TimeSpan.Zero;
         readonly HelloGameForm _form;
         Thread _t;
+        private readonly SynchronizedCollection<ThingBase> _things = new SynchronizedCollection<ThingBase>();
 
-        public CounterInTime ModelUpdateCounter = new CounterInTime(TimeSpan.FromSeconds(1));
+        public EventPerSecond ModelUpdateCounter = new EventPerSecond();
 
         public GameState(HelloGameForm form, KeysInfo keysMine)
         {
@@ -38,7 +39,7 @@ namespace HelloGame
 
         public void PaintStuff(Graphics g)
         {
-            foreach (ThingBase item in _things)
+            foreach (ThingBase item in _things.ToList())
             {
                 item.PaintStuff(g);
             }
@@ -52,7 +53,7 @@ namespace HelloGame
         private void StartGame()
         {
             _t = new Thread(UpdateModel);
-            _t.IsBackground = false;
+            _t.IsBackground = true;
             _t.Start();
         }
 
@@ -96,11 +97,11 @@ namespace HelloGame
         {
             RemoveAll();
 
-            _ship = new PlayerShip(_keysMine, this);
+            _ship = new PlayerShip(_keysMine, this, 30);
             _ship.Spawn(new Point(100, 100));
             AddThing(_ship);
 
-            var aiShip = new AiShip(this);
+            var aiShip = new AiShip(this, 50);
             aiShip.Spawn(new Point(400, 100));
             AddThing(aiShip);
 

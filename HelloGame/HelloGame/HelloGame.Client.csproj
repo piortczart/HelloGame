@@ -37,8 +37,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\AppData\Local\Temp\Vector-master\RP.Math.Vector3.Tests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</HintPath>
     </Reference>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -60,6 +65,7 @@
     <Compile Include="GameState.cs" />
     <Compile Include="MathStuff\Circle.cs" />
     <Compile Include="MathStuff\Shape.cs" />
+    <Compile Include="Network.cs" />
     <Compile Include="Physicsish\AlmostPhysics.cs" />
     <Compile Include="GameObjects\BigMass.cs" />
     <Compile Include="GameObjects\ElapsingThing.cs" />
@@ -93,6 +99,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -105,6 +112,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HelloGame.Common\HelloGame.Common.csproj">
+      <Project>{bae7afbf-e6a6-4e31-adbb-406f23798764}</Project>
+      <Name>HelloGame.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

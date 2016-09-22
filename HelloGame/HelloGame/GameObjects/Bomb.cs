@@ -39,9 +39,9 @@ namespace HelloGame.GameObjects
                     g.FillEllipse(pen.Brush, new Rectangle((int)Physics.Position.X - width / 2, (int)Physics.Position.Y - width / 2, width, width));
                 }
 
-                if (AgePercentage > 95)
+                if (AgePercentage >= 100)
                 {
-                    Destroy();
+                    Destroy(TimeSpan.FromSeconds(0.5));
                 }
             }
             else
@@ -63,8 +63,7 @@ namespace HelloGame.GameObjects
         {
             if (IsArmed)
             {
-                Destroy();
-                ElapseIn(TimeSpan.FromSeconds(0.5));
+                Destroy(TimeSpan.FromSeconds(0.5));
             }
         }
     }

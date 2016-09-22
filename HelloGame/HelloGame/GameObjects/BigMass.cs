@@ -7,12 +7,11 @@ namespace HelloGame.GameObjects
 {
     public class BigMass : ThingBase
     {
-        private readonly int _size;
-        
         static readonly ThingSettings Settings = new ThingSettings
         {
             Aerodynamism = int.MaxValue,
-            TimeToLive = TimeSpan.Zero
+            TimeToLive = TimeSpan.Zero,
+            CanBeMoved = false
         };
 
         private static Color GetRandom()
@@ -22,7 +21,7 @@ namespace HelloGame.GameObjects
 
         public BigMass(int size) : base(Settings)
         {
-            _size = size;
+            Physics.Size = size;
             Physics.Mass = size * 10000;
         }
 
@@ -35,7 +34,7 @@ namespace HelloGame.GameObjects
         {
             var shipPen = new Pen(Brushes.Red);
 
-            g.DrawArc(shipPen, new Rectangle((int)Physics.Position.X - _size / 2, (int)Physics.Position.Y - _size / 2, _size, _size), 0, 360);
+            g.DrawArc(shipPen, new Rectangle((int)(Physics.Position.X - Physics.Size / 2), (int)(Physics.Position.Y - Physics.Size / 2), (int)Physics.Size, (int)Physics.Size), 0, 360);
         }
 
         protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)

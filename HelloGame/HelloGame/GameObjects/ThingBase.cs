@@ -17,23 +17,27 @@ namespace HelloGame.GameObjects
             Creator = creator;
             Physics.Mass = settings.Mass;
             Physics.RadPerSecond = settings.RadPerSecond;
+            ElapseIn(settings.TimeToLive);
         }
 
+        protected bool CanBeMoved { get; private set; }
         public abstract void PaintStuff(Graphics g);
         protected abstract void UpdateModelInternal(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings);
         protected bool IsDestroyed { get; private set; }
 
-        protected void Destroy()
+        protected void Destroy(TimeSpan elapseIn)
         {
             IsDestroyed = true;
+            ElapseIn(elapseIn);
         }
 
         public void UpdateModel(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)
         {
             UpdateElapsing();
+
             if (!IsTimeToElapse)
             {
-                decimal timeBoundary = (decimal)(timeSinceLastUpdate.TotalMilliseconds*35);
+                decimal timeBoundary = (decimal)(timeSinceLastUpdate.TotalMilliseconds / 100);
 
                 // Update stuff like propelling.
                 UpdateModelInternal(timeSinceLastUpdate, otherThings);
@@ -51,8 +55,8 @@ namespace HelloGame.GameObjects
                 if (Physics.Mass == 0)
                 {
                     // No mass? 
-                    Physics.Position.X += totalForce.X / timeBoundary;
-                    Physics.Position.Y += totalForce.Y / timeBoundary;
+                    Physics.Position.X += totalForce.X * timeBoundary;
+                    Physics.Position.Y += totalForce.Y * timeBoundary;
                 }
                 else
                 {
@@ -61,8 +65,14 @@ namespace HelloGame.GameObjects
                     totalForce.Add(gravity);
 
                     // Move the object.
-                    Physics.Position.X += totalForce.X / Physics.Mass / timeBoundary;
-                    Physics.Position.Y += totalForce.Y / Physics.Mass / timeBoundary;
+                    Physics.Position.X += totalForce.X / Physics.Mass * timeBoundary;
+                    Physics.Position.Y += totalForce.Y / Physics.Mass * timeBoundary;
+                }
+
+                // Too far away! DIE!
+                if (Math.Abs(Physics.Position.X) > 100000 || Math.Abs(Physics.Position.Y) > 100000)
+                {
+                    Despawn();
                 }
             }
         }
@@ -96,7 +106,7 @@ namespace HelloGame.GameObjects
 
         public decimal DistanceTo(ThingBase another)
         {
-            return Physics.Position.DistanceTo(another.Physics.Position);
+            return Physics.Position.DistanceTo(another.Physics.Position) - ((Physics.Size + another.Physics.Size) / 2);
         }
 
         public void Spawn(Point where, Real2DVector initialInertia = null)

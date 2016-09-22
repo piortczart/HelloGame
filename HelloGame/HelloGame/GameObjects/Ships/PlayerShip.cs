@@ -8,7 +8,7 @@ namespace HelloGame.GameObjects.Ships
     {
         private KeysInfo KeysInfo { get; set; }
 
-        public PlayerShip(KeysInfo keysInfo, GameState scene) : base(scene)
+        public PlayerShip(KeysInfo keysInfo, GameState scene, decimal size = 10) : base(scene, size)
         {
             KeysInfo = keysInfo;
         }
