@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using HelloGame.Common.Model;
 
 namespace HelloGame
 {
@@ -13,7 +14,7 @@ namespace HelloGame
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new HelloGameForm());
+            Application.Run(new HelloGameForm(new Renderer(new ModelManager())));
         }
     }
 }

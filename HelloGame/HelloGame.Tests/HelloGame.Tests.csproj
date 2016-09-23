@@ -59,6 +59,10 @@
     <Compile Include="Real2DVector_Reversability_Tests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HelloGame.Common\HelloGame.Common.csproj">
+      <Project>{BAE7AFBF-E6A6-4E31-ADBB-406F23798764}</Project>
+      <Name>HelloGame.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HelloGame\HelloGame.Client.csproj">
       <Project>{3f6231a9-4f14-4dac-907f-7535e362d22d}</Project>
       <Name>HelloGame.Client</Name>

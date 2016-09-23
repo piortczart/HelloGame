@@ -30,8 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,8 +46,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NetworkStuff.cs" />
+    <Compile Include="EventPerSecond.cs" />
+    <Compile Include="Limiter.cs" />
+    <Compile Include="Model\CollisionDetector.cs" />
+    <Compile Include="Model\ElapsingThing.cs" />
+    <Compile Include="MathStuff\Circle.cs" />
+    <Compile Include="MathStuff\MathX.cs" />
+    <Compile Include="MathStuff\Real2DVector.cs" />
+    <Compile Include="MathStuff\Shape.cs" />
+    <Compile Include="Model\GameManager.cs" />
+    <Compile Include="Model\GameObjects\BigMass.cs" />
+    <Compile Include="Model\GameObjects\Bomb.cs" />
+    <Compile Include="Model\GameObjects\LazerBeamPew.cs" />
+    <Compile Include="Model\GameObjects\Ships\AiShip.cs" />
+    <Compile Include="Model\GameObjects\Ships\DaShip.cs" />
+    <Compile Include="Model\GameObjects\Ships\PlayerShip.cs" />
+    <Compile Include="Model\ModelManager.cs" />
+    <Compile Include="Model\ThingBase.cs" />
+    <Compile Include="Model\ThingSettings.cs" />
+    <Compile Include="Network\NetworkMessage.cs" />
+    <Compile Include="Network\NetworkStuff.cs" />
+    <Compile Include="Network\ThingInfo.cs" />
+    <Compile Include="ObjectExtensions.cs" />
+    <Compile Include="Physicsish\AlmostPhysics.cs" />
+    <Compile Include="Physicsish\Position.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

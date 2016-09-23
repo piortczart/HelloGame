@@ -1,29 +1,38 @@
-﻿using HelloGame.Common;
-using System.IO;
+﻿using System.IO;
 using System.Net.Sockets;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
+using HelloGame.Common.Network;
 
 namespace HelloGame
 {
     public class ClientNetwork
     {
-        Stream stream;
-        MessageTransciever sender = new MessageTransciever();
+        Stream _stream;
+        private readonly MessageTransciever _sender = new MessageTransciever();
+        private Thread _receiveThread;
 
-        public void Connect()
+        public void StartConnection(string server, string playerName, int port = 49182)
         {
-            TcpClient client = new TcpClient("localhost", 3000);
-            stream = client.GetStream();
+            Connect(server, port);
+            SendMyInfo(playerName);
+            _receiveThread = new Thread(Receive);
+            _receiveThread.Start();
         }
 
-        public void SendMyInfo()
+        private void Connect(string server, int port)
         {
-            sender.Send(new NetworkMessage { Text = "Hello!" }, stream);
+            TcpClient client = new TcpClient(server, port);
+            _stream = client.GetStream();
         }
 
-        public void Receive()
+        private void SendMyInfo(string playerName)
         {
-            var message = sender.Get(stream);
+            _sender.Send(new NetworkMessage { Text = "PN " + playerName }, _stream);
+        }
+
+        private void Receive()
+        {
+            var message = _sender.Get(_stream);
         }
     }
 }

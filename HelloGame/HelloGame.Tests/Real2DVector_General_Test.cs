@@ -1,7 +1,6 @@
 ﻿using System;
+using HelloGame.Common.MathStuff;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
-using HelloGame.MathStuff;
 
 namespace HelloGame.Tests
 {
