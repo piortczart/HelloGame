@@ -34,10 +34,15 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,7 +52,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventPerSecond.cs" />
+    <Compile Include="Extensions\ExtensionsString.cs" />
+    <Compile Include="HelloGameCommonNinjectBindings.cs" />
+    <Compile Include="Logging\ILoggerFactory.cs" />
+    <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Limiter.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Model\CollisionDetector.cs" />
     <Compile Include="Model\ElapsingThing.cs" />
     <Compile Include="MathStuff\Circle.cs" />
@@ -57,17 +68,23 @@
     <Compile Include="Model\GameManager.cs" />
     <Compile Include="Model\GameObjects\BigMass.cs" />
     <Compile Include="Model\GameObjects\Bomb.cs" />
+    <Compile Include="Model\GameObjects\GameObjectSummary.cs" />
     <Compile Include="Model\GameObjects\LazerBeamPew.cs" />
     <Compile Include="Model\GameObjects\Ships\AiShip.cs" />
     <Compile Include="Model\GameObjects\Ships\DaShip.cs" />
     <Compile Include="Model\GameObjects\Ships\PlayerShip.cs" />
+    <Compile Include="Model\GameObjects\Ships\PlayerShipAny.cs" />
+    <Compile Include="Model\GameObjects\Ships\PlayerShipMovable.cs" />
+    <Compile Include="Model\KeysInfo.cs" />
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Model\ThingBase.cs" />
+    <Compile Include="Model\ThingDescription.cs" />
+    <Compile Include="Model\ThingFactory.cs" />
     <Compile Include="Model\ThingSettings.cs" />
     <Compile Include="Network\NetworkMessage.cs" />
     <Compile Include="Network\NetworkStuff.cs" />
     <Compile Include="Network\ThingInfo.cs" />
-    <Compile Include="ObjectExtensions.cs" />
+    <Compile Include="Extensions\ExtensionsObject.cs" />
     <Compile Include="Physicsish\AlmostPhysics.cs" />
     <Compile Include="Physicsish\Position.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

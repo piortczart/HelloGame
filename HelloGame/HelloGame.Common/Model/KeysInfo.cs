@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace HelloGame
+namespace HelloGame.Common.Model
 {
     public class KeysInfo
     {

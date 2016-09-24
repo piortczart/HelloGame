@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,23 +9,39 @@ namespace HelloGame.Common.Model
 {
     public class ModelManager
     {
-        private readonly Action _updateModelAction;
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
         readonly CollisionDetector _collidor = new CollisionDetector();
         private TimeSpan _lastModelUpdate = TimeSpan.Zero;
-        private readonly EventPerSecond _modelUpdateCounter = new EventPerSecond();
+        public readonly EventPerSecond ModelUpdateCounter = new EventPerSecond();
         private readonly Thread _modelUpdateThread;
         private readonly SynchronizedCollection<ThingBase> _things = new SynchronizedCollection<ThingBase>();
+        private Action _updateModelAction;
 
-        public ModelManager(Action updateModelAction = null)
+        public ModelManager()
         {
-            _updateModelAction = updateModelAction;
             _modelUpdateThread = new Thread(UpdateModel) { IsBackground = true };
+        }
+
+        public void SetUpdateModelAction(Action action)
+        {
+            if (_updateModelAction != null)
+            {
+                throw new Exception("There is a model action already attached.");
+            }
+            _updateModelAction = action;
         }
 
         public void AddThing(ThingBase thingBase)
         {
-            _things.Add(thingBase);
+            ThingBase existing = _things.SingleOrDefault(t => t.Id == thingBase.Id);
+            if (existing == null)
+            {
+                _things.Add(thingBase);
+            }
+            else
+            {
+                existing.UpdateLocation(thingBase);
+            }
         }
 
         public List<ThingBase> GetThings()
@@ -41,14 +58,14 @@ namespace HelloGame.Common.Model
         {
             while (_modelUpdateThread.IsAlive)
             {
-                _modelUpdateCounter.Add();
+                ModelUpdateCounter.Add();
 
                 TimeSpan now = _stopwatch.Elapsed;
                 if (_lastModelUpdate != TimeSpan.Zero)
                 {
                     TimeSpan sinceLast = now - _lastModelUpdate;
 
-                    var nonModifiable = new List<ThingBase>(_things);
+                    List<ThingBase> nonModifiable = _things.OrderBy(t=>t.Id).ToList();
                     Parallel.ForEach(nonModifiable, item =>
                     {
                         item.UpdateModel(sinceLast, nonModifiable);

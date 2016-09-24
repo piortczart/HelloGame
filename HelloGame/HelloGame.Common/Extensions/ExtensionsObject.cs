@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HelloGame.Common
+namespace HelloGame.Common.Extensions
 {
     public static class ObjectExtensions
     {

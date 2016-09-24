@@ -12,7 +12,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
         Real2DVector _playerPointer = new Real2DVector();
 
-        public AiShip(ModelManager modelManager, decimal size = 10) : base(modelManager, size)
+        public AiShip(ModelManager modelManager, string name, decimal size = 10, int? id = null) : base(modelManager, size, name, id)
         {
         }
 
@@ -24,7 +24,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             //g.DrawString($"Ship angle: {playerPointer.AngleDegree}", font, Brushes.Black, new PointF(155, 295));
         }
 
-        protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)
+        protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings)
         {
             if (IsDestroyed)
             {

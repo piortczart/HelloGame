@@ -1,17 +1,17 @@
 ﻿using System;
 using HelloGame.Common.MathStuff;
-using HelloGame.Common.Model;
-using HelloGame.Common.Model.GameObjects;
-using HelloGame.Common.Model.GameObjects.Ships;
 
-namespace HelloGame
+namespace HelloGame.Common.Model.GameObjects.Ships
 {
     public class PlayerShipMovable : PlayerShip
     {
         public KeysInfo KeysInfo { private get; set; }
 
-        public PlayerShipMovable(ModelManager modelManager, decimal size = 10) : base(modelManager, size)
+        public PlayerShipMovable(ModelManager modelManager, string name, decimal size = 10, int? id = null) : base(modelManager, name, size, id)
         {
+            // TODO: REDO THIS
+            // Just for now. They will be reset for the proper ones.
+            KeysInfo = new KeysInfo();
         }
 
         private decimal GetUpdatedShipAngle(decimal shipAngle, TimeSpan timeSinceLastUpdate)

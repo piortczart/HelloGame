@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Threading;
+using HelloGame.Common;
+using Ninject;
+using Ninject.Syntax;
 
 namespace HelloGame.Server
 {
@@ -7,11 +10,13 @@ namespace HelloGame.Server
     {
         private static void Main()
         {
+            IResolutionRoot ninject = new StandardKernel(new HelloGameCommonNinjectBindings(true));
+
             while (true)
             {
                 try
                 {
-                    new Server().Start();
+                    ninject.Get<GameServer>().Start();
                 }
                 catch (Exception ex)
                 {

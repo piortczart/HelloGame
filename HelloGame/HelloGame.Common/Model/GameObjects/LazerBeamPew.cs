@@ -29,7 +29,7 @@ namespace HelloGame.Common.Model.GameObjects
             g.DrawLine(pen, Physics.PositionPoint, pointInDirection);
         }
 
-        protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)
+        protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings)
         {
         }
     }

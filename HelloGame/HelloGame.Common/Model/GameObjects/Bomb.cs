@@ -51,7 +51,7 @@ namespace HelloGame.Common.Model.GameObjects
             }
         }
 
-        protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)
+        protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings)
         {
             if (!IsArmed && Age > TimeSpan.FromSeconds(0.5))
             {

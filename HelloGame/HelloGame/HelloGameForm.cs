@@ -1,30 +1,31 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 using HelloGame.Common;
+using HelloGame.Common.Model;
 
 namespace HelloGame
 {
     public partial class HelloGameForm : Form
     {
         private readonly Renderer _renderer;
+        private readonly GameManager _gameManager;
         private readonly KeysInfo _keysMine = new KeysInfo();
         private readonly EventPerSecond _paintCounter = new EventPerSecond();
         private readonly Font _font = new Font("Courier", 12, GraphicsUnit.Pixel);
-        public readonly ClientNetwork Network = new ClientNetwork();
 
-        public HelloGameForm(Renderer renderer)
+        public HelloGameForm(Renderer renderer, InitialSetupForm setupForm, GameManager gameManager)
         {
             _renderer = renderer;
+            _gameManager = gameManager;
+            _renderer.RepaintAction = Refresh;
+
             InitializeComponent();
 
-            var ini = new InitialSetupForm(Network);
-            ini.ShowDialog(this);
-        }
+            setupForm.ShowDialog(this);
 
-        public void StartLocalServer()
-        {
-            var server = new global::HelloGame.Server.Server();
-            server.Start();
+            gameManager.StartGame();
+
+            gameManager.SetUpdateModelAction(()=> { this.Invoke(Refresh); });
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -44,6 +45,8 @@ namespace HelloGame
 
             _keysMine.Pressed(e.KeyCode);
             Refresh();
+
+            _gameManager.SetKeysInfo(_keysMine);
         }
 
         protected override void OnKeyUp(KeyEventArgs e)

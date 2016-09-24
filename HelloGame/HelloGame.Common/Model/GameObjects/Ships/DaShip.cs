@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Windows.Forms;
 using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
@@ -15,13 +16,15 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         };
 
         protected readonly ModelManager ModelManager;
+        public string Name { get; }
         protected readonly Limiter BombLimiter = new Limiter(TimeSpan.FromSeconds(1));
         protected readonly Limiter LaserLimiter = new Limiter(TimeSpan.FromMilliseconds(200));
-        protected readonly Font Font = new Font("Courier", 24, GraphicsUnit.Pixel);
+        protected readonly Font Font = new Font("monospace", 12, GraphicsUnit.Pixel);
 
-        protected DaShip(ModelManager modelManager, decimal size) : base(Settings)
+        protected DaShip(ModelManager modelManager, decimal size, string name, int? id) : base(Settings, id: id)
         {
             ModelManager = modelManager;
+            Name = name;
 
             Physics.Size = size;
             Physics.SelfPropelling = new Real2DVector(0.5m);
@@ -73,6 +76,10 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
                 // This is the circle around the ship.
                 g.DrawArc(shipPen, new Rectangle((int)(Physics.Position.X - Physics.Size / 2), (int)(Physics.Position.Y - Physics.Size / 2), (int)Physics.Size, (int)Physics.Size), 0, 360);
+
+                Size nameSize = TextRenderer.MeasureText(Name, Font);
+                var nameLocation = new PointF((int) Physics.Position.X - nameSize.Width/2, (int) Physics.Position.Y - nameSize.Height*2);
+                g.DrawString(Name, Font, Brushes.Black, nameLocation);
             }
 
             PaintStuffInternal(g);

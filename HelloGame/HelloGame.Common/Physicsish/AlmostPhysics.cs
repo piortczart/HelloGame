@@ -58,5 +58,15 @@ namespace HelloGame.Common.Physicsish
             Real2DVector direction = GetDirection(bigness);
             return new Point((int)(direction.X + Position.X), (int)(direction.Y + Position.Y));
         }
+
+        public void Update(AlmostPhysics other)
+        {
+            Position.X = other.Position.X;
+            Position.Y = other.Position.Y;
+            TotalForce.X = other.TotalForce.X;
+            TotalForce.Y = other.TotalForce.Y;
+            Aerodynamism = other.Aerodynamism;
+            Mass = other.Mass;
+        }
     }
 }

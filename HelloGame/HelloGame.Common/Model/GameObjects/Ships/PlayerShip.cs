@@ -5,11 +5,11 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 {
     public abstract class PlayerShip : DaShip
     {
-        public PlayerShip(ModelManager modelManager, decimal size = 10) : base(modelManager, size)
+        public PlayerShip(ModelManager modelManager, string name, decimal size = 10, int? id = null) : base(modelManager, size, name, id)
         {
         }
 
-        protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)
+        protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings)
         {
             if (IsDestroyed)
             {
@@ -20,16 +20,5 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         }
 
         protected abstract void Umi(TimeSpan timeSinceLastUpdate);
-    }
-
-    public class PlayerShipAny : PlayerShip
-    {
-        public PlayerShipAny(ModelManager modelManager, decimal size = 10) : base(modelManager, size)
-        {
-        }
-
-        protected override void Umi(TimeSpan timeSinceLastUpdate)
-        {
-        }
     }
 }

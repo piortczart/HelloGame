@@ -1,21 +1,17 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using HelloGame.Common.Model;
 
 namespace HelloGame
 {
-    public class Renderer : HelloGame.IRenderer
+    public class Renderer : IRenderer
     {
-        private HelloGameForm _form;
+        public Action RepaintAction { get; set; }
         private readonly ModelManager _modelManager;
 
         public Renderer(ModelManager modelManager)
         {
             _modelManager = modelManager;
-        }
-
-        public void SetForm(HelloGameForm form)
-        {
-            _form = form;
         }
 
         public void PaintStuff(Graphics graphics)
@@ -28,13 +24,7 @@ namespace HelloGame
 
         public void Repaint()
         {
-            if (_form != null && !_form.IsDisposed)
-            {
-                _form.Invoke(() =>
-                {
-                    _form.Refresh();
-                });
-            }
+            RepaintAction();
         }
     }
 }

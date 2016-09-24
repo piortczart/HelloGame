@@ -57,7 +57,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClientState.cs" />
+    <Compile Include="HelloGameClientNinjectBindings.cs" />
     <Compile Include="IRenderer.cs" />
     <Compile Include="InitialSetup.cs">
       <SubType>UserControl</SubType>
@@ -71,18 +71,16 @@
     <Compile Include="InitialSetupForm.Designer.cs">
       <DependentUpon>InitialSetupForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Network.cs" />
+    <Compile Include="ClientNetwork.cs" />
     <Compile Include="HelloGameForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="HelloGameForm.Designer.cs">
       <DependentUpon>HelloGameForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="KeysInfo.cs" />
-    <Compile Include="PlayerShipMovable.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ControlExtensions.cs" />
+    <Compile Include="ExtensionsControl.cs" />
     <Compile Include="Renderer.cs" />
     <EmbeddedResource Include="HelloGameForm.resx">
       <DependentUpon>HelloGameForm.cs</DependentUpon>

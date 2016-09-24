@@ -45,6 +45,10 @@ namespace HelloGame.Common.MathStuff
 
         public decimal AngleDegree { get { return Angle * 57.296m; } }
 
+        public Real2DVector()
+        {
+        }
+
         public Real2DVector(decimal? maxSize = null)
         {
             _maxSize = maxSize;

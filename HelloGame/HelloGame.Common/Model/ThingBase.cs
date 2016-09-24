@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using HelloGame.Common.MathStuff;
 using HelloGame.Common.Physicsish;
 
@@ -8,12 +9,15 @@ namespace HelloGame.Common.Model
 {
     public abstract class ThingBase : ElapsingThing
     {
-        public AlmostPhysics Physics { get; }
+        public AlmostPhysics Physics { get; private set; }
         public ThingBase Creator { get; }
         private bool CanBeMoved { get; }
         protected bool IsDestroyed { get; private set; }
+        private static int _highestId;
+        public int Id { get; }
+        private object _modelSynchronizer = new object();
 
-        protected ThingBase(ThingSettings settings, ThingBase creator = null) : base(settings.TimeToLive)
+        protected ThingBase(ThingSettings settings, ThingBase creator = null, int? id = null) : base(settings.TimeToLive)
         {
             Physics = new AlmostPhysics(settings.Aerodynamism);
             Creator = creator;
@@ -21,9 +25,10 @@ namespace HelloGame.Common.Model
             Physics.RadPerSecond = settings.RadPerSecond;
             CanBeMoved = settings.CanBeMoved;
             ElapseIn(settings.TimeToLive);
+            Id = id ?? Interlocked.Add(ref _highestId, 1);
         }
 
-        protected abstract void UpdateModelInternal(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings);
+        protected abstract void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings);
         public abstract void CollidesWith(ThingBase other);
         public abstract void PaintStuff(Graphics g);
 
@@ -35,53 +40,57 @@ namespace HelloGame.Common.Model
 
         public void UpdateModel(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)
         {
-            UpdateElapsing();
-
-            if (!IsTimeToElapse)
+            lock (_modelSynchronizer)
             {
-                // Update stuff like propelling.
-                UpdateModelInternal(timeSinceLastUpdate, otherThings);
+                UpdateElapsing();
 
-                if (CanBeMoved)
+                if (!IsTimeToElapse)
                 {
-                    // Add the propeller force to the interia.
-                    Physics.Interia.Add(Physics.SelfPropelling);
+                    // Update stuff like propelling.
+                    UpdateModelInternal(timeSinceLastUpdate, otherThings);
 
-                    // Drag changes the inertia?
-                    Physics.Drag = Physics.Interia.GetOpposite().GetScaled(Physics.Aerodynamism*0.05m);
-                    Physics.Interia.Add(Physics.Drag);
-
-                    Real2DVector totalForce = Physics.TotalForce;
-
-                    // No mass? No gravity. Think lazer.
-                    decimal timeBoundary = (decimal) (timeSinceLastUpdate.TotalMilliseconds/100);
-                    if (Physics.Mass == 0)
+                    if (CanBeMoved)
                     {
-                        // No mass? 
-                        Physics.Position.X += totalForce.X*timeBoundary;
-                        Physics.Position.Y += totalForce.Y*timeBoundary;
-                    }
-                    else
-                    {
-                        // Calculate gravity.
-                        Real2DVector gravity = CalculateGravity(otherThings);
-                        totalForce.Add(gravity);
+                        // Add the propeller force to the interia.
+                        Physics.Interia.Add(Physics.SelfPropelling);
 
-                        // Move the object.
-                        Physics.Position.X += totalForce.X/Physics.Mass*timeBoundary;
-                        Physics.Position.Y += totalForce.Y/Physics.Mass*timeBoundary;
-                    }
+                        // Drag changes the inertia?
+                        Physics.Drag = Physics.Interia.GetOpposite().GetScaled(Physics.Aerodynamism * 0.05m);
+                        Physics.Interia.Add(Physics.Drag);
 
-                    // Too far away! DIE!
-                    if (Math.Abs(Physics.Position.X) > 100000 || Math.Abs(Physics.Position.Y) > 100000)
-                    {
-                        Despawn();
+                        Real2DVector totalForce = Physics.TotalForce;
+
+                        // No mass? No gravity. Think lazer.
+                        decimal timeBoundary = (decimal)(timeSinceLastUpdate.TotalMilliseconds / 100);
+                        if (Physics.Mass == 0)
+                        {
+                            // No mass? 
+                            Physics.Position.X += totalForce.X * timeBoundary;
+                            Physics.Position.Y += totalForce.Y * timeBoundary;
+                        }
+                        else
+                        {
+                            // Calculate gravity.
+                            Real2DVector gravity = CalculateGravity(otherThings);
+                            totalForce.Add(gravity);
+
+                            // Move the object.
+                            Physics.Position.X += totalForce.X / Physics.Mass * timeBoundary;
+                            Physics.Position.Y += totalForce.Y / Physics.Mass * timeBoundary;
+                        }
+
+                        // Too far away! DIE!
+                        if (Math.Abs(Physics.Position.X) > 100000 || Math.Abs(Physics.Position.Y) > 100000)
+                        {
+                            Despawn();
+                        }
                     }
                 }
+
             }
         }
 
-        private Real2DVector CalculateGravity(List<ThingBase> otherThings)
+        private Real2DVector CalculateGravity(IEnumerable<ThingBase> otherThings)
         {
             Real2DVector result = new Real2DVector();
 
@@ -91,7 +100,7 @@ namespace HelloGame.Common.Model
                 var distance = thing.DistanceTo(this);
                 if (distance == 0) { continue; }
 
-                decimal length = 0.01m * Physics.Mass * thing.Physics.Mass / (decimal)Math.Pow((double)distance,2);
+                decimal length = 0.01m * Physics.Mass * thing.Physics.Mass / (decimal)Math.Pow((double)distance, 2);
                 var grav = new Real2DVector();
 
                 var x = thing.Physics.Position.X - Physics.Position.X;
@@ -115,6 +124,16 @@ namespace HelloGame.Common.Model
         {
             Physics.SetPosition(where);
             Physics.Interia = initialInertia ?? new Real2DVector();
+        }
+
+        public void UpdateLocation(ThingBase otherThing)
+        {
+            lock (_modelSynchronizer)
+            {
+                Physics = otherThing.Physics;
+                IsDestroyed = otherThing.IsDestroyed;
+                ElapseIn(otherThing.TimeToLive);
+            }
         }
     }
 }

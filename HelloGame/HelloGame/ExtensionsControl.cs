@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace HelloGame
 {
-    public static class ControlExtensions
+    public static class ExtensionsControl
     {
         public static void Invoke(this Control control, Action action)
         {
