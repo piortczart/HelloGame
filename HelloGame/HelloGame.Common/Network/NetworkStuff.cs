@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 
 namespace HelloGame.Common.Network
 {
@@ -17,5 +18,9 @@ namespace HelloGame.Common.Network
             return (NetworkMessage)_formatter.Deserialize(stream);
         }
 
+        public Task<NetworkMessage> GetAsync(Stream stream)
+        {
+            return Task.Run(() => (NetworkMessage)_formatter.Deserialize(stream));
+        }
     }
 }

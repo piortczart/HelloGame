@@ -1,8 +1,9 @@
-﻿using Ninject;
+﻿using System.Threading;
+using Ninject;
 using Ninject.Modules;
 using Ninject.Syntax;
 
-namespace HelloGame
+namespace HelloGame.Client
 {
     public class HelloGameClientNinjectBindings : NinjectModule
     {
@@ -15,7 +16,8 @@ namespace HelloGame
 
         public override void Load()
         {
-            Bind<Server.GameServer>().ToConstant(_serverNinject.Get<Server.GameServer>());
+            Bind<Server.GameServer>().ToConstant(_serverNinject.Get<Server.GameServer>()).InSingletonScope();
+            Bind<CancellationTokenSource>().ToConstant(new CancellationTokenSource()).InSingletonScope();
         }
     }
 }

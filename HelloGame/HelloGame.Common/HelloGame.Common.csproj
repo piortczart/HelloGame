@@ -57,6 +57,7 @@
     <Compile Include="Logging\ILoggerFactory.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Limiter.cs" />
+    <Compile Include="Logging\LogDetails.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Model\CollisionDetector.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Model\ThingFactory.cs" />
     <Compile Include="Model\ThingSettings.cs" />
     <Compile Include="Network\NetworkMessage.cs" />
+    <Compile Include="Network\NetworkMessageType.cs" />
     <Compile Include="Network\NetworkStuff.cs" />
     <Compile Include="Network\ThingInfo.cs" />
     <Compile Include="Extensions\ExtensionsObject.cs" />

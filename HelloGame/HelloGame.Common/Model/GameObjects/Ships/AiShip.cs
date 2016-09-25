@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
@@ -12,7 +13,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
         Real2DVector _playerPointer = new Real2DVector();
 
-        public AiShip(ModelManager modelManager, string name, decimal size = 10, int? id = null) : base(modelManager, size, name, id)
+        public AiShip(ILogger logger, ModelManager modelManager, string name, decimal size = 10, int? id = null) : base(logger, modelManager, size, name, id)
         {
         }
 

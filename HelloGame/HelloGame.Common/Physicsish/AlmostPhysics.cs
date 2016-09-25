@@ -24,6 +24,8 @@ namespace HelloGame.Common.Physicsish
         /// </summary>
         public Real2DVector Drag { get; set; }
 
+        public Real2DVector Gravity { get; set; }
+
         public decimal RadPerSecond { get; set; }
 
         public Real2DVector TotalForce => Real2DVector.Combine(SelfPropelling, Interia, Drag);
@@ -63,10 +65,13 @@ namespace HelloGame.Common.Physicsish
         {
             Position.X = other.Position.X;
             Position.Y = other.Position.Y;
-            TotalForce.X = other.TotalForce.X;
-            TotalForce.Y = other.TotalForce.Y;
+            Angle = other.Angle;
+            Drag = other.Drag;
+            RadPerSecond = other.RadPerSecond;
+            SelfPropelling = other.SelfPropelling;
             Aerodynamism = other.Aerodynamism;
             Mass = other.Mass;
+            Gravity = other.Gravity;
         }
     }
 }

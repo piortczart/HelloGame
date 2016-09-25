@@ -4,11 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using HelloGame.Common.Logging;
 
 namespace HelloGame.Common.Model
 {
     public class ModelManager
     {
+        private readonly ILogger _logger;
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
         readonly CollisionDetector _collidor = new CollisionDetector();
         private TimeSpan _lastModelUpdate = TimeSpan.Zero;
@@ -17,8 +19,9 @@ namespace HelloGame.Common.Model
         private readonly SynchronizedCollection<ThingBase> _things = new SynchronizedCollection<ThingBase>();
         private Action _updateModelAction;
 
-        public ModelManager()
+        public ModelManager(ILoggerFactory loggerFactory)
         {
+            _logger = loggerFactory.CreateLogger(GetType());
             _modelUpdateThread = new Thread(UpdateModel) { IsBackground = true };
         }
 
@@ -31,8 +34,10 @@ namespace HelloGame.Common.Model
             _updateModelAction = action;
         }
 
-        public void AddThing(ThingBase thingBase)
+        public void UpdateThing(ThingBase thingBase)
         {
+            _logger.LogInfo($"Things before update: {_things.Count}");
+
             ThingBase existing = _things.SingleOrDefault(t => t.Id == thingBase.Id);
             if (existing == null)
             {
@@ -42,6 +47,8 @@ namespace HelloGame.Common.Model
             {
                 existing.UpdateLocation(thingBase);
             }
+
+            _logger.LogInfo($"Things after update: {_things.Count}");
         }
 
         public List<ThingBase> GetThings()

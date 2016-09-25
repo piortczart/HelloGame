@@ -2,7 +2,7 @@
 using System.Drawing;
 using HelloGame.Common.Model;
 
-namespace HelloGame
+namespace HelloGame.Client
 {
     public class Renderer : IRenderer
     {

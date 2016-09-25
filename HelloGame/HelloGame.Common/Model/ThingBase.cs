@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
+using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
 using HelloGame.Common.Physicsish;
 
@@ -9,16 +10,19 @@ namespace HelloGame.Common.Model
 {
     public abstract class ThingBase : ElapsingThing
     {
-        public AlmostPhysics Physics { get; private set; }
+        protected readonly ILogger Logger;
+        public AlmostPhysics Physics { get; }
         public ThingBase Creator { get; }
         private bool CanBeMoved { get; }
         protected bool IsDestroyed { get; private set; }
         private static int _highestId;
         public int Id { get; }
-        private object _modelSynchronizer = new object();
+        private readonly object _modelSynchronizer = new object();
+        private bool _wasUpdatedFromOutside;
 
-        protected ThingBase(ThingSettings settings, ThingBase creator = null, int? id = null) : base(settings.TimeToLive)
+        protected ThingBase(ILogger logger, ThingSettings settings, ThingBase creator = null, int? id = null) : base(settings.TimeToLive)
         {
+            Logger = logger;
             Physics = new AlmostPhysics(settings.Aerodynamism);
             Creator = creator;
             Physics.Mass = settings.Mass;
@@ -71,8 +75,8 @@ namespace HelloGame.Common.Model
                         else
                         {
                             // Calculate gravity.
-                            Real2DVector gravity = CalculateGravity(otherThings);
-                            totalForce.Add(gravity);
+                            Physics.Gravity = CalculateGravity(otherThings);
+                            totalForce.Add(Physics.Gravity);
 
                             // Move the object.
                             Physics.Position.X += totalForce.X / Physics.Mass * timeBoundary;
@@ -87,6 +91,7 @@ namespace HelloGame.Common.Model
                     }
                 }
 
+                _wasUpdatedFromOutside = false;
             }
         }
 
@@ -130,9 +135,13 @@ namespace HelloGame.Common.Model
         {
             lock (_modelSynchronizer)
             {
-                Physics = otherThing.Physics;
+                Logger.LogInfo($"Total thing position shift: {Physics.Position.DistanceTo(otherThing.Physics.Position)}");
+
+                Physics.Update(otherThing.Physics);
                 IsDestroyed = otherThing.IsDestroyed;
                 ElapseIn(otherThing.TimeToLive);
+
+                _wasUpdatedFromOutside = true;
             }
         }
     }

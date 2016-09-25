@@ -5,7 +5,7 @@ using HelloGame.Server;
 using Ninject;
 using Ninject.Syntax;
 
-namespace HelloGame
+namespace HelloGame.Client
 {
     static class Program
     {

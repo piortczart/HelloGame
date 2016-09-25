@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Threading;
 using System.Windows.Forms;
+using HelloGame.Client.Properties;
 using HelloGame.Common.Model;
-using HelloGame.Properties;
 
-namespace HelloGame
+namespace HelloGame.Client
 {
     public partial class InitialSetup : UserControl
     {
-        public ClientNetwork ClientNetwork { get; set; }
-        public Server.GameServer Server { get; set; }
+        public ClientNetwork ClientNetwork { private get; set; }
+        public Server.GameServer Server { private get; set; }
         public GameManager GameManager { get; set; }
+        public CancellationTokenSource Cancellation { private get; set; }
 
         public InitialSetup()
         {
@@ -39,7 +41,8 @@ namespace HelloGame
             {
                 try
                 {
-                    Server.Start(port);
+                    var cts = new CancellationTokenSource();
+                    Server.Start(cts, port);
                 }
                 catch (Exception exception)
                 {
@@ -50,7 +53,7 @@ namespace HelloGame
 
             try
             {
-                ClientNetwork.StartConnection(Settings.Default.ServerName, Settings.Default.PlayerName, port);
+                ClientNetwork.StartConnection(Settings.Default.ServerName, Settings.Default.PlayerName, Cancellation, port);
             }
             catch (Exception exception)
             {

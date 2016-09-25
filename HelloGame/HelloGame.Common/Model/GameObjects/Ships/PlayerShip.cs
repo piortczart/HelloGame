@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using HelloGame.Common.Logging;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
 {
     public abstract class PlayerShip : DaShip
     {
-        public PlayerShip(ModelManager modelManager, string name, decimal size = 10, int? id = null) : base(modelManager, size, name, id)
+        public PlayerShip(ILogger logger, ModelManager modelManager, string name, decimal size = 10, int? id = null) : base(logger, modelManager, size, name, id)
         {
         }
 

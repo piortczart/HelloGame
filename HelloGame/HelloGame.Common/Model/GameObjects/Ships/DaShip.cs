@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
@@ -15,14 +16,16 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             RadPerSecond = (decimal)Math.PI
         };
 
+        private readonly ILogger _logger;
         protected readonly ModelManager ModelManager;
         public string Name { get; }
         protected readonly Limiter BombLimiter = new Limiter(TimeSpan.FromSeconds(1));
         protected readonly Limiter LaserLimiter = new Limiter(TimeSpan.FromMilliseconds(200));
         protected readonly Font Font = new Font("monospace", 12, GraphicsUnit.Pixel);
 
-        protected DaShip(ModelManager modelManager, decimal size, string name, int? id) : base(Settings, id: id)
+        protected DaShip(ILogger logger, ModelManager modelManager, decimal size, string name, int? id) : base(logger, Settings, id: id)
         {
+            _logger = logger;
             ModelManager = modelManager;
             Name = name;
 
@@ -35,13 +38,13 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         {
             if (LaserLimiter.CanHappen())
             {
-                var laser = new LazerBeamPew(this);
+                var laser = new LazerBeamPew(_logger, this);
 
                 Real2DVector inertia = Physics.GetDirection(20);
                 laser.Spawn(Physics.PositionPoint, inertia);
                 laser.Physics.Angle = Physics.Angle;
 
-                ModelManager.AddThing(laser);
+                ModelManager.UpdateThing(laser);
             }
         }
 

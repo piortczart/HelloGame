@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace HelloGame
+namespace HelloGame.Client
 {
     partial class HelloGameForm
     {
@@ -34,13 +34,15 @@ namespace HelloGame
             // 
             // HelloGameForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1599, 827);
+            this.ClientSize = new System.Drawing.Size(1066, 538);
             this.DoubleBuffered = true;
             this.KeyPreview = true;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "HelloGameForm";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HelloGameForm_FormClosing);
             this.ResumeLayout(false);
 
         }

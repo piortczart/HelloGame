@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using HelloGame.Common.Logging;
 
 namespace HelloGame.Common.Model.GameObjects
 {
@@ -12,7 +13,7 @@ namespace HelloGame.Common.Model.GameObjects
             TimeToLive = TimeSpan.FromSeconds(1)
         };
 
-        public LazerBeamPew(ThingBase creator) : base(Settings, creator)
+        public LazerBeamPew(ILogger logger, ThingBase creator) : base(logger, Settings, creator)
         {
         }
 

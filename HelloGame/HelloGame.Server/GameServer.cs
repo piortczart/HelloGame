@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,36 +14,32 @@ namespace HelloGame.Server
 {
     public class GameServer
     {
-        private TcpListener _tcpListener;
-        private readonly MessageTransciever _sender = new MessageTransciever();
-        private readonly SynchronizedCollection<NetworkStream> _clients = new SynchronizedCollection<NetworkStream>();
+        private readonly MessageTransciever _sender;
 
         private readonly GameManager _gameManager;
+        private readonly ClientMessageProcessing _clientMessageProcessing;
         private readonly ILogger _logger;
-        private Thread _listenThread;
         private Timer _propagateTimer;
-        private readonly Dictionary<TcpClient, PlayerShipAny> _ships = new Dictionary<TcpClient, PlayerShipAny>();
         private static readonly TimeSpan PropagateFrequency = TimeSpan.FromMilliseconds(500);
 
-        public GameServer(GameManager gameManager, ILoggerFactory loggerFactory)
+        public GameServer(GameManager gameManager, ILoggerFactory loggerFactory, ClientMessageProcessing clientMessageProcessing, MessageTransciever sender)
         {
             _gameManager = gameManager;
+            _clientMessageProcessing = clientMessageProcessing;
+            _sender = sender;
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
-        public void Start(int port = 49182)
+        public void Start(CancellationTokenSource cancellationTokenSource, int port = 49182)
         {
             _logger.LogInfo($"Server starting at port: {port}");
-
-            _tcpListener = new TcpListener(IPAddress.Any, port);
-            _tcpListener.Start();
+            _clientMessageProcessing.Start(port);
 
             _logger.LogInfo("Starting the game manager.");
             _gameManager.StartGame();
 
             _logger.LogInfo("Starting the listen thread.");
-            _listenThread = new Thread(Process);
-            _listenThread.Start();
+            Task.Run(() => { _clientMessageProcessing.Process(cancellationTokenSource.Token); }, cancellationTokenSource.Token);
 
             _logger.LogInfo("Starting the propagate timer.");
             _propagateTimer = new Timer(state => { Propagate(); }, null, PropagateFrequency, Timeout.InfiniteTimeSpan);
@@ -53,64 +47,29 @@ namespace HelloGame.Server
 
         private void Propagate()
         {
-            var message = new NetworkMessage
-            {
-                Type = NetworkMessageType.UpdateStuff,
-                Payload = _gameManager
-                    .ModelManager
-                    .GetThings()
-                    .Select(t => new ThingDescription(t, false))
-                    .SerializeJson()
-            };
-            SendToAll(message);
+            _logger.LogInfo($"Number of things: {_gameManager.ModelManager.GetThings().Count} {String.Join(",", _gameManager.ModelManager.GetThings().Select(t => t.Id))}");
+
+            SendUpdateMessage(_gameManager.ModelManager.GetThings());
 
             _propagateTimer.Change(PropagateFrequency, Timeout.InfiniteTimeSpan);
         }
 
-        private void Process()
+        private void SendUpdateMessage(List<ThingBase> things)
         {
-            while (true)
+            foreach (var client in _clientMessageProcessing.Clients)
             {
-                // Blocks until a client has connected to the server
-                TcpClient client = _tcpListener.AcceptTcpClient();
-                Task.Run(() => { HandleClientComm(client); });
-            }
-        }
+                NetworkStream networkStream = client.Key;
+                PlayerShipAny ship = client.Value;
 
-        public void SendToAll(NetworkMessage message)
-        {
-            foreach (NetworkStream networkStream in _clients)
-            {
+                var message = new NetworkMessage
+                {
+                    Type = NetworkMessageType.UpdateStuff,
+                    Payload = things.Select(t => new ThingDescription(t, t == ship)).SerializeJson()
+                };
+
                 _sender.Send(message, networkStream);
             }
         }
 
-        private void HandleClientComm(TcpClient client)
-        {
-            TcpClient tcpClient = client;
-            NetworkStream clientStream = tcpClient.GetStream();
-            _clients.Add(clientStream);
-
-            // Deserialize the stream into object
-            while (true)
-            {
-                NetworkMessage message = _sender.Get(clientStream);
-                _logger.LogInfo($"Got a client message: {message}");
-                ProcessMessage(message, client);
-            }
-        }
-
-        private void ProcessMessage(NetworkMessage message, TcpClient client)
-        {
-            switch (message.Type)
-            {
-                case NetworkMessageType.Hello:
-                    PlayerShipAny ship = _gameManager.AddPlayer(message.Payload.SubstringSafe(0, 15));
-                    _ships[client] = ship;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
     }
 }

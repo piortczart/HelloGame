@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Common.Model.GameObjects
@@ -19,7 +20,7 @@ namespace HelloGame.Common.Model.GameObjects
             return Color.FromArgb(MathX.Random.Next(0, 255), MathX.Random.Next(0, 255), MathX.Random.Next(0, 255));
         }
 
-        public BigMass(int size) : base(Settings)
+        public BigMass(ILogger logger, int size, int? id) : base(logger, Settings, id: id)
         {
             Physics.Size = size;
             Physics.Mass = size * 10000;

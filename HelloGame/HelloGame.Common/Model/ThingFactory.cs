@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
 using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.Model.GameObjects.Ships;
@@ -10,11 +11,13 @@ namespace HelloGame.Common.Model
     {
         private readonly bool _isServer;
         private readonly ModelManager _modelManager;
+        private readonly ILogger _logger;
 
-        public ThingFactory(bool isServer, ModelManager modelManager)
+        public ThingFactory(bool isServer, ModelManager modelManager, ILoggerFactory loggerFactory)
         {
             _isServer = isServer;
             _modelManager = modelManager;
+            _logger = loggerFactory.CreateLogger(GetType());
         }
 
         public ThingBase CreateFromDescription(ThingDescription description)
@@ -46,7 +49,7 @@ namespace HelloGame.Common.Model
                     {
                         int size = (int)(double)description.ConstructParams[0];
 
-                        return GetBigMass(size, description.AlmostPhysics.PositionPoint);
+                        return GetBigMass(size, description.AlmostPhysics.PositionPoint, description.Id);
                     }
             }
 
@@ -60,7 +63,7 @@ namespace HelloGame.Common.Model
                 throw new ArgumentException("The identifier is expected in a non-server environment.", nameof(id));
             }
 
-            var ship = new PlayerShipMovable(_modelManager, name, size, id);
+            var ship = new PlayerShipMovable(_logger, _modelManager, name, size, id);
             ship.Spawn(location);
             return ship;
         }
@@ -73,21 +76,21 @@ namespace HelloGame.Common.Model
                 throw new ArgumentException("The identifier is expected in a non-server environment.", nameof(id));
             }
 
-            var ship = new PlayerShipAny(_modelManager, name, size, id);
+            var ship = new PlayerShipAny(_logger, _modelManager, name, size, id);
             ship.Spawn(location);
             return ship;
         }
 
         public AiShip GetAiShip(int size, Point point, string name, int? id = null)
         {
-            var ship = new AiShip(_modelManager, name, size, id);
+            var ship = new AiShip(_logger, _modelManager, name, size, id);
             ship.Spawn(point);
             return ship;
         }
 
-        public BigMass GetBigMass(int? size = null, Point? point = null)
+        public BigMass GetBigMass(int? size = null, Point? point = null, int? id = null)
         {
-            BigMass mass = new BigMass(size ?? MathX.Random.Next(80, 200));
+            BigMass mass = new BigMass(_logger, size ?? MathX.Random.Next(80, 200), id);
             mass.Spawn(point ?? new Point(MathX.Random.Next(100, 500), MathX.Random.Next(400, 600)));
             return mass;
         }

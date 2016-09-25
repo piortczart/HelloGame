@@ -1,4 +1,5 @@
 ﻿using System;
+using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
@@ -7,7 +8,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
     {
         public KeysInfo KeysInfo { private get; set; }
 
-        public PlayerShipMovable(ModelManager modelManager, string name, decimal size = 10, int? id = null) : base(modelManager, name, size, id)
+        public PlayerShipMovable(ILogger logger, ModelManager modelManager, string name, decimal size = 10, int? id = null) : base(logger, modelManager, name, size, id)
         {
             // TODO: REDO THIS
             // Just for now. They will be reset for the proper ones.
@@ -52,10 +53,10 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             {
                 if (BombLimiter.CanHappen())
                 {
-                    var bomb = new Bomb(this);
+                    var bomb = new Bomb(Logger, this);
                     bomb.Spawn(Physics.GetPointInDirection(10), Physics.TotalForce.GetScaled(1.2m, false));
 
-                    ModelManager.AddThing(bomb);
+                    ModelManager.UpdateThing(bomb);
                 }
             }
 

@@ -2,7 +2,6 @@ using System;
 using System.Drawing;
 using System.Linq;
 using HelloGame.Common.Logging;
-using HelloGame.Common.MathStuff;
 using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.Model.GameObjects.Ships;
 
@@ -32,22 +31,22 @@ namespace HelloGame.Common.Model
         {
             _logger.LogInfo($"Adding player: {name}");
             PlayerShipAny newShip = _thingFactory.GetPlayerShip(15, new Point(100, 100), name);
-            ModelManager.AddThing(newShip);
+            ModelManager.UpdateThing(newShip);
             return newShip;
         }
 
-        public void AddAiShip()
+        private void AddAiShip()
         {
             _logger.LogInfo("Adding AI ship.");
             AiShip newShip = _thingFactory.GetAiShip(15, new Point(400, 400), "Stupid AI");
-            ModelManager.AddThing(newShip);
+            ModelManager.UpdateThing(newShip);
         }
 
-        public void AddBigThing()
+        private void AddBigThing()
         {
             _logger.LogInfo("Adding a big thing.");
             BigMass bigMass = _thingFactory.GetBigMass();
-            ModelManager.AddThing(bigMass);
+            ModelManager.UpdateThing(bigMass);
         }
 
         public void StartGame()
@@ -72,10 +71,10 @@ namespace HelloGame.Common.Model
             }
         }
 
-        public void CreateFromDescription(ThingDescription description)
+        public void ParseThingDescription(ThingDescription description)
         {
             ThingBase thing = _thingFactory.CreateFromDescription(description);
-            ModelManager.AddThing(thing);
+            ModelManager.UpdateThing(thing);
         }
 
         public void SetKeysInfo(KeysInfo keysMine)
@@ -85,6 +84,11 @@ namespace HelloGame.Common.Model
             {
                 shipMovable.KeysInfo = keysMine;
             }
+        }
+
+        public ThingBase GetMe()
+        {
+            return ModelManager.GetThings().FirstOrDefault(t => t is PlayerShipMovable);
         }
     }
 }

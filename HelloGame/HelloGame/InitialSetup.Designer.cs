@@ -1,4 +1,4 @@
-﻿namespace HelloGame
+﻿namespace HelloGame.Client
 {
     partial class InitialSetup
     {

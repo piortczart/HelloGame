@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Common.Model.GameObjects
@@ -16,7 +17,7 @@ namespace HelloGame.Common.Model.GameObjects
             Mass = 5
         };
 
-        public Bomb(ThingBase creator) : base(Settings, creator)
+        public Bomb(ILogger logger, ThingBase creator) : base(logger, Settings, creator)
         {
             Physics.Interia = new Real2DVector();
         }
