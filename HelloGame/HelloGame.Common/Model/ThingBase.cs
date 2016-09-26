@@ -4,12 +4,19 @@ using System.Drawing;
 using System.Threading;
 using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
+using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Physicsish;
 
 namespace HelloGame.Common.Model
 {
     public abstract class ThingBase : ElapsingThing
     {
+        public enum UpdateLocationSettings
+        {
+            All,
+            ExcludeAngle
+        }
+
         protected readonly ILogger Logger;
         public AlmostPhysics Physics { get; }
         public ThingBase Creator { get; }
@@ -18,7 +25,6 @@ namespace HelloGame.Common.Model
         private static int _highestId;
         public int Id { get; }
         private readonly object _modelSynchronizer = new object();
-        private bool _wasUpdatedFromOutside;
 
         protected ThingBase(ILogger logger, ThingSettings settings, ThingBase creator = null, int? id = null) : base(settings.TimeToLive)
         {
@@ -90,8 +96,6 @@ namespace HelloGame.Common.Model
                         }
                     }
                 }
-
-                _wasUpdatedFromOutside = false;
             }
         }
 
@@ -131,17 +135,27 @@ namespace HelloGame.Common.Model
             Physics.Interia = initialInertia ?? new Real2DVector();
         }
 
-        public void UpdateLocation(ThingBase otherThing)
+        public void UpdateLocation(ThingBase otherThing, UpdateLocationSettings settings = UpdateLocationSettings.All)
         {
             lock (_modelSynchronizer)
             {
-                Logger.LogInfo($"Total thing position shift: {Physics.Position.DistanceTo(otherThing.Physics.Position)}");
+                decimal positionShift = Physics.Position.DistanceTo(otherThing.Physics.Position);
+                Logger.LogInfo($"Total thing position shift: {positionShift}");
 
-                Physics.Update(otherThing.Physics);
+                if (positionShift > 10)
+                {
+                    throw new Exception($"Position shift too high! {positionShift}");
+                }
+
+                Physics.Update(otherThing.Physics, settings);
+
+                if (this is AiShip)
+                {
+                    Logger.LogInfo($"Updated angle to: {Physics.Angle}");
+                }
+
                 IsDestroyed = otherThing.IsDestroyed;
                 ElapseIn(otherThing.TimeToLive);
-
-                _wasUpdatedFromOutside = true;
             }
         }
     }

@@ -18,6 +18,7 @@ namespace HelloGame.Client
         {
             Bind<Server.GameServer>().ToConstant(_serverNinject.Get<Server.GameServer>()).InSingletonScope();
             Bind<CancellationTokenSource>().ToConstant(new CancellationTokenSource()).InSingletonScope();
+            Bind<HelloGameForm>().To<HelloGameForm>().WithConstructorArgument("showInitialForm", true);
         }
     }
 }

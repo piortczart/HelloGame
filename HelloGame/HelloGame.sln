@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloGame.Client", "HelloGame\HelloGame.Client.csproj", "{3F6231A9-4F14-4DAC-907F-7535E362D22D}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloGame.Server", "HelloGame.Server\HelloGame.Server.csproj", "{E9939856-2755-47A2-9C34-C002BF587E06}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloGame.Common", "HelloGame.Common\HelloGame.Common.csproj", "{BAE7AFBF-E6A6-4E31-ADBB-406F23798764}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloGame.GraphicalModelTest", "HelloGame.GraphicalModelTest\HelloGame.GraphicalModelTest.csproj", "{87956DDB-BFA6-41C4-AC3F-14CEC1953DF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{BAE7AFBF-E6A6-4E31-ADBB-406F23798764}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAE7AFBF-E6A6-4E31-ADBB-406F23798764}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAE7AFBF-E6A6-4E31-ADBB-406F23798764}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87956DDB-BFA6-41C4-AC3F-14CEC1953DF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87956DDB-BFA6-41C4-AC3F-14CEC1953DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87956DDB-BFA6-41C4-AC3F-14CEC1953DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87956DDB-BFA6-41C4-AC3F-14CEC1953DF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,7 +5,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 {
     public class PlayerShipAny : PlayerShip
     {
-        public PlayerShipAny(ILogger logger, ModelManager modelManager, string name, decimal size = 10, int? id = null) : base(logger, modelManager, name, size, id)
+        public PlayerShipAny(ILogger logger, GameManager gameManager, string name, decimal size = 10, int? id = null) : base(logger, gameManager, name, size, id)
         {
         }
 

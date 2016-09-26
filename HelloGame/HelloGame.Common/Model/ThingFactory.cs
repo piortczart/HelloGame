@@ -10,13 +10,13 @@ namespace HelloGame.Common.Model
     public class ThingFactory
     {
         private readonly bool _isServer;
-        private readonly ModelManager _modelManager;
+        private readonly GameManager _gameManager;
         private readonly ILogger _logger;
 
-        public ThingFactory(bool isServer, ModelManager modelManager, ILoggerFactory loggerFactory)
+        public ThingFactory(bool isServer, GameManager gameManager, ILoggerFactory loggerFactory)
         {
             _isServer = isServer;
-            _modelManager = modelManager;
+            _gameManager = gameManager;
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
@@ -63,7 +63,7 @@ namespace HelloGame.Common.Model
                 throw new ArgumentException("The identifier is expected in a non-server environment.", nameof(id));
             }
 
-            var ship = new PlayerShipMovable(_logger, _modelManager, name, size, id);
+            var ship = new PlayerShipMovable(_logger, _gameManager, name, size, id);
             ship.Spawn(location);
             return ship;
         }
@@ -76,14 +76,14 @@ namespace HelloGame.Common.Model
                 throw new ArgumentException("The identifier is expected in a non-server environment.", nameof(id));
             }
 
-            var ship = new PlayerShipAny(_logger, _modelManager, name, size, id);
+            var ship = new PlayerShipAny(_logger, _gameManager, name, size, id);
             ship.Spawn(location);
             return ship;
         }
 
         public AiShip GetAiShip(int size, Point point, string name, int? id = null)
         {
-            var ship = new AiShip(_logger, _modelManager, name, size, id);
+            var ship = new AiShip(_logger, _gameManager, name, size, id);
             ship.Spawn(point);
             return ship;
         }

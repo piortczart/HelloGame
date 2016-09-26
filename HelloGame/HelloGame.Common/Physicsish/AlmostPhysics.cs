@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using HelloGame.Common.MathStuff;
+using HelloGame.Common.Model;
 
 namespace HelloGame.Common.Physicsish
 {
@@ -61,11 +62,16 @@ namespace HelloGame.Common.Physicsish
             return new Point((int)(direction.X + Position.X), (int)(direction.Y + Position.Y));
         }
 
-        public void Update(AlmostPhysics other)
+        public void Update(AlmostPhysics other, ThingBase.UpdateLocationSettings settings)
         {
             Position.X = other.Position.X;
             Position.Y = other.Position.Y;
-            Angle = other.Angle;
+
+            if (settings != ThingBase.UpdateLocationSettings.ExcludeAngle)
+            {
+                Angle = other.Angle;
+            }
+
             Drag = other.Drag;
             RadPerSecond = other.RadPerSecond;
             SelfPropelling = other.SelfPropelling;

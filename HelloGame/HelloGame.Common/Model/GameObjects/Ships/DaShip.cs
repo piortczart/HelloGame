@@ -17,16 +17,16 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         };
 
         private readonly ILogger _logger;
-        protected readonly ModelManager ModelManager;
+        protected readonly GameManager GameManager;
         public string Name { get; }
         protected readonly Limiter BombLimiter = new Limiter(TimeSpan.FromSeconds(1));
         protected readonly Limiter LaserLimiter = new Limiter(TimeSpan.FromMilliseconds(200));
         protected readonly Font Font = new Font("monospace", 12, GraphicsUnit.Pixel);
 
-        protected DaShip(ILogger logger, ModelManager modelManager, decimal size, string name, int? id) : base(logger, Settings, id: id)
+        protected DaShip(ILogger logger, GameManager gameManager, decimal size, string name, int? id) : base(logger, Settings, id: id)
         {
             _logger = logger;
-            ModelManager = modelManager;
+            GameManager = gameManager;
             Name = name;
 
             Physics.Size = size;
@@ -34,7 +34,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             Physics.Interia = new Real2DVector(5);
         }
 
-        protected void PewPew()
+        protected void PewPew(bool isKeyBased = false)
         {
             if (LaserLimiter.CanHappen())
             {
@@ -44,7 +44,14 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 laser.Spawn(Physics.PositionPoint, inertia);
                 laser.Physics.Angle = Physics.Angle;
 
-                ModelManager.UpdateThing(laser);
+                if (isKeyBased)
+                {
+                    GameManager.AskServerToSpawn(laser);
+                }
+                else
+                {
+                    GameManager.ModelManager.UpdateThing(laser);
+                }
             }
         }
 
@@ -81,7 +88,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 g.DrawArc(shipPen, new Rectangle((int)(Physics.Position.X - Physics.Size / 2), (int)(Physics.Position.Y - Physics.Size / 2), (int)Physics.Size, (int)Physics.Size), 0, 360);
 
                 Size nameSize = TextRenderer.MeasureText(Name, Font);
-                var nameLocation = new PointF((int) Physics.Position.X - nameSize.Width/2, (int) Physics.Position.Y - nameSize.Height*2);
+                var nameLocation = new PointF((int)Physics.Position.X - nameSize.Width / 2, (int)Physics.Position.Y - nameSize.Height * 2);
                 g.DrawString(Name, Font, Brushes.Black, nameLocation);
             }
 

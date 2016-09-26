@@ -13,7 +13,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
         Real2DVector _playerPointer = new Real2DVector();
 
-        public AiShip(ILogger logger, ModelManager modelManager, string name, decimal size = 10, int? id = null) : base(logger, modelManager, size, name, id)
+        public AiShip(ILogger logger, GameManager gameManager, string name, decimal size = 10, int? id = null) : base(logger, gameManager, size, name, id)
         {
         }
 
@@ -35,16 +35,22 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             if (_locatePlayerLimiter.CanHappen())
             {
                 // Locate a ship.
-                var player = otherThings.FirstOrDefault(s => s is PlayerShip);
+                ThingBase player = otherThings.FirstOrDefault(s => s is PlayerShip);
                 if (player != null)
                 {
                     // Face him.
-                    var x = player.Physics.Position.X - Physics.Position.X;
-                    var y = player.Physics.Position.Y - Physics.Position.Y;
+                    decimal x = player.Physics.Position.X - Physics.Position.X;
+                    decimal y = player.Physics.Position.Y - Physics.Position.Y;
 
                     _playerPointer = Real2DVector.GetFromCoords(x, y);
 
+                    decimal angleBefore = Physics.Angle;
                     Physics.Angle = _playerPointer.Angle;
+
+                    if (angleBefore != 0 && Physics.Angle < 0.1m)
+                    {
+                        ;
+                    }
 
                     //PewPew();
                 }

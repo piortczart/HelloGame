@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using HelloGame.Common.Extensions;
 using HelloGame.Common.Logging;
+using HelloGame.Common.MathStuff;
 using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.Model.GameObjects.Ships;
 
@@ -13,6 +17,7 @@ namespace HelloGame.Common.Model
         private readonly bool _isServer;
         private readonly ILogger _logger;
         public ModelManager ModelManager { get; }
+        private readonly ConcurrentQueue<ThingBase> _thingsToSpawn = new ConcurrentQueue<ThingBase>();
 
         public GameManager(ModelManager modelManager, ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
         {
@@ -20,6 +25,22 @@ namespace HelloGame.Common.Model
             _isServer = isServer;
             _logger = loggerFactory.CreateLogger(GetType());
             ModelManager = modelManager;
+        }
+
+        public void AskServerToSpawn(ThingBase thing)
+        {
+            _thingsToSpawn.Enqueue(thing);
+        }
+
+        public List<ThingBase> GetThingsToSpawn()
+        {
+            var result = new List<ThingBase>();
+            ThingBase thing;
+            while (_thingsToSpawn.TryDequeue(out thing))
+            {
+                result.Add(thing);
+            }
+            return result;
         }
 
         public void SetUpdateModelAction(Action action)
@@ -38,7 +59,8 @@ namespace HelloGame.Common.Model
         private void AddAiShip()
         {
             _logger.LogInfo("Adding AI ship.");
-            AiShip newShip = _thingFactory.GetAiShip(15, new Point(400, 400), "Stupid AI");
+            Point location = MathX.Random.GetRandomPoint(new Rectangle(300, 300, 300, 200));
+            AiShip newShip = _thingFactory.GetAiShip(15, location, "Stupid AI");
             ModelManager.UpdateThing(newShip);
         }
 
@@ -63,10 +85,11 @@ namespace HelloGame.Common.Model
                 //AddThing(_thingFactory.GetPlayerShip(25, new Point(100, 100)));
 
                 AddAiShip();
+                AddAiShip();
 
                 //for (int i = 0; i < MathX.Random.Next(1, 4); i++)
                 //{
-                    AddBigThing();
+                //AddBigThing();
                 //}
             }
         }
@@ -74,6 +97,7 @@ namespace HelloGame.Common.Model
         public void ParseThingDescription(ThingDescription description)
         {
             ThingBase thing = _thingFactory.CreateFromDescription(description);
+            thing.Physics.Update(description.AlmostPhysics, ThingBase.UpdateLocationSettings.All);
             ModelManager.UpdateThing(thing);
         }
 
@@ -86,9 +110,23 @@ namespace HelloGame.Common.Model
             }
         }
 
+        public List<ThingBase> GetMyThings()
+        {
+            ThingBase me = GetMe();
+            return ModelManager.GetThings().Where(t => t.Creator == me).ToList();
+        }
+
         public ThingBase GetMe()
         {
             return ModelManager.GetThings().FirstOrDefault(t => t is PlayerShipMovable);
+        }
+
+        public void ParseThingDescriptions(List<ThingDescription> stuff)
+        {
+            foreach (ThingDescription thing in stuff)
+            {
+                ParseThingDescription(thing);
+            }
         }
     }
 }

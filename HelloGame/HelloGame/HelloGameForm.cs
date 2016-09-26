@@ -18,7 +18,7 @@ namespace HelloGame.Client
         private readonly Font _font = new Font("Courier", 12, GraphicsUnit.Pixel);
         private readonly SynchronizedCollection<LogDetails> _logDetails = new SynchronizedCollection<LogDetails>();
 
-        public HelloGameForm(Renderer renderer, InitialSetupForm setupForm, GameManager gameManager, ILoggerFactory loggerFactory, CancellationTokenSource cancellation)
+        public HelloGameForm(Renderer renderer, InitialSetupForm setupForm, GameManager gameManager, ILoggerFactory loggerFactory, CancellationTokenSource cancellation, bool showInitialForm)
         {
             _renderer = renderer;
             _gameManager = gameManager;
@@ -29,7 +29,10 @@ namespace HelloGame.Client
 
             loggerFactory.AddLogAction(UpdateLogDisplay);
 
-            setupForm.ShowDialog(this);
+            if (showInitialForm)
+            {
+                setupForm.ShowDialog(this);
+            }
 
             gameManager.StartGame();
 

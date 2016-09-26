@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -68,6 +69,10 @@ namespace HelloGame.Server
                     break;
                 case NetworkMessageType.MyPosition:
                     _gameManager.ParseThingDescription(message.Payload.DeSerializeJson<ThingDescription>());
+                    break;
+                case NetworkMessageType.PleaseSpawn:
+                    var stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
+                    _gameManager.ParseThingDescriptions(stuff);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

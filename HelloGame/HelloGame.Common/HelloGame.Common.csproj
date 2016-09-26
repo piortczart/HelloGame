@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventPerSecond.cs" />
+    <Compile Include="Extensions\ExtensionsRandom.cs" />
     <Compile Include="Extensions\ExtensionsString.cs" />
     <Compile Include="HelloGameCommonNinjectBindings.cs" />
     <Compile Include="Logging\ILoggerFactory.cs" />

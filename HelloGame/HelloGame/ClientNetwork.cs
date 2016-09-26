@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HelloGame.Common.Extensions;
@@ -18,13 +20,41 @@ namespace HelloGame.Client
         private readonly MessageTransciever _sender = new MessageTransciever();
         private readonly ILogger _logger;
         private readonly Timer _sendMeTimer;
-        private static readonly TimeSpan PropagateFrequency = TimeSpan.FromMilliseconds(100);
+        private static readonly TimeSpan PropagateFrequency = TimeSpan.FromMilliseconds(50);
+
+        // This is exclusive for the propagate timer.
+        private readonly HashSet<ThingBase> _thingsSent = new HashSet<ThingBase>();
 
         public ClientNetwork(ILoggerFactory loggerFactory, GameManager gameManager)
         {
             _gameManager = gameManager;
             _logger = loggerFactory.CreateLogger(GetType());
-            _sendMeTimer = new Timer(state => { SendMyPosition(); }, null, PropagateFrequency, Timeout.InfiniteTimeSpan);
+            _sendMeTimer = new Timer(state =>
+            {
+                SendMyPosition();
+                SendMyItems();
+            }, null, PropagateFrequency, Timeout.InfiniteTimeSpan);
+        }
+
+        private void SendMyItems()
+        {
+            List<ThingBase> unsentThings = _gameManager.GetThingsToSpawn();
+            if (unsentThings.Any())
+            {
+                var message = new NetworkMessage
+                {
+                    Type = NetworkMessageType.PleaseSpawn,
+                    Payload = unsentThings.Select(t => new ThingDescription(t, false)).SerializeJson()
+                };
+                _sender.Send(message, _stream);
+
+                foreach (ThingBase unsentThing in unsentThings)
+                {
+                    _thingsSent.Add(unsentThing);
+                }
+
+                _logger.LogInfo($"Sent {unsentThings.Count} items, total sent: {_thingsSent.Count}");
+            }
         }
 
         private void SendMyPosition()
@@ -32,12 +62,12 @@ namespace HelloGame.Client
             ThingBase me = _gameManager.GetMe();
             if (me != null)
             {
-                _sender.Send(
-                    new NetworkMessage
-                    {
-                        Type = NetworkMessageType.MyPosition,
-                        Payload = new ThingDescription(me, false).SerializeJson()
-                    }, _stream);
+                var message = new NetworkMessage
+                {
+                    Type = NetworkMessageType.MyPosition,
+                    Payload = new ThingDescription(me, false).SerializeJson()
+                };
+                _sender.Send(message, _stream);
             }
             _sendMeTimer.Change(PropagateFrequency, Timeout.InfiniteTimeSpan);
         }

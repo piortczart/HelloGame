@@ -14,7 +14,7 @@ namespace HelloGame.Common.Model
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
         readonly CollisionDetector _collidor = new CollisionDetector();
         private TimeSpan _lastModelUpdate = TimeSpan.Zero;
-        public readonly EventPerSecond ModelUpdateCounter = new EventPerSecond();
+        private readonly EventPerSecond _modelUpdateCounter = new EventPerSecond();
         private readonly Thread _modelUpdateThread;
         private readonly SynchronizedCollection<ThingBase> _things = new SynchronizedCollection<ThingBase>();
         private Action _updateModelAction;
@@ -36,8 +36,6 @@ namespace HelloGame.Common.Model
 
         public void UpdateThing(ThingBase thingBase)
         {
-            _logger.LogInfo($"Things before update: {_things.Count}");
-
             ThingBase existing = _things.SingleOrDefault(t => t.Id == thingBase.Id);
             if (existing == null)
             {
@@ -47,8 +45,6 @@ namespace HelloGame.Common.Model
             {
                 existing.UpdateLocation(thingBase);
             }
-
-            _logger.LogInfo($"Things after update: {_things.Count}");
         }
 
         public List<ThingBase> GetThings()
@@ -65,7 +61,7 @@ namespace HelloGame.Common.Model
         {
             while (_modelUpdateThread.IsAlive)
             {
-                ModelUpdateCounter.Add();
+                _modelUpdateCounter.Add();
 
                 TimeSpan now = _stopwatch.Elapsed;
                 if (_lastModelUpdate != TimeSpan.Zero)
