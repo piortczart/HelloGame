@@ -45,6 +45,14 @@ namespace HelloGame.Common.Model
                 return;
             }
 
+            var lazer = thingBase as LazerBeamPew;
+            if (lazer != null)
+            {
+                Type = lazer.GetType().Name;
+                ConstructParams = null;
+                return;
+            }
+
             throw new NotImplementedException($"Cannot create type: {thingBase.GetType().Name}");
         }
 

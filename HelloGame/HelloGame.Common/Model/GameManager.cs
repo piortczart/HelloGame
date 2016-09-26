@@ -13,18 +13,21 @@ namespace HelloGame.Common.Model
 {
     public class GameManager
     {
-        private readonly ThingFactory _thingFactory;
+        private readonly IThingFactory _thingFactory;
         private readonly bool _isServer;
         private readonly ILogger _logger;
         public ModelManager ModelManager { get; }
         private readonly ConcurrentQueue<ThingBase> _thingsToSpawn = new ConcurrentQueue<ThingBase>();
+        GameThingCoordinator _gameCoordinator;
 
-        public GameManager(ModelManager modelManager, ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
+        public GameManager(ModelManager modelManager, GameThingCoordinator gameCoordinator, IThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
         {
+            ModelManager = modelManager;
+            _gameCoordinator = gameCoordinator;
+            _gameCoordinator.SetActions(AskServerToSpawn, ModelManager.UpdateThing);
             _thingFactory = thingFactory;
             _isServer = isServer;
             _logger = loggerFactory.CreateLogger(GetType());
-            ModelManager = modelManager;
         }
 
         public void AskServerToSpawn(ThingBase thing)
@@ -87,10 +90,10 @@ namespace HelloGame.Common.Model
                 AddAiShip();
                 AddAiShip();
 
-                //for (int i = 0; i < MathX.Random.Next(1, 4); i++)
-                //{
-                //AddBigThing();
-                //}
+                for (int i = 0; i < MathX.Random.Next(1, 1); i++)
+                {
+                    AddBigThing();
+                }
             }
         }
 

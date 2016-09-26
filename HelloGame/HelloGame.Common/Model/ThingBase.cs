@@ -142,7 +142,7 @@ namespace HelloGame.Common.Model
                 decimal positionShift = Physics.Position.DistanceTo(otherThing.Physics.Position);
                 Logger.LogInfo($"Total thing position shift: {positionShift}");
 
-                if (positionShift > 10)
+                if (positionShift > 20)
                 {
                     throw new Exception($"Position shift too high! {positionShift}");
                 }

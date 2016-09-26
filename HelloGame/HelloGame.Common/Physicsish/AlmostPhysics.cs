@@ -78,6 +78,7 @@ namespace HelloGame.Common.Physicsish
             Aerodynamism = other.Aerodynamism;
             Mass = other.Mass;
             Gravity = other.Gravity;
+            Interia = other.Interia;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
         Real2DVector _playerPointer = new Real2DVector();
 
-        public AiShip(ILogger logger, GameManager gameManager, string name, decimal size = 10, int? id = null) : base(logger, gameManager, size, name, id)
+        public AiShip(ILogger logger, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null) : base(logger, gameManager, size, name, id)
         {
         }
 

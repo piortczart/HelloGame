@@ -17,13 +17,13 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         };
 
         private readonly ILogger _logger;
-        protected readonly GameManager GameManager;
+        protected readonly GameThingCoordinator GameManager;
         public string Name { get; }
         protected readonly Limiter BombLimiter = new Limiter(TimeSpan.FromSeconds(1));
         protected readonly Limiter LaserLimiter = new Limiter(TimeSpan.FromMilliseconds(200));
         protected readonly Font Font = new Font("monospace", 12, GraphicsUnit.Pixel);
 
-        protected DaShip(ILogger logger, GameManager gameManager, decimal size, string name, int? id) : base(logger, Settings, id: id)
+        protected DaShip(ILogger logger, GameThingCoordinator gameManager, decimal size, string name, int? id) : base(logger, Settings, id: id)
         {
             _logger = logger;
             GameManager = gameManager;
@@ -50,7 +50,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 }
                 else
                 {
-                    GameManager.ModelManager.UpdateThing(laser);
+                    GameManager.UpdateThing(laser);
                 }
             }
         }

@@ -20,7 +20,7 @@ namespace HelloGame.Server
         private readonly ClientMessageProcessing _clientMessageProcessing;
         private readonly ILogger _logger;
         private Timer _propagateTimer;
-        private static readonly TimeSpan PropagateFrequency = TimeSpan.FromMilliseconds(500);
+        private static readonly TimeSpan PropagateFrequency = TimeSpan.FromMilliseconds(25);
 
         public GameServer(GameManager gameManager, ILoggerFactory loggerFactory, ClientMessageProcessing clientMessageProcessing, MessageTransciever sender)
         {
