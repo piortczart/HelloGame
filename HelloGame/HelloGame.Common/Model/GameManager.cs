@@ -18,7 +18,7 @@ namespace HelloGame.Common.Model
         private readonly ILogger _logger;
         public ModelManager ModelManager { get; }
         private readonly ConcurrentQueue<ThingBase> _thingsToSpawn = new ConcurrentQueue<ThingBase>();
-        GameThingCoordinator _gameCoordinator;
+        readonly GameThingCoordinator _gameCoordinator;
 
         public GameManager(ModelManager modelManager, GameThingCoordinator gameCoordinator, IThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
         {

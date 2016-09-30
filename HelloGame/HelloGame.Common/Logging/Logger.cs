@@ -23,21 +23,37 @@ namespace HelloGame.Common.Logging
             {
                 Text = text,
                 ExtraInfo = _extraInfo,
+                Exception = null,
                 Type = _sourceType,
                 When = DateTime.Now
             };
 
             foreach (Action<LogDetails> logAction in _logActions)
             {
-                logAction(logDetails);
+                //logAction(logDetails);
             }
+
+            Debug.WriteLine(FormatLog(logDetails));
+        }
+
+        public void LogError(string text, Exception error = null)
+        {
+            var logDetails = new LogDetails
+            {
+                Text = text,
+                ExtraInfo = _extraInfo,
+                Exception = error,
+                Type = _sourceType,
+                When = DateTime.Now
+            };
 
             Debug.WriteLine(FormatLog(logDetails));
         }
 
         public static string FormatLog(LogDetails details)
         {
-            return $"{details.When:HH:mm:ss} [{details.ExtraInfo}] {details.Type.Name}: {details.Text}";
+            string exception = $"{Environment.NewLine}{details.Exception}";
+            return $"{details.When:HH:mm:ss} [{details.ExtraInfo}] {details.Type.Name}: {details.Text}{exception}";
         }
     }
 }

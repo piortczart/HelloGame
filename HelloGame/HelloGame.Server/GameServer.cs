@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
@@ -15,12 +16,11 @@ namespace HelloGame.Server
     public class GameServer
     {
         private readonly MessageTransciever _sender;
-
         private readonly GameManager _gameManager;
         private readonly ClientMessageProcessing _clientMessageProcessing;
         private readonly ILogger _logger;
         private Timer _propagateTimer;
-        private static readonly TimeSpan PropagateFrequency = TimeSpan.FromMilliseconds(25);
+        private static readonly TimeSpan PropagateFrequency = TimeSpan.Parse(ConfigurationManager.AppSettings["PropagateFrequencyServer"]);
 
         public GameServer(GameManager gameManager, ILoggerFactory loggerFactory, ClientMessageProcessing clientMessageProcessing, MessageTransciever sender)
         {

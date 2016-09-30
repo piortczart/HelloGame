@@ -5,6 +5,7 @@ using HelloGame.Common.Physicsish;
 
 namespace HelloGame.Common.Model
 {
+    [Serializable]
     public class ThingDescription
     {
         public AlmostPhysics AlmostPhysics { get; set; }

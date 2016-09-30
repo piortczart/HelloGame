@@ -77,6 +77,8 @@
     <Compile Include="Model\GameObjects\Ships\PlayerShip.cs" />
     <Compile Include="Model\GameObjects\Ships\PlayerShipAny.cs" />
     <Compile Include="Model\GameObjects\Ships\PlayerShipMovable.cs" />
+    <Compile Include="Model\GameThingCoordinator.cs" />
+    <Compile Include="Model\IThingFactory.cs" />
     <Compile Include="Model\KeysInfo.cs" />
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Model\ThingBase.cs" />

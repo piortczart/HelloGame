@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HelloGame.Common.Extensions;
@@ -20,9 +20,9 @@ namespace HelloGame.Client
         private readonly MessageTransciever _sender = new MessageTransciever();
         private readonly ILogger _logger;
         private readonly Timer _sendMeTimer;
-        private static readonly TimeSpan PropagateFrequency = TimeSpan.FromMilliseconds(50);
+        private static readonly TimeSpan PropagateFrequency = TimeSpan.Parse(ConfigurationManager.AppSettings["PropagateFrequencyClient"]);
 
-        // This is exclusive for the propagate timer.
+        // This is exclusive for the propagate timer thread.
         private readonly HashSet<ThingBase> _thingsSent = new HashSet<ThingBase>();
 
         public ClientNetwork(ILoggerFactory loggerFactory, GameManager gameManager)
