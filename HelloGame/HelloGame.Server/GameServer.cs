@@ -48,7 +48,7 @@ namespace HelloGame.Server
 
         private void Propagate()
         {
-            //_logger.LogInfo($"Propagating. Number of things: {_gameManager.ModelManager.GetThings().Count} (ids: {String.Join(",", _gameManager.ModelManager.GetThings().Select(t => t.Id + "_" + t.GetType().Name))})");
+            _logger.LogInfo($"Propagating. Number of things: {_gameManager.ModelManager.GetThings().Count} (ids: {String.Join(",", _gameManager.ModelManager.GetThings().Select(t => t.Id + "_" + t.GetType().Name))})");
 
             SendUpdateMessage(_gameManager.ModelManager.GetThings());
 

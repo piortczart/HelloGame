@@ -4,10 +4,19 @@ using HelloGame.Common.Logging;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
 {
-    public abstract class PlayerShip : DaShip
+    public abstract class PlayerShip : ShipBase
     {
-        public PlayerShip(ILogger logger, GameThingCoordinator gameManager, ThingSettings settings, string name, decimal size = 10, int? id = null, ThingBase creator = null) 
-            : base(logger, gameManager, settings, size, name, id, creator)
+        private static readonly ThingSettings Settings = new ThingSettings
+        {
+            Aerodynamism = 0.1m,
+            TimeToLive = TimeSpan.Zero,
+            Mass = 3,
+            RadPerSecond = (decimal)Math.PI,
+            LazerLimit = TimeSpan.FromMilliseconds(200)
+        };
+
+        public PlayerShip(ILogger logger, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null, ThingBase creator = null) 
+            : base(logger, gameManager, Settings, size, name, id, creator)
         {
         }
 

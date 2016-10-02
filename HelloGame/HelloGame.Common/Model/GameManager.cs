@@ -24,6 +24,7 @@ namespace HelloGame.Common.Model
         public GameManager(ModelManager modelManager, GameThingCoordinator gameCoordinator, ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
         {
             ModelManager = modelManager;
+            modelManager.AddUpdateModelAction(ModelUpdated);
             _gameCoordinator = gameCoordinator;
             _gameCoordinator.SetActions(AskServerToSpawn, ModelManager.UpdateThing);
             _thingFactory = thingFactory;
@@ -49,7 +50,22 @@ namespace HelloGame.Common.Model
 
         public void SetUpdateModelAction(Action action)
         {
-            ModelManager.SetUpdateModelAction(action);
+            ModelManager.AddUpdateModelAction(action);
+        }
+
+        /// <summary>
+        /// Will be called by the model each time it's updated.
+        /// </summary>
+        public void ModelUpdated()
+        {
+            // Only the server can spawn new ships.
+            if (_isServer)
+            {
+                if (!ModelManager.GetThings().Any(t => t is AiShip))
+                {
+                    AddAiShip();
+                }
+            }
         }
 
         public PlayerShipOther AddPlayer(string name)
@@ -80,6 +96,7 @@ namespace HelloGame.Common.Model
             SpawnStart();
             ModelManager.StartModelUpdates();
         }
+
 
         private void SpawnStart()
         {

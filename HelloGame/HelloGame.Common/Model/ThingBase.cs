@@ -50,10 +50,13 @@ namespace HelloGame.Common.Model
         {
             Render(g);
 
-            string owner = Creator?.Id.ToString() ?? "?";
-            Size nameSize = TextRenderer.MeasureText(owner, Font);
-            var nameLocation = new PointF((int)Physics.Position.X - nameSize.Width / 2, (int)Physics.Position.Y + (int)Settingz.Size + nameSize.Height * 2);
-            g.DrawString(owner, Font, Brushes.Black, nameLocation);
+            // Show the creator's id below this thing
+            {
+                string owner = $"{Id} ({Creator?.Id.ToString() ?? "?"})";
+                Size ownerSize = TextRenderer.MeasureText(owner, Font);
+                var nameLocation = new PointF((int)Physics.Position.X - ownerSize.Width / 2, (int)Physics.Position.Y + (int)Settingz.Size + ownerSize.Height * 2);
+                g.DrawString(owner, Font, Brushes.Black, nameLocation);
+            }
         }
 
         protected void Destroy(TimeSpan elapseIn)

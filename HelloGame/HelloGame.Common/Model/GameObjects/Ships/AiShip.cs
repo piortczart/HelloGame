@@ -7,7 +7,7 @@ using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
 {
-    public class AiShip : DaShip
+    public class AiShip : ShipBase
     {
         private readonly Limiter _locatePlayerLimiter = new Limiter(TimeSpan.FromSeconds(1));
         Real2DVector _playerPointer = new Real2DVector();
@@ -53,14 +53,16 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                     decimal angleBefore = Physics.Angle;
                     Physics.Angle = _playerPointer.Angle;
 
-                    PewPew();
+                    //PewPew();
                 }
 
+                // Player is far away? Get closer.
                 if (player.Physics.Position.DistanceTo(Physics.Position) > 300)
                 {
                     int maxSpeed = 3;
                     Physics.SelfPropelling.Change(Physics.Angle, maxSpeed);
                 }
+                // Player too close? Go back.
                 else
                 {
                     int maxSpeed = -3;

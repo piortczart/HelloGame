@@ -21,7 +21,8 @@ namespace HelloGame.Client
         {
             foreach (ThingBase item in _modelManager.GetThings())
             {
-                item.RenderBase(graphics);
+                if (item != null)
+                    item.RenderBase(graphics);
             }
             _overlay.Render(graphics);
         }

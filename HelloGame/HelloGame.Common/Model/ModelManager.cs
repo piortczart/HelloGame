@@ -58,7 +58,7 @@ namespace HelloGame.Common.Model
         private readonly Thread _modelUpdateThread;
         private readonly ThreadSafeList<ThingBase> _things = new ThreadSafeList<ThingBase>();
         private readonly ConcurrentQueue<ThingBase> _deadThings = new ConcurrentQueue<ThingBase>();
-        private Action _updateModelAction;
+        private readonly List<Action> _updateModelAction = new List<Action>();
         Overlay _overlay;
 
         public ModelManager(ILoggerFactory loggerFactory, Overlay overlay)
@@ -68,13 +68,9 @@ namespace HelloGame.Common.Model
             _overlay = overlay;
         }
 
-        public void SetUpdateModelAction(Action action)
+        public void AddUpdateModelAction(Action action)
         {
-            if (_updateModelAction != null)
-            {
-                throw new Exception("There is a model action already attached.");
-            }
-            _updateModelAction = action;
+            _updateModelAction.Add(action);
         }
 
         public void UpdateThing(ThingBase thingBase)
@@ -132,11 +128,14 @@ namespace HelloGame.Common.Model
                             _deadThings.Enqueue(item);
                         }
                     });
-                    _collidor.DetectCollisions(_things.ToList().Where(t=>t != null).ToList());
+                    _collidor.DetectCollisions(_things.ToList().Where(t => t != null).ToList());
                 }
                 _lastModelUpdate = now;
 
-                _updateModelAction?.Invoke();
+                foreach (var action in _updateModelAction)
+                {
+                    action.Invoke();
+                }
             }
         }
     }

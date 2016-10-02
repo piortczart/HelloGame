@@ -8,16 +8,8 @@ namespace HelloGame.Common.Model.GameObjects.Ships
     {
         public KeysInfo KeysInfo { private get; set; }
 
-        private static readonly ThingSettings Settings = new ThingSettings
-        {
-            Aerodynamism = 0.1m,
-            TimeToLive = TimeSpan.Zero,
-            Mass = 3,
-            RadPerSecond = (decimal)Math.PI
-        };
-
         public PlayerShipMovable(ILogger logger, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null, ThingBase creator = null) 
-            : base(logger, gameManager, Settings, name, size, id, creator)
+            : base(logger, gameManager, name, size, id, creator)
         {
             // TODO: REDO THIS
             // Just for now. They will be reset for the proper ones.

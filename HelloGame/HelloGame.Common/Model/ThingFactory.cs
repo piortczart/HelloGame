@@ -116,7 +116,7 @@ namespace HelloGame.Common.Model
         public BigMass GetBigMass(int? size = null, Point? point = null, int? id = null, ThingBase creator = null)
         {
             BigMass mass = new BigMass(_logger, size ?? MathX.Random.Next(10, 50), id, creator);
-            mass.Spawn(point ?? new Point(MathX.Random.Next(300, 500), MathX.Random.Next(100, 300)));
+            mass.Spawn(point ?? new Point(MathX.Random.Next(600, 900), MathX.Random.Next(100, 300)));
             return mass;
         }
     }

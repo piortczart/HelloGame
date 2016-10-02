@@ -6,7 +6,7 @@ using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
 {
-    public abstract class DaShip : ThingBase
+    public abstract class ShipBase : ThingBase
     {
         private readonly ILogger _logger;
         protected readonly GameThingCoordinator GameCoordinator;
@@ -14,7 +14,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         protected readonly Limiter BombLimiter = new Limiter(TimeSpan.FromSeconds(1));
         protected readonly Limiter LaserLimiter;
 
-        protected DaShip(ILogger logger, GameThingCoordinator gameCoordinator, ThingSettings settings, decimal size, string name, int? id, ThingBase creator = null)
+        protected ShipBase(ILogger logger, GameThingCoordinator gameCoordinator, ThingSettings settings, decimal size, string name, int? id, ThingBase creator = null)
             : base(logger, settings, creator, id)
         {
             _logger = logger;
@@ -32,7 +32,8 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         {
             if (LaserLimiter.CanHappen())
             {
-                var laser = new LazerBeamPew(_logger, this, MathX.Random.Next(90,900));
+                // 
+                var laser = new LazerBeamPew(_logger, this, -1);
 
                 Real2DVector inertia = Physics.GetDirection(30);
                 laser.Spawn(Physics.PositionPoint, inertia);

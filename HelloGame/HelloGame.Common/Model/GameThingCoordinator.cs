@@ -27,7 +27,7 @@ namespace HelloGame.Common.Model
             {
                 return null;
             }
-            return _model.GetThings().FirstOrDefault();
+            return _model.GetThings().FirstOrDefault(t=>t.Id == id);
         }
 
         public void SetActions(Action<ThingBase> askToSpawn, Action<ThingBase> updateThing)
