@@ -12,10 +12,6 @@ namespace HelloGame.Common
 
         private int CurrentSecond => (int)Math.Floor(_stopwatch.Elapsed.TotalSeconds);
 
-        public EventPerSecond()
-        {
-        }
-
         public void Add()
         {
             // The second has changed.

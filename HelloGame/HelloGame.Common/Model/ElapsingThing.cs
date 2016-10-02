@@ -1,5 +1,4 @@
-﻿using HelloGame.Common.Model.GameObjects;
-using System;
+﻿using System;
 
 namespace HelloGame.Common.Model
 {

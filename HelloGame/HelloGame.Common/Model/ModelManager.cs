@@ -5,49 +5,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using HelloGame.Common.Logging;
-using HelloGame.Common.Model.GameObjects;
 using System.Collections.Concurrent;
 using HelloGame.Common.Extensions;
 
 namespace HelloGame.Common.Model
 {
-    public class ThreadSafeList<T> : List<T>
-    {
-        protected List<T> _interalList = new List<T>();
-
-        // Other Elements of IList implementation
-
-        public new IEnumerator<T> GetEnumerator()
-        {
-            return Clone().GetEnumerator();
-        }
-
-        protected static object _lock = new object();
-
-        public List<T> Clone()
-        {
-            List<T> newList = new List<T>();
-
-            lock (_lock)
-            {
-                _interalList.ForEach(x => newList.Add(x));
-            }
-
-            return newList;
-        }
-
-        //public new void Remove(T item)
-        //{
-        //    lock (_lock)
-        //    {
-        //        if (_interalList.Contains(item))
-        //        {
-        //            _interalList.Remove(item);
-        //        }
-        //    }
-        //}
-    }
-
     public class ModelManager
     {
         private readonly ILogger _logger;

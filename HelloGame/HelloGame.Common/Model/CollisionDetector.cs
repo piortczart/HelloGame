@@ -13,7 +13,7 @@ namespace HelloGame.Common.Model
                 {
                     ThingBase thing2 = things[j];
 
-                    if (thing1.DistanceTo(thing2) < 10)
+                    if (thing1.DistanceTo(thing2) <= 0)
                     {
                         thing1.CollidesWith(thing2);
                         thing2.CollidesWith(thing1);

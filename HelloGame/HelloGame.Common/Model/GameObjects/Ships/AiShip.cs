@@ -50,7 +50,6 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
                     _playerPointer = Real2DVector.GetFromCoords(x, y);
 
-                    decimal angleBefore = Physics.Angle;
                     Physics.Angle = _playerPointer.Angle;
 
                     //PewPew();

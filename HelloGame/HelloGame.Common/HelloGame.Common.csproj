@@ -64,7 +64,6 @@
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Model\CollisionDetector.cs" />
     <Compile Include="Model\ElapsingThing.cs" />
-    <Compile Include="MathStuff\Circle.cs" />
     <Compile Include="MathStuff\MathX.cs" />
     <Compile Include="MathStuff\Real2DVector.cs" />
     <Compile Include="MathStuff\Shape.cs" />
@@ -84,6 +83,7 @@
     <Compile Include="Model\ThingDescription.cs" />
     <Compile Include="Model\ThingFactory.cs" />
     <Compile Include="Model\ThingSettings.cs" />
+    <Compile Include="Model\ThreadSafeList.cs" />
     <Compile Include="Network\NetworkMessage.cs" />
     <Compile Include="Network\NetworkMessageType.cs" />
     <Compile Include="Network\NetworkStuff.cs" />

@@ -2,6 +2,9 @@ using System;
 
 namespace HelloGame.Common.Model
 {
+    /// <summary>
+    /// General settings of a Thing.
+    /// </summary>
     public class ThingSettings
     {
         public TimeSpan TimeToLive { get; set; }

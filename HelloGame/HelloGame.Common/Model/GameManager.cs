@@ -18,15 +18,13 @@ namespace HelloGame.Common.Model
         private readonly ILogger _logger;
         public ModelManager ModelManager { get; }
         private readonly ConcurrentQueue<ThingBase> _thingsToSpawn = new ConcurrentQueue<ThingBase>();
-        readonly GameThingCoordinator _gameCoordinator;
         public int ThingsCount { get { return ModelManager.GetThings().Count; } }
 
         public GameManager(ModelManager modelManager, GameThingCoordinator gameCoordinator, ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
         {
             ModelManager = modelManager;
             modelManager.AddUpdateModelAction(ModelUpdated);
-            _gameCoordinator = gameCoordinator;
-            _gameCoordinator.SetActions(AskServerToSpawn, ModelManager.UpdateThing);
+            gameCoordinator.SetActions(AskServerToSpawn, ModelManager.UpdateThing);
             _thingFactory = thingFactory;
             _isServer = isServer;
             _logger = loggerFactory.CreateLogger(GetType());
@@ -139,12 +137,6 @@ namespace HelloGame.Common.Model
             {
                 shipMovable.KeysInfo = keysMine;
             }
-        }
-
-        public List<ThingBase> GetMyThings()
-        {
-            ThingBase me = GetMe();
-            return ModelManager.GetThings().Where(t => t.Creator == me).ToList();
         }
 
         public ThingBase GetMe()

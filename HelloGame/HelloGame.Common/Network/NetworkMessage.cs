@@ -13,10 +13,5 @@ namespace HelloGame.Common.Network
         {
             return $"[{Type}] {Payload.SubstringSafe(0, 50)}";
         }
-
-        public string ToStringFull()
-        {
-            return $"[{Type}] {Payload}";
-        }
     }
 }

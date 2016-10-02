@@ -27,7 +27,7 @@ namespace HelloGame.Common.Model.GameObjects
             }
         }
 
-        public override void Render(Graphics g)
+        protected override void Render(Graphics g)
         {
             var pen = new Pen(Brushes.Red);
 

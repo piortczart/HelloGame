@@ -31,7 +31,7 @@ namespace HelloGame.Common.Model.GameObjects
             GetRandom();
         }
 
-        public override void Render(Graphics g)
+        protected override void Render(Graphics g)
         {
             var shipPen = new Pen(Brushes.Red);
 

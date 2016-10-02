@@ -43,8 +43,8 @@ namespace HelloGame.Common.Model
         }
 
         protected abstract void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings);
+        protected abstract void Render(Graphics g);
         public abstract void CollidesWith(ThingBase other);
-        public abstract void Render(Graphics g);
 
         public void RenderBase(Graphics g)
         {

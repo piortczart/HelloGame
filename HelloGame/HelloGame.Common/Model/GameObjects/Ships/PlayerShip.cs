@@ -15,7 +15,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             LazerLimit = TimeSpan.FromMilliseconds(200)
         };
 
-        public PlayerShip(ILogger logger, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null, ThingBase creator = null) 
+        protected PlayerShip(ILogger logger, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null, ThingBase creator = null) 
             : base(logger, gameManager, Settings, size, name, id, creator)
         {
         }

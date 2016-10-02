@@ -3,12 +3,15 @@ using System.Diagnostics;
 
 namespace HelloGame.Common
 {
+    /// <summary>
+    /// Can be used to limit occurance of an event to the given frequency.
+    /// </summary>
     public class Limiter
     {
         private static readonly Stopwatch Stopwatch = Stopwatch.StartNew();
         private TimeSpan _lastEvent = TimeSpan.Zero;
         readonly TimeSpan _frequency;
-        private object synchronizer = new object();
+        private readonly object _synchronizer = new object();
 
         public Limiter(TimeSpan frequency)
         {
@@ -17,7 +20,7 @@ namespace HelloGame.Common
 
         public bool CanHappen(bool willHappen = true)
         {
-            lock (synchronizer)
+            lock (_synchronizer)
             {
                 TimeSpan nextEvent = _lastEvent.Add(_frequency);
                 if (Stopwatch.Elapsed > nextEvent)

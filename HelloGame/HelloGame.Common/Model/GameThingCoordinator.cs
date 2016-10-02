@@ -9,10 +9,9 @@ namespace HelloGame.Common.Model
     /// </summary>
     public class GameThingCoordinator
     {
-        private ModelManager _model;
-
-        Action<ThingBase> _askToSpawnAction;
-        Action<ThingBase> _updateThingAction;
+        private readonly ModelManager _model;
+        private Action<ThingBase> _askToSpawnAction;
+        private Action<ThingBase> _updateThingAction;
 
         public int ThingsCount { get { return _model.GetThings().Count; } }
 

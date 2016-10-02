@@ -22,7 +22,7 @@ namespace HelloGame.Common.Model.GameObjects
             Physics.Interia = new Real2DVector();
         }
 
-        public override void Render(Graphics g)
+        protected override void Render(Graphics g)
         {
             if (!IsDestroyed)
             {

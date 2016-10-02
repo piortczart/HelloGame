@@ -14,6 +14,7 @@ namespace HelloGame.Common.Model
         public object[] ConstructParams { get; set; }
 
         // Needed for deserialization.
+        // ReSharper disable once MemberCanBePrivate.Global
         public ThingDescription()
         {
         }
