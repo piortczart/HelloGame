@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace HelloGame.Common.Model
 {
@@ -13,9 +14,20 @@ namespace HelloGame.Common.Model
         Action<ThingBase> _askToSpawnAction;
         Action<ThingBase> _updateThingAction;
 
+        public int ThingsCount { get { return _model.GetThings().Count; } }
+
         public GameThingCoordinator(ModelManager model)
         {
             _model = model;
+        }
+
+        public ThingBase GetThingById(int? id)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+            return _model.GetThings().FirstOrDefault();
         }
 
         public void SetActions(Action<ThingBase> askToSpawn, Action<ThingBase> updateThing)

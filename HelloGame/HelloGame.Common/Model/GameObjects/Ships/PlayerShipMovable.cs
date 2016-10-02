@@ -8,7 +8,16 @@ namespace HelloGame.Common.Model.GameObjects.Ships
     {
         public KeysInfo KeysInfo { private get; set; }
 
-        public PlayerShipMovable(ILogger logger, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null) : base(logger, gameManager, name, size, id)
+        private static readonly ThingSettings Settings = new ThingSettings
+        {
+            Aerodynamism = 0.1m,
+            TimeToLive = TimeSpan.Zero,
+            Mass = 3,
+            RadPerSecond = (decimal)Math.PI
+        };
+
+        public PlayerShipMovable(ILogger logger, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null, ThingBase creator = null) 
+            : base(logger, gameManager, Settings, name, size, id, creator)
         {
             // TODO: REDO THIS
             // Just for now. They will be reset for the proper ones.
@@ -56,7 +65,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                     var bomb = new Bomb(Logger, this);
                     bomb.Spawn(Physics.GetPointInDirection(10), Physics.TotalForce.GetScaled(1.2m, false));
 
-                    GameManager.UpdateThing(bomb);
+                    GameCoordinator.UpdateThing(bomb);
                 }
             }
 
@@ -65,7 +74,6 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 PewPew(true);
             }
         }
-
 
         private static void UpdateEngineAcc(Real2DVector engineForce, decimal shipAngle, KeysInfo keys)
         {

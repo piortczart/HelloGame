@@ -46,5 +46,17 @@ namespace HelloGame.Client.Properties {
                 this["PlayerName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SpawnServer {
+            get {
+                return ((bool)(this["SpawnServer"]));
+            }
+            set {
+                this["SpawnServer"] = value;
+            }
+        }
     }
 }

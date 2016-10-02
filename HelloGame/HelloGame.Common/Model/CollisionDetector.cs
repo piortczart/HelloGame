@@ -4,7 +4,7 @@ namespace HelloGame.Common.Model
 {
     public class CollisionDetector
     {
-        public void DetectCollisions(SynchronizedCollection<ThingBase> things)
+        public void DetectCollisions(List<ThingBase> things)
         {
             for (int i = 0; i < things.Count; i++)
             {

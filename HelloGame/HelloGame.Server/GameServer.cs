@@ -21,6 +21,7 @@ namespace HelloGame.Server
         private readonly ILogger _logger;
         private Timer _propagateTimer;
         private static readonly TimeSpan PropagateFrequency = TimeSpan.Parse(ConfigurationManager.AppSettings["PropagateFrequencyServer"]);
+        private static readonly int ServerPortNumber = int.Parse(ConfigurationManager.AppSettings["ServerPortNumber"]);
 
         public GameServer(GameManager gameManager, ILoggerFactory loggerFactory, ClientMessageProcessing clientMessageProcessing, MessageTransciever sender)
         {
@@ -30,24 +31,24 @@ namespace HelloGame.Server
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
-        public void Start(CancellationTokenSource cancellationTokenSource, int port = 49182)
+        public async Task Start(CancellationTokenSource cancellationTokenSource)
         {
-            _logger.LogInfo($"Server starting at port: {port}");
-            _clientMessageProcessing.Start(port);
+            _logger.LogInfo($"Server starting at port: {ServerPortNumber}");
+            _clientMessageProcessing.Start(ServerPortNumber);
 
             _logger.LogInfo("Starting the game manager.");
             _gameManager.StartGame();
 
-            _logger.LogInfo("Starting the listen thread.");
-            Task.Run(() => { _clientMessageProcessing.Process(cancellationTokenSource.Token); }, cancellationTokenSource.Token);
-
             _logger.LogInfo("Starting the propagate timer.");
             _propagateTimer = new Timer(state => { Propagate(); }, null, PropagateFrequency, Timeout.InfiniteTimeSpan);
+
+            _logger.LogInfo("Starting the listen thread.");
+            await Task.Run(() => { _clientMessageProcessing.Process(cancellationTokenSource.Token); }, cancellationTokenSource.Token);
         }
 
         private void Propagate()
         {
-            _logger.LogInfo($"Number of things: {_gameManager.ModelManager.GetThings().Count} {String.Join(",", _gameManager.ModelManager.GetThings().Select(t => t.Id))}");
+            //_logger.LogInfo($"Propagating. Number of things: {_gameManager.ModelManager.GetThings().Count} (ids: {String.Join(",", _gameManager.ModelManager.GetThings().Select(t => t.Id + "_" + t.GetType().Name))})");
 
             SendUpdateMessage(_gameManager.ModelManager.GetThings());
 
@@ -59,15 +60,27 @@ namespace HelloGame.Server
             foreach (var client in _clientMessageProcessing.Clients)
             {
                 NetworkStream networkStream = client.Key;
-                PlayerShipAny ship = client.Value;
+                PlayerShipOther ship = client.Value;
 
-                var message = new NetworkMessage
+                var message1 = new NetworkMessage
                 {
                     Type = NetworkMessageType.UpdateStuff,
                     Payload = things.Select(t => new ThingDescription(t, t == ship)).SerializeJson()
                 };
 
-                _sender.Send(message, networkStream);
+                _sender.Send(message1, networkStream);
+
+                List<int> deadThings = _gameManager.ModelManager.GetDeadThings().Select(t => t.Id).ToList();
+                if (deadThings.Any())
+                {
+                    var message2 = new NetworkMessage
+                    {
+                        Type = NetworkMessageType.DeadStuff,
+                        Payload = deadThings.SerializeJson()
+                    };
+
+                    _sender.Send(message2, networkStream);
+                }
             }
         }
 

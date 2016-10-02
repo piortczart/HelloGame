@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HelloGame.Common.Model.GameObjects;
+using System;
 
 namespace HelloGame.Common.Model
 {
@@ -21,7 +22,7 @@ namespace HelloGame.Common.Model
             TimeToLive = lifeLeft;
         }
 
-        protected void Despawn()
+        public void Despawn()
         {
             IsTimeToElapse = true;
         }

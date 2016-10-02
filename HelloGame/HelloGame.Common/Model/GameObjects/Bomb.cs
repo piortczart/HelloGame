@@ -22,7 +22,7 @@ namespace HelloGame.Common.Model.GameObjects
             Physics.Interia = new Real2DVector();
         }
 
-        public override void PaintStuff(Graphics g)
+        public override void Render(Graphics g)
         {
             if (!IsDestroyed)
             {
@@ -64,7 +64,7 @@ namespace HelloGame.Common.Model.GameObjects
         {
             if (IsArmed)
             {
-                Destroy(TimeSpan.FromSeconds(0.5));
+                Destroy(TimeSpan.FromSeconds(5));
             }
         }
     }

@@ -8,6 +8,49 @@ namespace HelloGame.Tests
     public class Real2DVector_General_Test
     {
         [TestMethod]
+        public void Real2DVector_GetScaled_X_Positive_Y_Zero()
+        {
+            var vector = new Real2DVector
+            {
+                X = -3,
+                Y = 0
+            };
+
+            Real2DVector scaled = vector.GetScaled(2);
+
+        }
+
+        [TestMethod]
+        public void Real2DVector_GetOpposite_Negative()
+        {
+            var vector = new Real2DVector
+            {
+                X = -3,
+                Y = -6
+            };
+
+            var opposite = vector.GetOpposite();
+
+            Assert.AreEqual(3, opposite.X);
+            Assert.AreEqual(6, opposite.Y);
+        }
+
+        [TestMethod]
+        public void Real2DVector_GetOpposite_Positive()
+        {
+            var vector = new Real2DVector
+            {
+                X = 3,
+                Y = 6
+            };
+
+            var opposite = vector.GetOpposite();
+
+            Assert.AreEqual(-3, opposite.X);
+            Assert.AreEqual(-6, opposite.Y);
+        }
+
+        [TestMethod]
         public void Real2DVector_Change_Simple()
         {
             Real2DVector vector = new Real2DVector();

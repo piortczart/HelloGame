@@ -6,6 +6,7 @@ using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
 using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Physicsish;
+using System.Windows.Forms;
 
 namespace HelloGame.Common.Model
 {
@@ -25,9 +26,12 @@ namespace HelloGame.Common.Model
         private static int _highestId;
         public int Id { get; }
         private readonly object _modelSynchronizer = new object();
+        protected readonly Font Font = new Font("monospace", 12, GraphicsUnit.Pixel);
+        protected readonly ThingSettings Settingz;
 
         protected ThingBase(ILogger logger, ThingSettings settings, ThingBase creator = null, int? id = null) : base(settings.TimeToLive)
         {
+            Settingz = settings;
             Logger = logger;
             Physics = new AlmostPhysics(settings.Aerodynamism);
             Creator = creator;
@@ -40,7 +44,17 @@ namespace HelloGame.Common.Model
 
         protected abstract void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings);
         public abstract void CollidesWith(ThingBase other);
-        public abstract void PaintStuff(Graphics g);
+        public abstract void Render(Graphics g);
+
+        public void RenderBase(Graphics g)
+        {
+            Render(g);
+
+            string owner = Creator?.Id.ToString() ?? "?";
+            Size nameSize = TextRenderer.MeasureText(owner, Font);
+            var nameLocation = new PointF((int)Physics.Position.X - nameSize.Width / 2, (int)Physics.Position.Y + (int)Settingz.Size + nameSize.Height * 2);
+            g.DrawString(owner, Font, Brushes.Black, nameLocation);
+        }
 
         protected void Destroy(TimeSpan elapseIn)
         {
@@ -61,22 +75,24 @@ namespace HelloGame.Common.Model
 
                     if (CanBeMoved)
                     {
+                        var before = new Position(Physics.Position.X, Physics.Position.Y);
+
+                        decimal timeBoundary = (decimal)(timeSinceLastUpdate.TotalMilliseconds / 100);
+
                         // Add the propeller force to the interia.
-                        Physics.Interia.Add(Physics.SelfPropelling);
+                        Physics.Interia.Add(Physics.SelfPropelling.GetScaled(timeBoundary));
 
                         // Drag changes the inertia?
-                        Physics.Drag = Physics.Interia.GetOpposite().GetScaled(Physics.Aerodynamism * 0.05m);
+                        Physics.Drag = Physics.Interia.GetOpposite().GetScaled(Physics.Aerodynamism * 0.5m * timeBoundary);
                         Physics.Interia.Add(Physics.Drag);
 
                         Real2DVector totalForce = Physics.TotalForce;
 
                         // No mass? No gravity. Think lazer.
-                        decimal timeBoundary = (decimal)(timeSinceLastUpdate.TotalMilliseconds / 100);
                         if (Physics.Mass == 0)
                         {
                             // No mass? 
-                            Physics.Position.X += totalForce.X * timeBoundary;
-                            Physics.Position.Y += totalForce.Y * timeBoundary;
+                            Physics.PositionDelta(totalForce.X * timeBoundary, totalForce.Y * timeBoundary);
                         }
                         else
                         {
@@ -85,8 +101,9 @@ namespace HelloGame.Common.Model
                             totalForce.Add(Physics.Gravity);
 
                             // Move the object.
-                            Physics.Position.X += totalForce.X / Physics.Mass * timeBoundary;
-                            Physics.Position.Y += totalForce.Y / Physics.Mass * timeBoundary;
+                            decimal newX = totalForce.X / Physics.Mass * timeBoundary;
+                            decimal newY = totalForce.Y / Physics.Mass * timeBoundary;
+                            Physics.PositionDelta(newX, newY);
                         }
 
                         // Too far away! DIE!
@@ -131,28 +148,24 @@ namespace HelloGame.Common.Model
 
         public void Spawn(Point where, Real2DVector initialInertia = null)
         {
-            Physics.SetPosition(where);
+            Physics.SetInitialPosition(where);
             Physics.Interia = initialInertia ?? new Real2DVector();
         }
 
-        public void UpdateLocation(ThingBase otherThing, UpdateLocationSettings settings = UpdateLocationSettings.All)
+        public void UpdateLocation(ThingBase otherThing)
         {
             lock (_modelSynchronizer)
             {
                 decimal positionShift = Physics.Position.DistanceTo(otherThing.Physics.Position);
-                Logger.LogInfo($"Total thing position shift: {positionShift}");
+                //Logger.LogInfo($"Total thing position shift: {positionShift}");
 
                 if (positionShift > 20)
                 {
-                    throw new Exception($"Position shift too high! {positionShift}");
+                    //throw new Exception($"Position shift too high! {positionShift}");
                 }
 
+                var settings = this is PlayerShipMovable ? UpdateLocationSettings.ExcludeAngle : UpdateLocationSettings.All;
                 Physics.Update(otherThing.Physics, settings);
-
-                if (this is AiShip)
-                {
-                    Logger.LogInfo($"Updated angle to: {Physics.Angle}");
-                }
 
                 IsDestroyed = otherThing.IsDestroyed;
                 ElapseIn(otherThing.TimeToLive);

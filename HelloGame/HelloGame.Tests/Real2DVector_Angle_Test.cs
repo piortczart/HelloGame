@@ -7,6 +7,21 @@ namespace HelloGame.Tests
     public class Real2DVector_Angle_Test
     {
         [TestMethod]
+        public void Real2DVector_Angle_NegZero()
+        {
+            Real2DVector sample = new Real2DVector
+            {
+                X = -0.8m,
+                Y = 0
+            };
+
+            decimal actual = sample.Angle;
+            decimal expected = MathX.DegreeToRadian(180);
+
+            TestX.AssertAreAlmostSame(actual, expected);
+        }
+
+        [TestMethod]
         public void Real2DVector_Angle_PosPos()
         {
             Real2DVector sample = new Real2DVector

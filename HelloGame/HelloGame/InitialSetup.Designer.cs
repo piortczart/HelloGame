@@ -33,7 +33,7 @@
             this.tbPlayerName = new System.Windows.Forms.TextBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.lbLog = new System.Windows.Forms.Label();
-            this.cbIsLocal = new System.Windows.Forms.CheckBox();
+            this.cbCreateLocalServer = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnPlay
@@ -79,20 +79,20 @@
             // 
             // cbIsLocal
             // 
-            this.cbIsLocal.AutoSize = true;
-            this.cbIsLocal.Location = new System.Drawing.Point(3, 82);
-            this.cbIsLocal.Name = "cbIsLocal";
-            this.cbIsLocal.Size = new System.Drawing.Size(105, 17);
-            this.cbIsLocal.TabIndex = 5;
-            this.cbIsLocal.Text = "Start local server";
-            this.cbIsLocal.UseVisualStyleBackColor = true;
-            this.cbIsLocal.CheckedChanged += new System.EventHandler(this.cbIsLocal_CheckedChanged);
+            this.cbCreateLocalServer.AutoSize = true;
+            this.cbCreateLocalServer.Location = new System.Drawing.Point(3, 82);
+            this.cbCreateLocalServer.Name = "cbIsLocal";
+            this.cbCreateLocalServer.Size = new System.Drawing.Size(105, 17);
+            this.cbCreateLocalServer.TabIndex = 5;
+            this.cbCreateLocalServer.Text = "Start local server";
+            this.cbCreateLocalServer.UseVisualStyleBackColor = true;
+            this.cbCreateLocalServer.CheckedChanged += new System.EventHandler(this.cbIsLocal_CheckedChanged);
             // 
             // InitialSetup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.cbIsLocal);
+            this.Controls.Add(this.cbCreateLocalServer);
             this.Controls.Add(this.lbLog);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.tbPlayerName);
@@ -112,6 +112,6 @@
         private System.Windows.Forms.TextBox tbPlayerName;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label lbLog;
-        private System.Windows.Forms.CheckBox cbIsLocal;
+        private System.Windows.Forms.CheckBox cbCreateLocalServer;
     }
 }

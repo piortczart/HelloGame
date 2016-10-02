@@ -13,14 +13,15 @@ namespace HelloGame.Common.Model
 {
     public class GameManager
     {
-        private readonly IThingFactory _thingFactory;
+        private readonly ThingFactory _thingFactory;
         private readonly bool _isServer;
         private readonly ILogger _logger;
         public ModelManager ModelManager { get; }
         private readonly ConcurrentQueue<ThingBase> _thingsToSpawn = new ConcurrentQueue<ThingBase>();
         readonly GameThingCoordinator _gameCoordinator;
+        public int ThingsCount { get { return ModelManager.GetThings().Count; } }
 
-        public GameManager(ModelManager modelManager, GameThingCoordinator gameCoordinator, IThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
+        public GameManager(ModelManager modelManager, GameThingCoordinator gameCoordinator, ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
         {
             ModelManager = modelManager;
             _gameCoordinator = gameCoordinator;
@@ -51,10 +52,10 @@ namespace HelloGame.Common.Model
             ModelManager.SetUpdateModelAction(action);
         }
 
-        public PlayerShipAny AddPlayer(string name)
+        public PlayerShipOther AddPlayer(string name)
         {
             _logger.LogInfo($"Adding player: {name}");
-            PlayerShipAny newShip = _thingFactory.GetPlayerShip(15, new Point(100, 100), name);
+            PlayerShipOther newShip = _thingFactory.GetPlayerShip(15, new Point(100, 100), name);
             ModelManager.UpdateThing(newShip);
             return newShip;
         }
@@ -87,13 +88,23 @@ namespace HelloGame.Common.Model
                 // The server can spawn items without giving them ids.
                 //AddThing(_thingFactory.GetPlayerShip(25, new Point(100, 100)));
 
-                AddAiShip();
+                //AddAiShip();
                 AddAiShip();
 
                 for (int i = 0; i < MathX.Random.Next(1, 1); i++)
                 {
                     AddBigThing();
                 }
+            }
+        }
+
+        public void StuffDied(List<int> stuffIds)
+        {
+            var toDespawn = ModelManager.GetThings().Where(t => stuffIds.Contains(t.Id)).ToList();
+            _logger.LogInfo($"Asked to despawn items: {toDespawn.Count} ({String.Join(",", toDespawn.GetType().Name)})");
+            foreach (ThingBase thingToRemove in toDespawn)
+            {
+                thingToRemove.Despawn();
             }
         }
 

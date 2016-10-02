@@ -6,7 +6,7 @@ namespace HelloGame.Common.MathStuff
     {
         public decimal X { get; set; }
         public decimal Y { get; set; }
-        private decimal? _maxSize;
+        public decimal? MaxSize { get; set; }
 
         public decimal Size => (decimal)Math.Pow((double)(X * X + Y * Y), 0.5);
 
@@ -23,17 +23,17 @@ namespace HelloGame.Common.MathStuff
                         (X == 0 ? 0 : (decimal)Math.Abs(Math.Atan((double)(Y / X)))) :
                         (Y == 0 ? 0 : (decimal)Math.Abs(Math.Atan((double)(X / Y))));
 
-                if (X < 0 && Y < 0)
+                if (X < 0 && Y <= 0)
                 {
                     // Bottom left.
                     return baseAngle + (decimal)Math.PI;
                 }
-                if (X < 0 && Y > 0)
+                if (X < 0 && Y >= 0)
                 {
                     // Top left.
                     return baseAngle + (decimal)Math.PI / 2;
                 }
-                if (X > 0 && Y < 0)
+                if (X >= 0 && Y < 0)
                 {
                     // Bottom Right.
                     return baseAngle + (decimal)Math.PI * 3 / 2;
@@ -51,7 +51,7 @@ namespace HelloGame.Common.MathStuff
 
         public Real2DVector(decimal? maxSize = null)
         {
-            _maxSize = maxSize;
+            MaxSize = maxSize;
         }
 
         public static Real2DVector GetFromCoords(decimal x, decimal y, decimal? maxSize = null)
@@ -60,14 +60,14 @@ namespace HelloGame.Common.MathStuff
             {
                 X = x,
                 Y = y,
-                _maxSize = maxSize
+                MaxSize = maxSize
             };
         }
 
 
         public Real2DVector(decimal angle, decimal bigness, decimal? maxSize = null)
         {
-            _maxSize = maxSize;
+            MaxSize = maxSize;
             Set(angle, bigness);
         }
 
@@ -97,9 +97,9 @@ namespace HelloGame.Common.MathStuff
                 newAngle += 2 * (decimal)Math.PI;
             }
 
-            if (_maxSize.HasValue && size > _maxSize.Value)
+            if (MaxSize.HasValue && size > MaxSize.Value)
             {
-                size = _maxSize.Value;
+                size = MaxSize.Value;
             }
 
             var newX = GetX(newAngle, size);
@@ -159,7 +159,7 @@ namespace HelloGame.Common.MathStuff
         public void Add(Real2DVector vector)
         {
 
-            if (_maxSize.HasValue && Size > _maxSize)
+            if (MaxSize.HasValue && Size > MaxSize)
             {
                 X += vector.X;
                 Y += vector.Y;
@@ -173,7 +173,7 @@ namespace HelloGame.Common.MathStuff
 
         public Real2DVector Copy(bool withRestriction = true)
         {
-            return new Real2DVector(withRestriction ? _maxSize : null)
+            return new Real2DVector(withRestriction ? MaxSize : null)
             {
                 X = X,
                 Y = Y

@@ -19,7 +19,7 @@ namespace HelloGame.Server
         private readonly GameManager _gameManager;
         private readonly MessageTransciever _transciever;
         private readonly ILogger _logger;
-        public readonly ConcurrentDictionary<NetworkStream, PlayerShipAny> Clients = new ConcurrentDictionary<NetworkStream, PlayerShipAny>();
+        public readonly ConcurrentDictionary<NetworkStream, PlayerShipOther> Clients = new ConcurrentDictionary<NetworkStream, PlayerShipOther>();
 
         public ClientMessageProcessing(GameManager gameManager, ILoggerFactory loggerFactory, MessageTransciever transciever)
         {
@@ -56,13 +56,14 @@ namespace HelloGame.Server
                 while (!cancellation.IsCancellationRequested)
                 {
                     NetworkMessage message = await _transciever.GetAsync(clientStream);
-                    _logger.LogInfo($"Got a client message: {message}");
+                    //_logger.LogInfo($"Got a client message: {message}");
                     ProcessMessage(message, clientStream);
                 }
             }
             catch (Exception exception)
             {
                 _logger.LogError("Handling client communication failed.", exception);
+                client.Close();
             }
         }
 
@@ -71,7 +72,7 @@ namespace HelloGame.Server
             switch (message.Type)
             {
                 case NetworkMessageType.Hello:
-                    PlayerShipAny ship = _gameManager.AddPlayer(message.Payload.SubstringSafe(0, 15));
+                    PlayerShipOther ship = _gameManager.AddPlayer(message.Payload.SubstringSafe(0, 15));
                     Clients[clientStream] = ship;
                     break;
                 case NetworkMessageType.MyPosition:

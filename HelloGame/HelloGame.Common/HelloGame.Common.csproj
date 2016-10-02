@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventPerSecond.cs" />
+    <Compile Include="Extensions\ExtensionsConcurrentQueue.cs" />
     <Compile Include="Extensions\ExtensionsRandom.cs" />
     <Compile Include="Extensions\ExtensionsString.cs" />
     <Compile Include="HelloGameCommonNinjectBindings.cs" />
@@ -70,7 +71,6 @@
     <Compile Include="Model\GameManager.cs" />
     <Compile Include="Model\GameObjects\BigMass.cs" />
     <Compile Include="Model\GameObjects\Bomb.cs" />
-    <Compile Include="Model\GameObjects\GameObjectSummary.cs" />
     <Compile Include="Model\GameObjects\LazerBeamPew.cs" />
     <Compile Include="Model\GameObjects\Ships\AiShip.cs" />
     <Compile Include="Model\GameObjects\Ships\DaShip.cs" />
@@ -78,7 +78,6 @@
     <Compile Include="Model\GameObjects\Ships\PlayerShipAny.cs" />
     <Compile Include="Model\GameObjects\Ships\PlayerShipMovable.cs" />
     <Compile Include="Model\GameThingCoordinator.cs" />
-    <Compile Include="Model\IThingFactory.cs" />
     <Compile Include="Model\KeysInfo.cs" />
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Model\ThingBase.cs" />
@@ -90,6 +89,7 @@
     <Compile Include="Network\NetworkStuff.cs" />
     <Compile Include="Network\ThingInfo.cs" />
     <Compile Include="Extensions\ExtensionsObject.cs" />
+    <Compile Include="Overlay.cs" />
     <Compile Include="Physicsish\AlmostPhysics.cs" />
     <Compile Include="Physicsish\Position.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

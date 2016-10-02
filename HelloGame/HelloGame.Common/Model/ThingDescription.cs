@@ -26,7 +26,7 @@ namespace HelloGame.Common.Model
             if (player != null)
             {
                 Type = isHisShip ? "PlayerShipMovable" : "PlayerShipAny";
-                ConstructParams = new object[] { player.Name, player.Physics.Size };
+                ConstructParams = new object[] { player.Name, player.Physics.Size, player.Creator?.Id };
                 return;
             }
 
@@ -34,7 +34,7 @@ namespace HelloGame.Common.Model
             if (big != null)
             {
                 Type = big.GetType().Name;
-                ConstructParams = new object[] { big.Physics.Size };
+                ConstructParams = new object[] { big.Physics.Size, big.Creator?.Id };
                 return;
             }
 
@@ -42,7 +42,7 @@ namespace HelloGame.Common.Model
             if (ai != null)
             {
                 Type = ai.GetType().Name;
-                ConstructParams = new object[] { ai.Name, ai.Physics.Size };
+                ConstructParams = new object[] { ai.Name, ai.Physics.Size, ai.Creator?.Id };
                 return;
             }
 
@@ -50,7 +50,7 @@ namespace HelloGame.Common.Model
             if (lazer != null)
             {
                 Type = lazer.GetType().Name;
-                ConstructParams = null;
+                ConstructParams = new object[] { lazer.Creator?.Id }; 
                 return;
             }
 

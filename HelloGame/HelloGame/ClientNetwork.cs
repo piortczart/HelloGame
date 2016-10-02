@@ -21,6 +21,7 @@ namespace HelloGame.Client
         private readonly ILogger _logger;
         private readonly Timer _sendMeTimer;
         private static readonly TimeSpan PropagateFrequency = TimeSpan.Parse(ConfigurationManager.AppSettings["PropagateFrequencyClient"]);
+        private static readonly int ServerPortNumber = int.Parse(ConfigurationManager.AppSettings["ServerPortNumber"]);
 
         // This is exclusive for the propagate timer thread.
         private readonly HashSet<ThingBase> _thingsSent = new HashSet<ThingBase>();
@@ -72,11 +73,11 @@ namespace HelloGame.Client
             _sendMeTimer.Change(PropagateFrequency, Timeout.InfiniteTimeSpan);
         }
 
-        public void StartConnection(string server, string playerName, CancellationTokenSource cancellation, int port = 49182)
+        public void StartConnection(string serverAddress, string playerName, CancellationTokenSource cancellation)
         {
-            _logger.LogInfo("Starting connection.");
+            _logger.LogInfo($"Starting connection to {serverAddress}:{ServerPortNumber}");
 
-            Connect(server, port);
+            Connect(serverAddress, ServerPortNumber);
             SendMyInfo(playerName);
 
             Task.Run(async () => { await Receive(cancellation.Token); }, cancellation.Token);
@@ -95,27 +96,41 @@ namespace HelloGame.Client
 
         private async Task Receive(CancellationToken token)
         {
-            _logger.LogInfo("Starting receive loop.");
-
-            while (!token.IsCancellationRequested)
+            try
             {
-                NetworkMessage message = await _sender.GetAsync(_stream);
-                _logger.LogInfo($"Got messsage: {message.ToStringFull()}");
+                _logger.LogInfo("Starting receive loop.");
 
-                switch (message.Type)
+                while (!token.IsCancellationRequested)
                 {
-                    case NetworkMessageType.UpdateStuff:
-                        {
-                            List<ThingDescription> stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
-                            foreach (ThingDescription description in stuff)
+                    NetworkMessage message = await _sender.GetAsync(_stream);
+                    //_logger.LogInfo($"Got messsage: {message.ToStringFull()}");
+
+                    switch (message.Type)
+                    {
+                        case NetworkMessageType.UpdateStuff:
                             {
-                                _gameManager.ParseThingDescription(description);
+                                List<ThingDescription> stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
+                                foreach (ThingDescription description in stuff)
+                                {
+                                    _gameManager.ParseThingDescription(description);
+                                }
                             }
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                            break;
+                        case NetworkMessageType.DeadStuff:
+                            {
+                                List<int> deadStuff = message.Payload.DeSerializeJson<List<int>>();
+                                _gameManager.StuffDied(deadStuff);
+                                break;
+                            }
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                 }
+
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError("Server communication error.", exception);
             }
         }
     }

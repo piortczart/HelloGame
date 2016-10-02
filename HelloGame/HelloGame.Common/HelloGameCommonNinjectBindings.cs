@@ -16,10 +16,11 @@ namespace HelloGame.Common
         public override void Load()
         {
             Bind<GameThingCoordinator>().To<GameThingCoordinator>().InSingletonScope();
-            Bind<IThingFactory>().To<ThingFactory>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
+            Bind<ThingFactory>().To<ThingFactory>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
             Bind<GameManager>().To<GameManager>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
             Bind<ModelManager>().To<ModelManager>().InSingletonScope();
             Bind<ILoggerFactory>().To<LoggerFactory>().InSingletonScope().WithConstructorArgument("extraInfo", _isServer ? "Server" : "Client");
+            Bind<Overlay>().To<Overlay>().InSingletonScope();
         }
     }
 }

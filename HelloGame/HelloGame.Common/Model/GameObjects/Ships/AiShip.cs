@@ -9,20 +9,25 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 {
     public class AiShip : DaShip
     {
-        private readonly Limiter _locatePlayerLimiter = new Limiter(TimeSpan.FromSeconds(2));
-
+        private readonly Limiter _locatePlayerLimiter = new Limiter(TimeSpan.FromSeconds(1));
         Real2DVector _playerPointer = new Real2DVector();
 
-        public AiShip(ILogger logger, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null) : base(logger, gameManager, size, name, id)
+        private static readonly ThingSettings Settings = new ThingSettings
+        {
+            Aerodynamism = 0.1m,
+            TimeToLive = TimeSpan.Zero,
+            Mass = 3,
+            RadPerSecond = (decimal)Math.PI,
+            LazerLimit = TimeSpan.FromSeconds(5)
+        };
+
+        public AiShip(ILogger logger, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null, ThingBase creator = null) 
+            : base(logger, gameManager, Settings, size, name, id, creator)
         {
         }
 
         protected override void PaintStuffInternal(Graphics g)
         {
-            //g.DrawLine(ShipPen, Physics.PositionPoint, 
-            //    new Point((int)(Physics.PositionPoint.X + playerPointer.X), (int)(Physics.PositionPoint.Y + playerPointer.Y)));
-
-            //g.DrawString($"Ship angle: {playerPointer.AngleDegree}", font, Brushes.Black, new PointF(155, 295));
         }
 
         protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings)
@@ -32,12 +37,13 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 return;
             }
 
-            if (_locatePlayerLimiter.CanHappen())
+            ThingBase player = otherThings.FirstOrDefault(s => s is PlayerShip);
+            if (player != null)
             {
-                // Locate a ship.
-                ThingBase player = otherThings.FirstOrDefault(s => s is PlayerShip);
-                if (player != null)
+                if (_locatePlayerLimiter.CanHappen())
                 {
+                    // Locate a player's ship.
+
                     // Face him.
                     decimal x = player.Physics.Position.X - Physics.Position.X;
                     decimal y = player.Physics.Position.Y - Physics.Position.Y;
@@ -47,16 +53,20 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                     decimal angleBefore = Physics.Angle;
                     Physics.Angle = _playerPointer.Angle;
 
-                    if (angleBefore != 0 && Physics.Angle < 0.1m)
-                    {
-                        ;
-                    }
-
-                    //PewPew();
+                    PewPew();
                 }
 
+                if (player.Physics.Position.DistanceTo(Physics.Position) > 300)
+                {
+                    int maxSpeed = 3;
+                    Physics.SelfPropelling.Change(Physics.Angle, maxSpeed);
+                }
+                else
+                {
+                    int maxSpeed = -3;
+                    Physics.SelfPropelling.Change(Physics.Angle, maxSpeed);
+                }
             }
-
         }
     }
 }

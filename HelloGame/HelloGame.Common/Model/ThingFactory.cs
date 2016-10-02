@@ -7,7 +7,7 @@ using HelloGame.Common.Model.GameObjects.Ships;
 
 namespace HelloGame.Common.Model
 {
-    public class ThingFactory : IThingFactory
+    public class ThingFactory
     {
         private readonly bool _isServer;
         private readonly GameThingCoordinator _gameManager;
@@ -28,86 +28,95 @@ namespace HelloGame.Common.Model
                     {
                         string name = (string)description.ConstructParams[0];
                         int size = (int)(double)description.ConstructParams[1];
+                        int? creator = (int?)description.ConstructParams[2];
 
-                        return GetPlayerShip(size, description.AlmostPhysics.PositionPoint, name, description.Id);
+                        return GetPlayerShip(size, description.AlmostPhysics.PositionPoint, name, description.Id, _gameManager.GetThingById(creator));
                     }
                 case "PlayerShipMovable":
                     {
                         string name = (string)description.ConstructParams[0];
                         int size = (int)(double)description.ConstructParams[1];
+                        int? creator = (int?)description.ConstructParams[2];
 
-                        return GetPlayerShipMovable(size, description.AlmostPhysics.PositionPoint, name, description.Id);
+                        return GetPlayerShipMovable(size, description.AlmostPhysics.PositionPoint, name, description.Id, _gameManager.GetThingById(creator));
                     }
                 case "AiShip":
                     {
                         string name = (string)description.ConstructParams[0];
                         int size = (int)(double)description.ConstructParams[1];
+                        int? creator = (int?)description.ConstructParams[2];
 
-                        return GetAiShip(size, description.AlmostPhysics.PositionPoint, name, description.Id);
+                        return GetAiShip(size, description.AlmostPhysics.PositionPoint, name, description.Id, _gameManager.GetThingById(creator));
                     }
                 case "BigMass":
                     {
                         int size = (int)(double)description.ConstructParams[0];
+                        int? creator = (int?)description.ConstructParams[1];
 
-                        return GetBigMass(size, description.AlmostPhysics.PositionPoint, description.Id);
+                        return GetBigMass(size, description.AlmostPhysics.PositionPoint, description.Id, _gameManager.GetThingById(creator));
                     }
                 case "LazerBeamPew":
                     {
-                        return GetLazerBeam(description.Id, description.AlmostPhysics.PositionPoint);
+                        // This can be spawned by the player. Server should give it a proper id.
+                        // The id comming from the player can be bad.
+                        // TODO: This can be spawned by the server too!!
+                        int? id = _isServer ? (int?)null : description.Id;
+                        int? creator = (int?)(long?)description.ConstructParams[0];
+                        return GetLazerBeam(id, description.AlmostPhysics.PositionPoint, _gameManager.GetThingById(creator));
                     }
             }
 
             throw new NotImplementedException($"Cannot spawn {description.Type}");
         }
 
-        private ThingBase GetLazerBeam(int? id, Point location)
+        private ThingBase GetLazerBeam(int? id, Point location, ThingBase creator = null)
         {
             if (!_isServer && !id.HasValue)
             {
                 throw new ArgumentException("The identifier is expected in a non-server environment.", nameof(id));
             }
 
-            var lazer = new LazerBeamPew(_logger, null);
+            var lazer = new LazerBeamPew(_logger, creator, id);
             lazer.Spawn(location);
             return lazer;
         }
 
-        public PlayerShipMovable GetPlayerShipMovable(int size, Point location, string name, int? id = null)
+        public PlayerShipMovable GetPlayerShipMovable(int size, Point location, string name, int? id = null, ThingBase creator = null)
         {
             if (!_isServer && !id.HasValue)
             {
                 throw new ArgumentException("The identifier is expected in a non-server environment.", nameof(id));
             }
 
-            var ship = new PlayerShipMovable(_logger, _gameManager, name, size, id);
+            var ship = new PlayerShipMovable(_logger, _gameManager, name, size, id, creator);
             ship.Spawn(location);
             return ship;
         }
 
 
-        public PlayerShipAny GetPlayerShip(int size, Point location, string name, int? id = null)
+        public PlayerShipOther GetPlayerShip(int size, Point location, string name, int? id = null, ThingBase creator = null)
         {
             if (!_isServer && !id.HasValue)
             {
                 throw new ArgumentException("The identifier is expected in a non-server environment.", nameof(id));
             }
 
-            var ship = new PlayerShipAny(_logger, _gameManager, name, size, id);
+            var ship = new PlayerShipOther(_logger, _gameManager, name, size, id, creator);
             ship.Spawn(location);
             return ship;
         }
 
-        public AiShip GetAiShip(int size, Point point, string name, int? id = null)
+        public AiShip GetAiShip(int size, Point point, string name, int? id = null, ThingBase creator = null)
         {
-            var ship = new AiShip(_logger, _gameManager, name, size, id);
+            var ship = new AiShip(_logger, _gameManager, name, size, id, creator);
             ship.Spawn(point);
             return ship;
         }
 
-        public BigMass GetBigMass(int? size = null, Point? point = null, int? id = null)
+        public BigMass GetBigMass(int? size = null, Point? point = null, int? id = null, ThingBase creator = null)
         {
-            BigMass mass = new BigMass(_logger, size ?? MathX.Random.Next(80, 200), id);
-            mass.Spawn(point ?? new Point(MathX.Random.Next(100, 500), MathX.Random.Next(400, 600)));
+            BigMass mass = new BigMass(_logger, size ?? MathX.Random.Next(10, 50), id, creator);
+            mass.Spawn(point ?? new Point(MathX.Random.Next(300, 500), MathX.Random.Next(100, 300)));
             return mass;
         }
     }

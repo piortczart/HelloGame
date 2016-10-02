@@ -14,7 +14,6 @@ namespace HelloGame.Client
         private readonly GameManager _gameManager;
         private readonly CancellationTokenSource _cancellation;
         private readonly KeysInfo _keysMine = new KeysInfo();
-        private readonly EventPerSecond _paintCounter = new EventPerSecond();
         private readonly Font _font = new Font("Courier", 12, GraphicsUnit.Pixel);
         private readonly SynchronizedCollection<LogDetails> _logDetails = new SynchronizedCollection<LogDetails>();
 
@@ -53,10 +52,6 @@ namespace HelloGame.Client
             base.OnPaint(e);
 
             _renderer.PaintStuff(e.Graphics);
-
-            _paintCounter.Add();
-
-            e.Graphics.DrawString($"paints/s: {_paintCounter.GetPerSecond()}", _font, Brushes.Black, new PointF(10, 15));
 
             PaintLogDetails(e.Graphics);
         }

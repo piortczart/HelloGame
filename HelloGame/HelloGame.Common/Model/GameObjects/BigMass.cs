@@ -20,7 +20,7 @@ namespace HelloGame.Common.Model.GameObjects
             return Color.FromArgb(MathX.Random.Next(0, 255), MathX.Random.Next(0, 255), MathX.Random.Next(0, 255));
         }
 
-        public BigMass(ILogger logger, int size, int? id) : base(logger, Settings, id: id)
+        public BigMass(ILogger logger, int size, int? id, ThingBase creator) : base(logger, Settings, creator, id)
         {
             Physics.Size = size;
             Physics.Mass = size * 10000;
@@ -31,7 +31,7 @@ namespace HelloGame.Common.Model.GameObjects
             GetRandom();
         }
 
-        public override void PaintStuff(Graphics g)
+        public override void Render(Graphics g)
         {
             var shipPen = new Pen(Brushes.Red);
 

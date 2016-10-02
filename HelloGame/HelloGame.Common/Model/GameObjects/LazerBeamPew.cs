@@ -7,22 +7,27 @@ namespace HelloGame.Common.Model.GameObjects
 {
     public class LazerBeamPew : ThingBase
     {
+        public bool IsArmed { get; private set; }
+
         private static readonly ThingSettings Settings = new ThingSettings
         {
             Aerodynamism = 0,
             TimeToLive = TimeSpan.FromSeconds(1)
         };
 
-        public LazerBeamPew(ILogger logger, ThingBase creator) : base(logger, Settings, creator)
+        public LazerBeamPew(ILogger logger, ThingBase creator, int? id) : base(logger, Settings, creator, id)
         {
         }
 
         public override void CollidesWith(ThingBase other)
         {
-            Destroy(TimeSpan.Zero);
+            if (IsArmed)
+            {
+                Destroy(TimeSpan.Zero);
+            }
         }
 
-        public override void PaintStuff(Graphics g)
+        public override void Render(Graphics g)
         {
             var pen = new Pen(Brushes.Red);
 
@@ -32,6 +37,10 @@ namespace HelloGame.Common.Model.GameObjects
 
         protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings)
         {
+            if (!IsArmed && Age > TimeSpan.FromSeconds(0.5))
+            {
+                IsArmed = true;
+            }
         }
     }
 }

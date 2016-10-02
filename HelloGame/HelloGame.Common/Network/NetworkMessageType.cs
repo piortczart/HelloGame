@@ -8,6 +8,7 @@ namespace HelloGame.Common.Network
         UpdateStuff,
         Hello,
         MyPosition,
-        PleaseSpawn
+        PleaseSpawn,
+        DeadStuff
     }
 }

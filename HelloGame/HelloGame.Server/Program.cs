@@ -17,7 +17,7 @@ namespace HelloGame.Server
                 try
                 {
                     var cts = new CancellationTokenSource();
-                    ninject.Get<GameServer>().Start(cts);
+                    ninject.Get<GameServer>().Start(cts).Wait();
                 }
                 catch (Exception ex)
                 {

@@ -8,29 +8,23 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 {
     public abstract class DaShip : ThingBase
     {
-        private static readonly ThingSettings Settings = new ThingSettings
-        {
-            Aerodynamism = 0.1m,
-            TimeToLive = TimeSpan.Zero,
-            Mass = 3,
-            RadPerSecond = (decimal)Math.PI
-        };
-
         private readonly ILogger _logger;
-        protected readonly GameThingCoordinator GameManager;
+        protected readonly GameThingCoordinator GameCoordinator;
         public string Name { get; }
         protected readonly Limiter BombLimiter = new Limiter(TimeSpan.FromSeconds(1));
-        protected readonly Limiter LaserLimiter = new Limiter(TimeSpan.FromMilliseconds(200));
-        protected readonly Font Font = new Font("monospace", 12, GraphicsUnit.Pixel);
+        protected readonly Limiter LaserLimiter;
 
-        protected DaShip(ILogger logger, GameThingCoordinator gameManager, decimal size, string name, int? id) : base(logger, Settings, id: id)
+        protected DaShip(ILogger logger, GameThingCoordinator gameCoordinator, ThingSettings settings, decimal size, string name, int? id, ThingBase creator = null)
+            : base(logger, settings, creator, id)
         {
             _logger = logger;
-            GameManager = gameManager;
+            GameCoordinator = gameCoordinator;
             Name = name;
 
+            LaserLimiter = new Limiter(settings.LazerLimit);
+
             Physics.Size = size;
-            Physics.SelfPropelling = new Real2DVector(0.5m);
+            Physics.SelfPropelling = new Real2DVector(5m);
             Physics.Interia = new Real2DVector(5);
         }
 
@@ -38,19 +32,19 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         {
             if (LaserLimiter.CanHappen())
             {
-                var laser = new LazerBeamPew(_logger, this);
+                var laser = new LazerBeamPew(_logger, this, MathX.Random.Next(90,900));
 
-                Real2DVector inertia = Physics.GetDirection(20);
+                Real2DVector inertia = Physics.GetDirection(30);
                 laser.Spawn(Physics.PositionPoint, inertia);
                 laser.Physics.Angle = Physics.Angle;
 
                 if (isKeyBased)
                 {
-                    GameManager.AskServerToSpawn(laser);
+                    GameCoordinator.AskServerToSpawn(laser);
                 }
                 else
                 {
-                    GameManager.UpdateThing(laser);
+                    GameCoordinator.UpdateThing(laser);
                 }
             }
         }
@@ -59,7 +53,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         {
         }
 
-        public override void PaintStuff(Graphics g)
+        public override void Render(Graphics g)
         {
             if (IsDestroyed)
             {
@@ -97,6 +91,11 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
         public override void CollidesWith(ThingBase other)
         {
+            if (this is AiShip && other.Creator is AiShip)
+            {
+                return;
+            }
+
             if (other is Bomb)
             {
                 var bomb = (Bomb)other;
@@ -107,11 +106,13 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             }
             if (other is LazerBeamPew)
             {
-                if (other.Creator == this)
+                var lazer = (LazerBeamPew)other;
+                if (!lazer.IsArmed || other.Creator == this)
                 {
                     return;
                 }
             }
+
 
             Destroy(TimeSpan.FromSeconds(3));
         }

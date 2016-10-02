@@ -5,9 +5,49 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using HelloGame.Common.Logging;
+using HelloGame.Common.Model.GameObjects;
+using System.Collections.Concurrent;
+using HelloGame.Common.Extensions;
 
 namespace HelloGame.Common.Model
 {
+    public class ThreadSafeList<T> : List<T>
+    {
+        protected List<T> _interalList = new List<T>();
+
+        // Other Elements of IList implementation
+
+        public new IEnumerator<T> GetEnumerator()
+        {
+            return Clone().GetEnumerator();
+        }
+
+        protected static object _lock = new object();
+
+        public List<T> Clone()
+        {
+            List<T> newList = new List<T>();
+
+            lock (_lock)
+            {
+                _interalList.ForEach(x => newList.Add(x));
+            }
+
+            return newList;
+        }
+
+        //public new void Remove(T item)
+        //{
+        //    lock (_lock)
+        //    {
+        //        if (_interalList.Contains(item))
+        //        {
+        //            _interalList.Remove(item);
+        //        }
+        //    }
+        //}
+    }
+
     public class ModelManager
     {
         private readonly ILogger _logger;
@@ -16,13 +56,16 @@ namespace HelloGame.Common.Model
         private TimeSpan _lastModelUpdate = TimeSpan.Zero;
         private readonly EventPerSecond _modelUpdateCounter = new EventPerSecond();
         private readonly Thread _modelUpdateThread;
-        private readonly SynchronizedCollection<ThingBase> _things = new SynchronizedCollection<ThingBase>();
+        private readonly ThreadSafeList<ThingBase> _things = new ThreadSafeList<ThingBase>();
+        private readonly ConcurrentQueue<ThingBase> _deadThings = new ConcurrentQueue<ThingBase>();
         private Action _updateModelAction;
+        Overlay _overlay;
 
-        public ModelManager(ILoggerFactory loggerFactory)
+        public ModelManager(ILoggerFactory loggerFactory, Overlay overlay)
         {
             _logger = loggerFactory.CreateLogger(GetType());
             _modelUpdateThread = new Thread(UpdateModel) { IsBackground = true };
+            _overlay = overlay;
         }
 
         public void SetUpdateModelAction(Action action)
@@ -49,7 +92,16 @@ namespace HelloGame.Common.Model
 
         public List<ThingBase> GetThings()
         {
-            return new List<ThingBase>(_things);
+            return _things.ToList();
+        }
+
+        /// <summary>
+        /// Returns all things that have been despawned since last call of this method.
+        /// </summary>
+        /// <returns></returns>
+        public List<ThingBase> GetDeadThings()
+        {
+            return _deadThings.GetAll();
         }
 
         public void StartModelUpdates()
@@ -61,6 +113,8 @@ namespace HelloGame.Common.Model
         {
             while (_modelUpdateThread.IsAlive)
             {
+                _overlay.Update(this);
+
                 _modelUpdateCounter.Add();
 
                 TimeSpan now = _stopwatch.Elapsed;
@@ -68,19 +122,17 @@ namespace HelloGame.Common.Model
                 {
                     TimeSpan sinceLast = now - _lastModelUpdate;
 
-                    List<ThingBase> nonModifiable = _things.OrderBy(t=>t.Id).ToList();
+                    List<ThingBase> nonModifiable = _things.ToList().OrderBy(t => t.Id).ToList();
                     Parallel.ForEach(nonModifiable, item =>
                     {
                         item.UpdateModel(sinceLast, nonModifiable);
                         if (item.IsTimeToElapse)
                         {
-                            if (_things.Contains(item))
-                            {
-                                _things.Remove(item);
-                            }
+                            _things.Remove(item);
+                            _deadThings.Enqueue(item);
                         }
                     });
-                    _collidor.DetectCollisions(_things);
+                    _collidor.DetectCollisions(_things.ToList().Where(t=>t != null).ToList());
                 }
                 _lastModelUpdate = now;
 

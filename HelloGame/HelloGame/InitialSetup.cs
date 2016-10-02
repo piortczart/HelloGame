@@ -3,6 +3,7 @@ using System.Threading;
 using System.Windows.Forms;
 using HelloGame.Client.Properties;
 using HelloGame.Common.Model;
+using System.Threading.Tasks;
 
 namespace HelloGame.Client
 {
@@ -19,8 +20,7 @@ namespace HelloGame.Client
 
             tbServerName.Text = Settings.Default.ServerName;
             tbPlayerName.Text = Settings.Default.PlayerName;
-
-            cbIsLocal.Checked = true;
+            cbCreateLocalServer.Checked = Settings.Default.SpawnServer;
         }
 
         private void btnPlay_Click(object sender, EventArgs e)
@@ -33,16 +33,18 @@ namespace HelloGame.Client
 
             Settings.Default.ServerName = tbServerName.Text;
             Settings.Default.PlayerName = tbPlayerName.Text;
+            Settings.Default.SpawnServer = cbCreateLocalServer.Checked;
             Settings.Default.Save();
 
-            int port = 12152;
-
-            if (cbIsLocal.Checked)
+            if (cbCreateLocalServer.Checked)
             {
                 try
                 {
                     var cts = new CancellationTokenSource();
-                    Server.Start(cts, port);
+                    Task.Run(async () => { await Server.Start(cts); })
+                        .ContinueWith(t => {
+                            ;
+                        }, TaskContinuationOptions.OnlyOnFaulted);
                 }
                 catch (Exception exception)
                 {
@@ -53,7 +55,7 @@ namespace HelloGame.Client
 
             try
             {
-                ClientNetwork.StartConnection(Settings.Default.ServerName, Settings.Default.PlayerName, Cancellation, port);
+                ClientNetwork.StartConnection(Settings.Default.ServerName, Settings.Default.PlayerName, Cancellation);
             }
             catch (Exception exception)
             {
@@ -67,11 +69,11 @@ namespace HelloGame.Client
 
         private void cbIsLocal_CheckedChanged(object sender, EventArgs e)
         {
-            if (cbIsLocal.Checked)
+            if (cbCreateLocalServer.Checked)
             {
                 tbServerName.Text = "localhost";
             }
-            tbServerName.Enabled = !cbIsLocal.Checked;
+            tbServerName.Enabled = !cbCreateLocalServer.Checked;
         }
     }
 }

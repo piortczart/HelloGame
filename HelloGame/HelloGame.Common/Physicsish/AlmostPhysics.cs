@@ -46,9 +46,15 @@ namespace HelloGame.Common.Physicsish
             Size = size;
         }
 
-        public void SetPosition(Point point)
+        public void SetInitialPosition(Point point)
         {
             Position = new Position(point.X, point.Y);
+        }
+
+        public void PositionDelta(decimal X, decimal Y)
+        {
+            Position.X += X;
+            Position.Y += Y;
         }
 
         public Real2DVector GetDirection(decimal bigness)
@@ -64,8 +70,7 @@ namespace HelloGame.Common.Physicsish
 
         public void Update(AlmostPhysics other, ThingBase.UpdateLocationSettings settings)
         {
-            Position.X = other.Position.X;
-            Position.Y = other.Position.Y;
+            Position = new Position(other.Position.X, other.Position.Y);
 
             if (settings != ThingBase.UpdateLocationSettings.ExcludeAngle)
             {
