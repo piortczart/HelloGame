@@ -72,49 +72,57 @@ namespace HelloGame.Common.Model
                 UpdateElapsing();
 
                 if (!IsTimeToElapse)
-                {
+                {           
                     // Update stuff like propelling.
                     UpdateModelInternal(timeSinceLastUpdate, otherThings);
 
-                    if (CanBeMoved)
+                    NewMethod(timeSinceLastUpdate, otherThings);
+
+                    // Too far away! DIE!
+                    if (Math.Abs(Physics.Position.X) > 100000 || Math.Abs(Physics.Position.Y) > 100000)
                     {
-                        var before = new Position(Physics.Position.X, Physics.Position.Y);
-
-                        decimal timeBoundary = (decimal)(timeSinceLastUpdate.TotalMilliseconds / 100);
-
-                        // Add the propeller force to the interia.
-                        Physics.Interia.Add(Physics.SelfPropelling.GetScaled(timeBoundary));
-
-                        // Drag changes the inertia?
-                        Physics.Drag = Physics.Interia.GetOpposite().GetScaled(Physics.Aerodynamism * 0.5m * timeBoundary);
-                        Physics.Interia.Add(Physics.Drag);
-
-                        Real2DVector totalForce = Physics.TotalForce;
-
-                        // No mass? No gravity. Think lazer.
-                        if (Physics.Mass == 0)
-                        {
-                            // No mass? 
-                            Physics.PositionDelta(totalForce.X * timeBoundary, totalForce.Y * timeBoundary);
-                        }
-                        else
-                        {
-                            // Calculate gravity.
-                            Physics.Gravity = CalculateGravity(otherThings);
-                            totalForce.Add(Physics.Gravity);
-
-                            // Move the object.
-                            decimal newX = totalForce.X / Physics.Mass * timeBoundary;
-                            decimal newY = totalForce.Y / Physics.Mass * timeBoundary;
-                            Physics.PositionDelta(newX, newY);
-                        }
-
-                        // Too far away! DIE!
-                        if (Math.Abs(Physics.Position.X) > 100000 || Math.Abs(Physics.Position.Y) > 100000)
-                        {
-                            Despawn();
-                        }
+                        Despawn();
                     }
+                }
+            }
+        }
+
+        private AlmostPhysics NewMethod(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)
+        {
+
+            var result = new AlmostPhysics(1);
+            
+            if (CanBeMoved)
+            {
+                var before = new Position(Physics.Position.X, Physics.Position.Y);
+
+                decimal timeBoundary = (decimal)(timeSinceLastUpdate.TotalMilliseconds / 100);
+
+                // Add the propeller force to the interia.
+                Physics.Interia.Add(Physics.SelfPropelling.GetScaled(timeBoundary));
+
+                // Drag changes the inertia?
+                Physics.Drag = Physics.Interia.GetOpposite().GetScaled(Physics.Aerodynamism * 0.5m * timeBoundary);
+                Physics.Interia.Add(Physics.Drag);
+
+                Real2DVector totalForce = Physics.TotalForce;
+
+                // No mass? No gravity. Think lazer.
+                if (Physics.Mass == 0)
+                {
+                    // No mass? 
+                    Physics.PositionDelta(totalForce.X * timeBoundary, totalForce.Y * timeBoundary);
+                }
+                else
+                {
+                    // Calculate gravity.
+                    Physics.Gravity = CalculateGravity(otherThings);
+                    totalForce.Add(Physics.Gravity);
+
+                    // Move the object.
+                    decimal newX = totalForce.X / Physics.Mass * timeBoundary;
+                    decimal newY = totalForce.Y / Physics.Mass * timeBoundary;
+                    Physics.PositionDelta(newX, newY);
                 }
             }
         }

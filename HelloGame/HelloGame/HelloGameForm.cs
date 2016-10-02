@@ -2,9 +2,9 @@
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
-using HelloGame.Common;
 using HelloGame.Common.Logging;
 using HelloGame.Common.Model;
+using System;
 
 namespace HelloGame.Client
 {
@@ -35,9 +35,18 @@ namespace HelloGame.Client
 
             gameManager.StartGame();
 
-            gameManager.SetUpdateModelAction(() => { this.Invoke(Refresh); });
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+
+            timer.Interval = 14;
+            timer.Tick += new EventHandler(timer_Tick);
+            timer.Start();
         }
 
+        void timer_Tick(object sender, EventArgs e)
+        {
+            this.Invoke(Refresh);
+        }
+        
         private void UpdateLogDisplay(LogDetails logDetails)
         {
             _logDetails.Add(logDetails);
