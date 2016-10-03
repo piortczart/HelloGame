@@ -2,6 +2,7 @@
 using System.Drawing;
 using HelloGame.Common.Model;
 using HelloGame.Common;
+using System.Diagnostics;
 
 namespace HelloGame.Client
 {

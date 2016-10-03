@@ -21,6 +21,7 @@ namespace HelloGame.Common.Model
         private readonly ThreadSafeList<ThingBase> _things = new ThreadSafeList<ThingBase>();
         private readonly ConcurrentQueue<ThingBase> _deadThings = new ConcurrentQueue<ThingBase>();
         private readonly List<Action> _updateModelAction = new List<Action>();
+        public EventPerSecond CollisionCalculations { get { return _collidor.CollisoinsCounter; } }
         Overlay _overlay;
 
         public ModelManager(ILoggerFactory loggerFactory, Overlay overlay)
