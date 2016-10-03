@@ -97,23 +97,23 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 return;
             }
 
-            if (other is Bomb)
+            Bomb bomb = other as Bomb;
+            if (bomb != null)
             {
-                var bomb = (Bomb)other;
                 if (!bomb.IsArmed)
                 {
                     return;
                 }
             }
-            if (other is LazerBeamPew)
+
+            LazerBeamPew pew = other as LazerBeamPew;
+            if (pew != null)
             {
-                var lazer = (LazerBeamPew)other;
-                if (!lazer.IsArmed || other.Creator == this)
+                if (pew.Creator == this)
                 {
                     return;
                 }
             }
-
 
             Destroy(TimeSpan.FromSeconds(3));
         }

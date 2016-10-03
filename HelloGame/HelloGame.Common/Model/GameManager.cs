@@ -68,6 +68,11 @@ namespace HelloGame.Common.Model
 
         public PlayerShipOther AddPlayer(string name)
         {
+            if (!_isServer)
+            {
+                throw new Exception("Only server can add players.");
+            }
+
             _logger.LogInfo($"Adding player: {name}");
             PlayerShipOther newShip = _thingFactory.GetPlayerShip(15, new Point(100, 100), name);
             ModelManager.UpdateThing(newShip);
@@ -76,6 +81,11 @@ namespace HelloGame.Common.Model
 
         private void AddAiShip()
         {
+            if (!_isServer)
+            {
+                throw new Exception("Only server can add AI ships.");
+            }
+
             _logger.LogInfo("Adding AI ship.");
             Point location = MathX.Random.GetRandomPoint(new Rectangle(300, 300, 300, 200));
             AiShip newShip = _thingFactory.GetAiShip(15, location, "Stupid AI");

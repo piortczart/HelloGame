@@ -2,6 +2,9 @@
 
 namespace HelloGame.Common.MathStuff
 {
+    /// <summary>
+    /// TODO: This class can be accessed via multiple threads! Needs some synchro!
+    /// </summary>
     public class Real2DVector
     {
         public decimal X { get; set; }

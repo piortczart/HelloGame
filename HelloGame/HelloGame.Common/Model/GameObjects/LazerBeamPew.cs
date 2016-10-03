@@ -7,8 +7,6 @@ namespace HelloGame.Common.Model.GameObjects
 {
     public class LazerBeamPew : ThingBase
     {
-        public bool IsArmed { get; private set; }
-
         private static readonly ThingSettings Settings = new ThingSettings
         {
             Aerodynamism = 0,
@@ -21,10 +19,7 @@ namespace HelloGame.Common.Model.GameObjects
 
         public override void CollidesWith(ThingBase other)
         {
-            if (IsArmed)
-            {
-                Destroy(TimeSpan.Zero);
-            }
+            Destroy(TimeSpan.Zero);
         }
 
         protected override void Render(Graphics g)
@@ -37,10 +32,6 @@ namespace HelloGame.Common.Model.GameObjects
 
         protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings)
         {
-            if (!IsArmed && Age > TimeSpan.FromSeconds(0.5))
-            {
-                IsArmed = true;
-            }
         }
     }
 }

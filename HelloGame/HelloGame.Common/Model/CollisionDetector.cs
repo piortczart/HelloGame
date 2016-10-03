@@ -1,12 +1,10 @@
-﻿using HelloGame.Common.Model.GameObjects;
-using HelloGame.Common.Model.GameObjects.Ships;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace HelloGame.Common.Model
 {
     public class CollisionDetector
     {
-        public EventPerSecond CollisoinsCounter = new EventPerSecond();
+        public readonly EventPerSecond CollisoinsCounter = new EventPerSecond();
 
         public void DetectCollisions(List<ThingBase> things)
         {

@@ -76,7 +76,7 @@ namespace HelloGame.Common.Model
                     // Update stuff like propelling.
                     UpdateModelInternal(timeSinceLastUpdate, otherThings);
 
-                    NewMethod(timeSinceLastUpdate, otherThings);
+                    UpdatePhysics(timeSinceLastUpdate, otherThings);
 
                     // Too far away! DIE!
                     if (Math.Abs(Physics.Position.X) > 100000 || Math.Abs(Physics.Position.Y) > 100000)
@@ -87,15 +87,10 @@ namespace HelloGame.Common.Model
             }
         }
 
-        private AlmostPhysics NewMethod(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)
+        private void UpdatePhysics(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)
         {
-
-            var result = new AlmostPhysics(1);
-            
             if (CanBeMoved)
             {
-                var before = new Position(Physics.Position.X, Physics.Position.Y);
-
                 decimal timeBoundary = (decimal)(timeSinceLastUpdate.TotalMilliseconds / 100);
 
                 // Add the propeller force to the interia.
