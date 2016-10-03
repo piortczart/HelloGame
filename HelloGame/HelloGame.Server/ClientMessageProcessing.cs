@@ -46,10 +46,11 @@ namespace HelloGame.Server
 
         private async Task HandleClientComm(TcpClient client, CancellationToken cancellation)
         {
+            NetworkStream clientStream = null;
             try
             {
                 TcpClient tcpClient = client;
-                NetworkStream clientStream = tcpClient.GetStream();
+                clientStream = tcpClient.GetStream();
                 Clients[clientStream] = null;
 
                 // Deserialize the stream into object
@@ -63,6 +64,11 @@ namespace HelloGame.Server
             catch (Exception exception)
             {
                 _logger.LogError("Handling client communication failed.", exception);
+                if (clientStream != null)
+                {
+                    PlayerShipOther ship = Clients[clientStream];
+                    ship?.Despawn();
+                }
                 client.Close();
             }
         }
