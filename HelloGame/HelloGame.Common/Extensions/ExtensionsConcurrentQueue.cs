@@ -5,15 +5,13 @@ namespace HelloGame.Common.Extensions
 {
     public static class ExtensionsConcurrentQueue
     {
-        public static List<TQueued> GetAll<TQueued>(this ConcurrentQueue<TQueued> queue)
+        public static IEnumerable<TQueued> GetAll<TQueued>(this ConcurrentQueue<TQueued> queue)
         {
-            var result = new List<TQueued>();
             TQueued currentItem;
             while (queue.TryDequeue(out currentItem))
             {
-                result.Add(currentItem);
+                yield return currentItem;
             }
-            return result;
         }
     }
 }

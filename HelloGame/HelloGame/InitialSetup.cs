@@ -20,7 +20,7 @@ namespace HelloGame.Client
 
             tbServerName.Text = Settings.Default.ServerName;
             tbPlayerName.Text = Settings.Default.PlayerName;
-            cbCreateLocalServer.Checked = Settings.Default.SpawnServer;
+            cbCreateServer.Checked = Settings.Default.SpawnServer;
         }
 
         private void btnPlay_Click(object sender, EventArgs e)
@@ -33,16 +33,17 @@ namespace HelloGame.Client
 
             Settings.Default.ServerName = tbServerName.Text;
             Settings.Default.PlayerName = tbPlayerName.Text;
-            Settings.Default.SpawnServer = cbCreateLocalServer.Checked;
+            Settings.Default.SpawnServer = cbCreateServer.Checked;
             Settings.Default.Save();
 
-            if (cbCreateLocalServer.Checked)
+            if (cbCreateServer.Checked)
             {
                 try
                 {
                     var cts = new CancellationTokenSource();
                     Task.Run(async () => { await Server.Start(cts); })
-                        .ContinueWith(t => {
+                        .ContinueWith(t =>
+                        {
                             ;
                         }, TaskContinuationOptions.OnlyOnFaulted);
                 }
@@ -53,27 +54,35 @@ namespace HelloGame.Client
                 }
             }
 
-            try
+            if (cbLocalOnly.Checked)
             {
-                ClientNetwork.StartConnection(Settings.Default.ServerName, Settings.Default.PlayerName, Cancellation);
+                // ?
+                GameManager.StartGame();
+                GameManager.AddPlayer(Settings.Default.PlayerName);
             }
-            catch (Exception exception)
+            else
             {
-                lbLog.Text = "Connecting to server failed: " + exception.Message;
+                try
+                {
+                    ClientNetwork.StartConnection(Settings.Default.ServerName, Settings.Default.PlayerName, Cancellation);
+                }
+                catch (Exception exception)
+                {
+                    lbLog.Text = "Connecting to server failed: " + exception.Message;
+                }
+                lbLog.Text = "We are in!";
             }
-
-            lbLog.Text = "We are in!";
 
             ((Form)this.TopLevelControl).Close();
         }
 
         private void cbIsLocal_CheckedChanged(object sender, EventArgs e)
         {
-            if (cbCreateLocalServer.Checked)
+            if (cbCreateServer.Checked)
             {
                 tbServerName.Text = "localhost";
             }
-            tbServerName.Enabled = !cbCreateLocalServer.Checked;
+            tbServerName.Enabled = !cbCreateServer.Checked;
         }
     }
 }

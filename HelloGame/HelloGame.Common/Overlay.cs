@@ -13,7 +13,7 @@ namespace HelloGame.Common
 
         internal void Update(ModelManager modelManager)
         {
-            _thingsCount = modelManager.GetThings().Count;
+            _thingsCount = modelManager.Things.Count;
             collisionCalculations = (int)modelManager.CollisionCalculations.GetPerSecond();
         }
 

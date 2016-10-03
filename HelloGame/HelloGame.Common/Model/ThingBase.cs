@@ -42,7 +42,13 @@ namespace HelloGame.Common.Model
             Id = id ?? Interlocked.Add(ref _highestId, 1);
         }
 
+        /// <summary>
+        /// Be aware, this is called by the ModelUpdate thread.
+        /// </summary>
         protected abstract void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings);
+        /// <summary>
+        /// Be aware, this is called by the GUI thread (WinForms Timer)
+        /// </summary>
         protected abstract void Render(Graphics g);
         public abstract void CollidesWith(ThingBase other);
 
@@ -61,18 +67,21 @@ namespace HelloGame.Common.Model
 
         protected void Destroy(TimeSpan elapseIn)
         {
-            IsDestroyed = true;
-            ElapseIn(elapseIn);
+            lock (_modelSynchronizer)
+            {
+                IsDestroyed = true;
+                ElapseIn(elapseIn); 
+            }
         }
 
-        public void UpdateModel(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)
+        public void UpdateModel(TimeSpan timeSinceLastUpdate, IReadOnlyCollection<ThingBase> otherThings)
         {
             lock (_modelSynchronizer)
             {
                 UpdateElapsing();
 
                 if (!IsTimeToElapse)
-                {           
+                {
                     // Update stuff like propelling.
                     UpdateModelInternal(timeSinceLastUpdate, otherThings);
 
@@ -87,7 +96,7 @@ namespace HelloGame.Common.Model
             }
         }
 
-        private void UpdatePhysics(TimeSpan timeSinceLastUpdate, List<ThingBase> otherThings)
+        private void UpdatePhysics(TimeSpan timeSinceLastUpdate, IReadOnlyCollection<ThingBase> otherThings)
         {
             if (CanBeMoved)
             {
@@ -149,13 +158,20 @@ namespace HelloGame.Common.Model
 
         public decimal DistanceTo(ThingBase another)
         {
-            return Physics.Position.DistanceTo(another.Physics.Position) - ((Physics.Size + another.Physics.Size) / 2);
+            lock (_modelSynchronizer)
+            {
+                return Physics.Position.DistanceTo(another.Physics.Position) - ((Physics.Size + another.Physics.Size) / 2); 
+            }
         }
 
         public void Spawn(Point where, Real2DVector initialInertia = null)
         {
-            Physics.SetInitialPosition(where);
-            Physics.Interia = initialInertia ?? new Real2DVector();
+            lock (_modelSynchronizer)
+            {
+                Physics.SetInitialPosition(where);
+                Physics.Interia = initialInertia ?? new Real2DVector();
+
+            }
         }
 
         public void UpdateLocation(ThingBase otherThing)

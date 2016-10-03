@@ -8,9 +8,17 @@ namespace HelloGame.Common.Network
     {
         readonly BinaryFormatter _formatter = new BinaryFormatter();
 
-        public void Send(NetworkMessage message, Stream stream)
+        public bool Send(NetworkMessage message, Stream stream)
         {
-            _formatter.Serialize(stream, message);
+            try
+            {
+                _formatter.Serialize(stream, message);
+                return true;
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
         }
 
         public NetworkMessage Get(Stream stream)

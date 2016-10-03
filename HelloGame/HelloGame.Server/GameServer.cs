@@ -42,20 +42,23 @@ namespace HelloGame.Server
             _logger.LogInfo("Starting the propagate timer.");
             _propagateTimer = new Timer(state => { Propagate(); }, null, PropagateFrequency, Timeout.InfiniteTimeSpan);
 
-            _logger.LogInfo("Starting the listen thread.");
+            _logger.LogInfo("Starting the listen thread. This operation will block (if awaited on).");
             await Task.Run(() => { _clientMessageProcessing.Process(cancellationTokenSource.Token); }, cancellationTokenSource.Token);
         }
 
         private void Propagate()
         {
-            _logger.LogInfo($"Propagating. Number of things: {_gameManager.ModelManager.GetThings().Count} (ids: {String.Join(",", _gameManager.ModelManager.GetThings().Select(t => t.Id + "_" + t.GetType().Name))})");
+            IReadOnlyCollection<ThingBase> things = _gameManager.ModelManager.Things.GetThingsReadOnly();
 
-            SendUpdateMessage(_gameManager.ModelManager.GetThings());
+            string thingIds = string.Join(",", things.Select(t => t.Id + "_" + t.GetType().Name));
+            _logger.LogInfo($"Propagating. Number of things: {things.Count} (ids: {thingIds})");
+
+            SendUpdateMessage(things);
 
             _propagateTimer.Change(PropagateFrequency, Timeout.InfiniteTimeSpan);
         }
 
-        private void SendUpdateMessage(List<ThingBase> things)
+        private void SendUpdateMessage(IReadOnlyCollection<ThingBase> things)
         {
             foreach (var client in _clientMessageProcessing.Clients)
             {
@@ -68,7 +71,11 @@ namespace HelloGame.Server
                     Payload = things.Select(t => new ThingDescription(t, t == ship)).SerializeJson()
                 };
 
-                _sender.Send(message1, networkStream);
+                // Try to send a message, do not continue if there was an error.
+                if (!_clientMessageProcessing.SendDisconnectOnError(message1, networkStream))
+                {
+                    continue;
+                }
 
                 List<int> deadThings = _gameManager.ModelManager.GetDeadThings().Select(t => t.Id).ToList();
                 if (deadThings.Any())
@@ -79,10 +86,13 @@ namespace HelloGame.Server
                         Payload = deadThings.SerializeJson()
                     };
 
-                    _sender.Send(message2, networkStream);
+                    // Try to send a message, do not continue if there was an error.
+                    if (!_clientMessageProcessing.SendDisconnectOnError(message2, networkStream))
+                    {
+                        continue;
+                    }
                 }
             }
         }
-
     }
 }

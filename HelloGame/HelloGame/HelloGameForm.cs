@@ -14,7 +14,7 @@ namespace HelloGame.Client
         private readonly GameManager _gameManager;
         private readonly CancellationTokenSource _cancellation;
         private readonly KeysInfo _keysMine = new KeysInfo();
-        private readonly Font _font = new Font("Courier", 12, GraphicsUnit.Pixel);
+        private readonly Font _font = new Font(FontFamily.GenericMonospace, 12);
         private readonly SynchronizedCollection<LogDetails> _logDetails = new SynchronizedCollection<LogDetails>();
 
         public HelloGameForm(Renderer renderer, InitialSetupForm setupForm, GameManager gameManager, ILoggerFactory loggerFactory, CancellationTokenSource cancellation, bool showInitialForm)
@@ -35,18 +35,14 @@ namespace HelloGame.Client
 
             gameManager.StartGame();
 
-            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
-
-            timer.Interval = 14;
-            timer.Tick += new EventHandler(timer_Tick);
+            var timer = new System.Windows.Forms.Timer
+            {
+                Interval = 14
+            };
+            timer.Tick += new EventHandler((sender,args)=> { this.Invoke(Refresh); });
             timer.Start();
         }
 
-        void timer_Tick(object sender, EventArgs e)
-        {
-            this.Invoke(Refresh);
-        }
-        
         private void UpdateLogDisplay(LogDetails logDetails)
         {
             _logDetails.Add(logDetails);

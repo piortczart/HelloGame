@@ -8,7 +8,7 @@ namespace HelloGame.Common.Model
         public TimeSpan Age => DateTime.Now - SpawnedAt;
         public bool IsTimeToElapse { get; private set; }
         public TimeSpan TimeToLive { get; private set; }
-        public double AgePercentage => 100 * Age.TotalMilliseconds/ TimeToLive.TotalMilliseconds;
+        public double AgePercentage => 100 * Age.TotalMilliseconds / TimeToLive.TotalMilliseconds;
 
         protected ElapsingThing(TimeSpan timeToLive)
         {

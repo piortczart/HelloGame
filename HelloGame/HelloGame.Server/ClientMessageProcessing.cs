@@ -34,6 +34,7 @@ namespace HelloGame.Server
             _tcpListener.Start();
         }
 
+
         public void Process(CancellationToken cancellation)
         {
             while (!cancellation.IsCancellationRequested)
@@ -93,5 +94,29 @@ namespace HelloGame.Server
             }
         }
 
+        /// <summary>
+        /// Attempts to send the message to the client, returns true on success, false on error.
+        /// Disconnects the user on error. Despawns the ship.
+        /// </summary>
+        public bool SendDisconnectOnError(NetworkMessage message, NetworkStream stream)
+        {
+            bool isSuccess = _transciever.Send(message, stream);
+            if (!isSuccess)
+            {
+                Disconnect(stream);
+            }
+            return isSuccess;
+        }
+
+        private void Disconnect(NetworkStream client)
+        {
+            PlayerShipOther ship;
+            // Remove from the clients list.
+            if (Clients.TryRemove(client, out ship))
+            {
+                // Despawn the ship.
+                ship.Despawn();
+            }
+        }
     }
 }

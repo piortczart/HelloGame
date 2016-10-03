@@ -1,19 +1,17 @@
-﻿using System.Collections.Generic;
-
-namespace HelloGame.Common.Model
+﻿namespace HelloGame.Common.Model
 {
     public class CollisionDetector
     {
         public readonly EventPerSecond CollisoinsCounter = new EventPerSecond();
 
-        public void DetectCollisions(List<ThingBase> things)
+        public void DetectCollisions(ThingBase[] things)
         {
             CollisoinsCounter.Add();
 
-            for (int i = 0; i < things.Count; i++)
+            for (int i = 0; i < things.Length; i++)
             {
                 ThingBase thing1 = things[i];
-                for (int j = i + 1; j < things.Count; j++)
+                for (int j = i + 1; j < things.Length; j++)
                 {
                     ThingBase thing2 = things[j];
 

@@ -18,14 +18,17 @@ namespace HelloGame.Common.Model
         private TimeSpan _lastModelUpdate = TimeSpan.Zero;
         private readonly EventPerSecond _modelUpdateCounter = new EventPerSecond();
         private readonly Thread _modelUpdateThread;
-        private readonly ThreadSafeList<ThingBase> _things = new ThreadSafeList<ThingBase>();
+        private readonly ThingsList _things = new ThingsList();
         private readonly ConcurrentQueue<ThingBase> _deadThings = new ConcurrentQueue<ThingBase>();
         private readonly List<Action> _updateModelAction = new List<Action>();
         public EventPerSecond CollisionCalculations => _collidor.CollisoinsCounter;
         private readonly Overlay _overlay;
+        public ThingsList Things { get { return _things; } }
+        private readonly bool _isServer;
 
-        public ModelManager(ILoggerFactory loggerFactory, Overlay overlay)
+        public ModelManager(ILoggerFactory loggerFactory, Overlay overlay, bool isServer)
         {
+            _isServer = isServer;
             _logger = loggerFactory.CreateLogger(GetType());
             _modelUpdateThread = new Thread(UpdateModel) { IsBackground = true };
             _overlay = overlay;
@@ -36,29 +39,20 @@ namespace HelloGame.Common.Model
             _updateModelAction.Add(action);
         }
 
-        public void UpdateThing(ThingBase thingBase)
+        public void AddOrUpdateThing(ThingBase thingBase)
         {
-            ThingBase existing = _things.SingleOrDefault(t => t.Id == thingBase.Id);
-            if (existing == null)
+            ThingBase alreadyExisting = _things.AddIfMissing(thingBase);
+            if (alreadyExisting != null)
             {
-                _things.Add(thingBase);
+                alreadyExisting.UpdateLocation(thingBase);
             }
-            else
-            {
-                existing.UpdateLocation(thingBase);
-            }
-        }
-
-        public List<ThingBase> GetThings()
-        {
-            return _things.ToList();
         }
 
         /// <summary>
         /// Returns all things that have been despawned since last call of this method.
         /// </summary>
         /// <returns></returns>
-        public List<ThingBase> GetDeadThings()
+        public IEnumerable<ThingBase> GetDeadThings()
         {
             return _deadThings.GetAll();
         }
@@ -72,7 +66,11 @@ namespace HelloGame.Common.Model
         {
             while (_modelUpdateThread.IsAlive)
             {
-                _overlay.Update(this);
+                if (!_isServer)
+                {
+                    // Overlay only needed in client.
+                    _overlay.Update(this);
+                }
 
                 _modelUpdateCounter.Add();
 
@@ -81,17 +79,39 @@ namespace HelloGame.Common.Model
                 {
                     TimeSpan sinceLast = now - _lastModelUpdate;
 
-                    List<ThingBase> nonModifiable = _things.ToList().OrderBy(t => t.Id).ToList();
-                    Parallel.ForEach(nonModifiable, item =>
+                    IReadOnlyCollection<ThingBase> things = _things.GetThingsReadOnly();
+                    foreach (var thing in things)
                     {
-                        item.UpdateModel(sinceLast, nonModifiable);
-                        if (item.IsTimeToElapse)
+                        // Perform the model update.
+                        thing.UpdateModel(sinceLast, things);
+
+                        // Despawn the thing if it should elapse.
+                        if (thing.IsTimeToElapse)
                         {
-                            _things.Remove(item);
-                            _deadThings.Enqueue(item);
+                            _things.Remove(thing);
+                            _deadThings.Enqueue(thing);
                         }
-                    });
-                    _collidor.DetectCollisions(_things.ToList().Where(t => t != null).ToList());
+                    }
+
+                    //Parallel.ForEach(things,
+                    //    new ParallelOptions
+                    //    {
+                    //        MaxDegreeOfParallelism = Environment.ProcessorCount
+                    //    },
+                    //    thing =>
+                    //    {
+                    //        // Perform the model update.
+                    //        thing.UpdateModel(sinceLast, things);
+
+                    //        // Despawn the thing if it should elapse.
+                    //        if (thing.IsTimeToElapse)
+                    //        {
+                    //            _things.Remove(thing);
+                    //            _deadThings.Enqueue(thing);
+                    //        }
+                    //    });
+
+                    _collidor.DetectCollisions(_things.GetThingsArray());
                 }
                 _lastModelUpdate = now;
 

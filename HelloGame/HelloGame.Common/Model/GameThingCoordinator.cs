@@ -13,8 +13,6 @@ namespace HelloGame.Common.Model
         private Action<ThingBase> _askToSpawnAction;
         private Action<ThingBase> _updateThingAction;
 
-        public int ThingsCount { get { return _model.GetThings().Count; } }
-
         public GameThingCoordinator(ModelManager model)
         {
             _model = model;
@@ -26,7 +24,7 @@ namespace HelloGame.Common.Model
             {
                 return null;
             }
-            return _model.GetThings().FirstOrDefault(t=>t.Id == id);
+            return _model.Things.GetById(id.Value);
         }
 
         public void SetActions(Action<ThingBase> askToSpawn, Action<ThingBase> updateThing)

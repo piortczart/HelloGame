@@ -2,7 +2,6 @@
 using System.Drawing;
 using HelloGame.Common.Model;
 using HelloGame.Common;
-using System.Diagnostics;
 
 namespace HelloGame.Client
 {
@@ -20,7 +19,7 @@ namespace HelloGame.Client
 
         public void PaintStuff(Graphics graphics)
         {
-            foreach (ThingBase item in _modelManager.GetThings())
+            foreach (ThingBase item in _modelManager.Things.GetThingsReadOnly())
             {
                 if (item != null)
                     item.RenderBase(graphics);

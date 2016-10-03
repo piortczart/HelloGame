@@ -31,16 +31,17 @@
             this.btnPlay = new System.Windows.Forms.Button();
             this.tbServerName = new System.Windows.Forms.TextBox();
             this.tbPlayerName = new System.Windows.Forms.TextBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.lbLog = new System.Windows.Forms.Label();
-            this.cbCreateLocalServer = new System.Windows.Forms.CheckBox();
+            this.cbCreateServer = new System.Windows.Forms.CheckBox();
+            this.cbLocalOnly = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnPlay
             // 
-            this.btnPlay.Location = new System.Drawing.Point(133, 61);
+            this.btnPlay.Location = new System.Drawing.Point(200, 94);
+            this.btnPlay.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnPlay.Name = "btnPlay";
-            this.btnPlay.Size = new System.Drawing.Size(81, 38);
+            this.btnPlay.Size = new System.Drawing.Size(122, 58);
             this.btnPlay.TabIndex = 0;
             this.btnPlay.Text = "Go!";
             this.btnPlay.UseVisualStyleBackColor = true;
@@ -48,58 +49,66 @@
             // 
             // tbServerName
             // 
-            this.tbServerName.Location = new System.Drawing.Point(3, 3);
+            this.tbServerName.Location = new System.Drawing.Point(4, 5);
+            this.tbServerName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tbServerName.Name = "tbServerName";
-            this.tbServerName.Size = new System.Drawing.Size(211, 20);
+            this.tbServerName.Size = new System.Drawing.Size(314, 26);
             this.tbServerName.TabIndex = 1;
             // 
             // tbPlayerName
             // 
-            this.tbPlayerName.Location = new System.Drawing.Point(3, 29);
+            this.tbPlayerName.Location = new System.Drawing.Point(4, 45);
+            this.tbPlayerName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tbPlayerName.Name = "tbPlayerName";
-            this.tbPlayerName.Size = new System.Drawing.Size(211, 20);
+            this.tbPlayerName.Size = new System.Drawing.Size(314, 26);
             this.tbPlayerName.TabIndex = 2;
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(3, 55);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
-            this.comboBox1.TabIndex = 3;
             // 
             // lbLog
             // 
             this.lbLog.AutoSize = true;
-            this.lbLog.Location = new System.Drawing.Point(3, 118);
+            this.lbLog.Location = new System.Drawing.Point(4, 182);
+            this.lbLog.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbLog.Name = "lbLog";
-            this.lbLog.Size = new System.Drawing.Size(20, 13);
+            this.lbLog.Size = new System.Drawing.Size(28, 20);
             this.lbLog.TabIndex = 4;
             this.lbLog.Text = "Hi.";
             // 
-            // cbIsLocal
+            // cbCreateLocalServer
             // 
-            this.cbCreateLocalServer.AutoSize = true;
-            this.cbCreateLocalServer.Location = new System.Drawing.Point(3, 82);
-            this.cbCreateLocalServer.Name = "cbIsLocal";
-            this.cbCreateLocalServer.Size = new System.Drawing.Size(105, 17);
-            this.cbCreateLocalServer.TabIndex = 5;
-            this.cbCreateLocalServer.Text = "Start local server";
-            this.cbCreateLocalServer.UseVisualStyleBackColor = true;
-            this.cbCreateLocalServer.CheckedChanged += new System.EventHandler(this.cbIsLocal_CheckedChanged);
+            this.cbCreateServer.AutoSize = true;
+            this.cbCreateServer.Location = new System.Drawing.Point(4, 126);
+            this.cbCreateServer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.cbCreateServer.Name = "cbCreateLocalServer";
+            this.cbCreateServer.Size = new System.Drawing.Size(153, 24);
+            this.cbCreateServer.TabIndex = 5;
+            this.cbCreateServer.Text = "Start local server";
+            this.cbCreateServer.UseVisualStyleBackColor = true;
+            this.cbCreateServer.CheckedChanged += new System.EventHandler(this.cbIsLocal_CheckedChanged);
+            // 
+            // cbLocalOnly
+            // 
+            this.cbLocalOnly.AutoSize = true;
+            this.cbLocalOnly.Location = new System.Drawing.Point(4, 92);
+            this.cbLocalOnly.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.cbLocalOnly.Name = "cbLocalOnly";
+            this.cbLocalOnly.Size = new System.Drawing.Size(184, 24);
+            this.cbLocalOnly.TabIndex = 6;
+            this.cbLocalOnly.Text = "Local only (no server)";
+            this.cbLocalOnly.UseVisualStyleBackColor = true;
             // 
             // InitialSetup
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.cbCreateLocalServer);
+            this.Controls.Add(this.cbLocalOnly);
+            this.Controls.Add(this.cbCreateServer);
             this.Controls.Add(this.lbLog);
-            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.tbPlayerName);
             this.Controls.Add(this.tbServerName);
             this.Controls.Add(this.btnPlay);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "InitialSetup";
-            this.Size = new System.Drawing.Size(219, 142);
+            this.Size = new System.Drawing.Size(328, 218);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -110,8 +119,8 @@
         private System.Windows.Forms.Button btnPlay;
         private System.Windows.Forms.TextBox tbServerName;
         private System.Windows.Forms.TextBox tbPlayerName;
-        private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label lbLog;
-        private System.Windows.Forms.CheckBox cbCreateLocalServer;
+        private System.Windows.Forms.CheckBox cbCreateServer;
+        private System.Windows.Forms.CheckBox cbLocalOnly;
     }
 }

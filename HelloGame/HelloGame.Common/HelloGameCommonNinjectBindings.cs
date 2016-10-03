@@ -18,7 +18,7 @@ namespace HelloGame.Common
             Bind<GameThingCoordinator>().To<GameThingCoordinator>().InSingletonScope();
             Bind<ThingFactory>().To<ThingFactory>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
             Bind<GameManager>().To<GameManager>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
-            Bind<ModelManager>().To<ModelManager>().InSingletonScope();
+            Bind<ModelManager>().To<ModelManager>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer); ;
             Bind<ILoggerFactory>().To<LoggerFactory>().InSingletonScope().WithConstructorArgument("extraInfo", _isServer ? "Server" : "Client");
             Bind<Overlay>().To<Overlay>().InSingletonScope();
         }
