@@ -15,10 +15,16 @@ namespace HelloGame.Client
         [STAThread]
         static void Main()
         {
+            GeneralSettings settings = GeneralSettings.Gameplay;
+                //new GeneralSettings
+                //{
+                //    ShowThingIds = false
+                //};
+
             // A separate server binding (in sense server is a separate application ran inside this process)
-            IResolutionRoot serverNinject = new StandardKernel(new HelloGameCommonNinjectBindings(true), new HelloGameServerNinjectBindings());
+            IResolutionRoot serverNinject = new StandardKernel(new HelloGameCommonNinjectBindings(settings, true), new HelloGameServerNinjectBindings());
             // And regular client binding with a server ninject passed to construct a server with separate objects and configuration.
-            IResolutionRoot clientNinject = new StandardKernel(new HelloGameCommonNinjectBindings(false), new HelloGameClientNinjectBindings(serverNinject));
+            IResolutionRoot clientNinject = new StandardKernel(new HelloGameCommonNinjectBindings(settings, false), new HelloGameClientNinjectBindings(serverNinject));
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

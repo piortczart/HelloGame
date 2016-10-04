@@ -2,28 +2,27 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
 {
+    public class AiShipSettings : ShipSettings
+    {
+        public int DistanceToPlayer { get; set; }
+        public TimeSpan LocatePlayerFrequency { get; set; }
+    }
+
     public class AiShip : ShipBase
     {
-        private readonly Limiter _locatePlayerLimiter = new Limiter(TimeSpan.FromSeconds(1));
-        Real2DVector _playerPointer = new Real2DVector();
+        private readonly Limiter _locatePlayerLimiter;
+        private Real2DVector _playerPointer = new Real2DVector();
+        private readonly AiShipSettings _aiShipSettings;
 
-        private static readonly ThingSettings Settings = new ThingSettings
+        public AiShip(ThingBaseInjections injections, GameThingCoordinator coordinator, string name, decimal size = 10, int? id = null, ThingBase creator = null)
+            : base(injections, coordinator, injections.GeneralSettings.AiShipSettings, size, name, id, creator)
         {
-            Aerodynamism = 0.1m,
-            TimeToLive = TimeSpan.Zero,
-            Mass = 3,
-            RadPerSecond = (decimal)Math.PI,
-            LazerLimit = TimeSpan.FromSeconds(5)
-        };
-
-        public AiShip(ILogger logger, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null, ThingBase creator = null) 
-            : base(logger, gameManager, Settings, size, name, id, creator)
-        {
+            _aiShipSettings = injections.GeneralSettings.AiShipSettings;
+            _locatePlayerLimiter = new Limiter(_aiShipSettings.LocatePlayerFrequency, TimeSource);
         }
 
         protected override void PaintStuffInternal(Graphics g)
@@ -44,28 +43,28 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 {
                     // Locate a player's ship.
 
-                    // Face him.
+                    // Face him. (change the angle)
                     decimal x = player.Physics.Position.X - Physics.Position.X;
                     decimal y = player.Physics.Position.Y - Physics.Position.Y;
-
                     _playerPointer = Real2DVector.GetFromCoords(x, y);
 
                     Physics.Angle = _playerPointer.Angle;
 
-                    //PewPew();
+                    if (GeneralSettings.IsAiHostile)
+                    {
+                        PewPew();
+                    }
                 }
 
                 // Player is far away? Get closer.
-                if (player.Physics.Position.DistanceTo(Physics.Position) > 300)
+                if (player.Physics.Position.DistanceTo(Physics.Position) > _aiShipSettings.DistanceToPlayer)
                 {
-                    int maxSpeed = 3;
-                    Physics.SelfPropelling.Change(Physics.Angle, maxSpeed);
+                    Physics.SelfPropelling.Change(Physics.Angle, _aiShipSettings.MaxEnginePower);
                 }
                 // Player too close? Go back.
                 else
                 {
-                    int maxSpeed = -3;
-                    Physics.SelfPropelling.Change(Physics.Angle, maxSpeed);
+                    Physics.SelfPropelling.Change(Physics.Angle, _aiShipSettings.MaxEnginePower);
                 }
             }
         }

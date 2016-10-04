@@ -4,16 +4,18 @@ namespace HelloGame.Common.Model
 {
     public abstract class ElapsingThing
     {
-        protected readonly DateTime SpawnedAt;
-        public TimeSpan Age => DateTime.Now - SpawnedAt;
+        protected readonly TimeSpan SpawnedAt;
+        public TimeSpan Age => TimeSource.ElapsedSinceStart - SpawnedAt;
         public bool IsTimeToElapse { get; private set; }
         public TimeSpan TimeToLive { get; private set; }
         public double AgePercentage => 100 * Age.TotalMilliseconds / TimeToLive.TotalMilliseconds;
+        protected readonly TimeSource TimeSource;
 
-        protected ElapsingThing(TimeSpan timeToLive)
+        protected ElapsingThing(TimeSpan timeToLive, TimeSource timeSource)
         {
             TimeToLive = timeToLive;
-            SpawnedAt = DateTime.Now;
+            TimeSource = timeSource;
+            SpawnedAt = TimeSource.ElapsedSinceStart;
         }
 
         protected void ElapseIn(TimeSpan lifeLeft)

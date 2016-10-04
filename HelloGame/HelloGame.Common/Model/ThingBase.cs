@@ -10,6 +10,20 @@ using System.Windows.Forms;
 
 namespace HelloGame.Common.Model
 {
+    public class ThingBaseInjections
+    {
+        public TimeSource TimeSource { get; set; }
+        public ILoggerFactory LoggerFactory { get; set; }
+        public GeneralSettings GeneralSettings { get; set; }
+
+        public ThingBaseInjections(TimeSource timeSource, ILoggerFactory loggerFactory, GeneralSettings generalSettings)
+        {
+            TimeSource = timeSource;
+            LoggerFactory = loggerFactory;
+            GeneralSettings = generalSettings;
+        }
+    }
+
     public abstract class ThingBase : ElapsingThing
     {
         public enum UpdateLocationSettings
@@ -22,17 +36,22 @@ namespace HelloGame.Common.Model
         public AlmostPhysics Physics { get; }
         public ThingBase Creator { get; }
         private bool CanBeMoved { get; }
-        protected bool IsDestroyed { get; private set; }
+        public bool IsDestroyed { get; private set; }
         private static int _highestId;
         public int Id { get; }
         private readonly object _modelSynchronizer = new object();
         protected readonly Font Font = new Font("monospace", 12, GraphicsUnit.Pixel);
         protected readonly ThingSettings Settingz;
+        protected readonly ThingBaseInjections Injections;
+        protected readonly GeneralSettings GeneralSettings;
 
-        protected ThingBase(ILogger logger, ThingSettings settings, ThingBase creator = null, int? id = null) : base(settings.TimeToLive)
+        protected ThingBase(ThingBaseInjections injections, ThingSettings settings, ThingBase creator = null, int? id = null)
+            : base(settings.TimeToLive, injections.TimeSource)
         {
+            GeneralSettings = injections.GeneralSettings;
+            Injections = injections;
             Settingz = settings;
-            Logger = logger;
+            Logger = injections.LoggerFactory.CreateLogger(GetType());
             Physics = new AlmostPhysics(settings.Aerodynamism);
             Creator = creator;
             Physics.Mass = settings.Mass;
@@ -57,6 +76,7 @@ namespace HelloGame.Common.Model
             Render(g);
 
             // Show the creator's id below this thing
+            if (GeneralSettings.ShowThingIds)
             {
                 string owner = $"{Id} ({Creator?.Id.ToString() ?? "?"})";
                 Size ownerSize = TextRenderer.MeasureText(owner, Font);
@@ -70,7 +90,7 @@ namespace HelloGame.Common.Model
             lock (_modelSynchronizer)
             {
                 IsDestroyed = true;
-                ElapseIn(elapseIn); 
+                ElapseIn(elapseIn);
             }
         }
 
@@ -160,7 +180,7 @@ namespace HelloGame.Common.Model
         {
             lock (_modelSynchronizer)
             {
-                return Physics.Position.DistanceTo(another.Physics.Position) - ((Physics.Size + another.Physics.Size) / 2); 
+                return Physics.Position.DistanceTo(another.Physics.Position) - ((Physics.Size + another.Physics.Size) / 2);
             }
         }
 

@@ -5,14 +5,19 @@ namespace HelloGame.Common
 {
     public class EventPerSecond
     {
-        readonly Stopwatch _stopwatch = Stopwatch.StartNew();
+        private readonly TimeSource _timeSource;
         private int _lastCounter;
         private int _coutner;
         private int _lastSecond;
 
+        public EventPerSecond(TimeSource timeSource)
+        {
+            _timeSource = timeSource;
+        }
+
         private object _synchro = new object();
 
-        private int CurrentSecond => (int)Math.Floor(_stopwatch.Elapsed.TotalSeconds);
+        private int CurrentSecond => (int)Math.Floor(_timeSource.ElapsedSinceStart.TotalSeconds);
 
         public void Add()
         {

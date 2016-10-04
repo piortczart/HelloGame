@@ -7,10 +7,14 @@ namespace HelloGame.Common
     public class HelloGameCommonNinjectBindings : NinjectModule
     {
         readonly bool _isServer;
+        readonly bool _pauseTime;
+        GeneralSettings _generalSettings;
 
-        public HelloGameCommonNinjectBindings(bool isServer)
+        public HelloGameCommonNinjectBindings(GeneralSettings generalSettings, bool isServer, bool pauseTime = false)
         {
             _isServer = isServer;
+            _pauseTime = pauseTime;
+            _generalSettings = generalSettings;
         }
 
         public override void Load()
@@ -21,6 +25,9 @@ namespace HelloGame.Common
             Bind<ModelManager>().To<ModelManager>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer); ;
             Bind<ILoggerFactory>().To<LoggerFactory>().InSingletonScope().WithConstructorArgument("extraInfo", _isServer ? "Server" : "Client");
             Bind<Overlay>().To<Overlay>().InSingletonScope();
+            Bind<TimeSource>().To<TimeSource>().InSingletonScope().WithConstructorArgument("startStopwatch", !_pauseTime);
+            Bind<GeneralSettings>().ToConstant(_generalSettings);
+            Bind<ThingBaseInjections>().To<ThingBaseInjections>().InSingletonScope();
         }
     }
 }

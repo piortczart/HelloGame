@@ -50,8 +50,8 @@ namespace HelloGame.Server
         {
             IReadOnlyCollection<ThingBase> things = _gameManager.ModelManager.Things.GetThingsReadOnly();
 
-            string thingIds = string.Join(",", things.Select(t => t.Id + "_" + t.GetType().Name));
-            _logger.LogInfo($"Propagating. Number of things: {things.Count} (ids: {thingIds})");
+            //string thingIds = string.Join(",", things.Select(t => t.Id + "_" + t.GetType().Name));
+            //_logger.LogInfo($"Propagating. Number of things: {things.Count} (ids: {thingIds})");
 
             SendUpdateMessage(things);
 
@@ -60,6 +60,8 @@ namespace HelloGame.Server
 
         private void SendUpdateMessage(IReadOnlyCollection<ThingBase> things)
         {
+            List<ThingBase> deadThings = _gameManager.ModelManager.GetDeadThings().ToList();
+            List<PlayerShipOther> deadPlayers = deadThings.Where(t => t is PlayerShipOther).Cast<PlayerShipOther>().ToList();
             foreach (var client in _clientMessageProcessing.Clients)
             {
                 NetworkStream networkStream = client.Key;
@@ -77,13 +79,22 @@ namespace HelloGame.Server
                     continue;
                 }
 
-                List<int> deadThings = _gameManager.ModelManager.GetDeadThings().Select(t => t.Id).ToList();
                 if (deadThings.Any())
                 {
+                    
+                    foreach (PlayerShipOther deadPlayer in deadPlayers)
+                    {
+                        if (deadPlayer == _clientMessageProcessing.Clients[networkStream]) {
+                            PlayerShipOther newShip = _gameManager.AddPlayer(deadPlayer.Name);
+                            _clientMessageProcessing.Clients[networkStream] = newShip;
+                        }
+                    }
+
+                    List<int> deadThingIds = deadThings.Select(t => t.Id).ToList();
                     var message2 = new NetworkMessage
                     {
                         Type = NetworkMessageType.DeadStuff,
-                        Payload = deadThings.SerializeJson()
+                        Payload = deadThingIds.SerializeJson()
                     };
 
                     // Try to send a message, do not continue if there was an error.

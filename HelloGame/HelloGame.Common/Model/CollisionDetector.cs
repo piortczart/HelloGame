@@ -2,7 +2,12 @@
 {
     public class CollisionDetector
     {
-        public readonly EventPerSecond CollisoinsCounter = new EventPerSecond();
+        public readonly EventPerSecond CollisoinsCounter;
+
+        public CollisionDetector(TimeSource timeSource)
+        {
+            CollisoinsCounter = new EventPerSecond(timeSource);
+        }
 
         public void DetectCollisions(ThingBase[] things)
         {
@@ -11,9 +16,11 @@
             for (int i = 0; i < things.Length; i++)
             {
                 ThingBase thing1 = things[i];
+
                 for (int j = i + 1; j < things.Length; j++)
                 {
                     ThingBase thing2 = things[j];
+
 
                     if (thing1.DistanceTo(thing2) <= 3)
                     {

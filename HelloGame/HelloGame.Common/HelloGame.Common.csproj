@@ -51,14 +51,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EventPerSecond.cs" />
+    <Compile Include="TimeStuffs\EventPerSecond.cs" />
     <Compile Include="Extensions\ExtensionsConcurrentQueue.cs" />
     <Compile Include="Extensions\ExtensionsRandom.cs" />
     <Compile Include="Extensions\ExtensionsString.cs" />
+    <Compile Include="GeneralSettings.cs" />
     <Compile Include="HelloGameCommonNinjectBindings.cs" />
     <Compile Include="Logging\ILoggerFactory.cs" />
     <Compile Include="Logging\ILogger.cs" />
-    <Compile Include="Limiter.cs" />
+    <Compile Include="TimeStuffs\Limiter.cs" />
     <Compile Include="Logging\LogDetails.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
@@ -72,7 +73,7 @@
     <Compile Include="Model\GameObjects\Bomb.cs" />
     <Compile Include="Model\GameObjects\LazerBeamPew.cs" />
     <Compile Include="Model\GameObjects\Ships\AiShip.cs" />
-    <Compile Include="Model\GameObjects\Ships\DaShip.cs" />
+    <Compile Include="Model\GameObjects\Ships\ShipBase.cs" />
     <Compile Include="Model\GameObjects\Ships\PlayerShip.cs" />
     <Compile Include="Model\GameObjects\Ships\PlayerShipAny.cs" />
     <Compile Include="Model\GameObjects\Ships\PlayerShipMovable.cs" />
@@ -93,6 +94,8 @@
     <Compile Include="Physicsish\AlmostPhysics.cs" />
     <Compile Include="Physicsish\Position.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TimeStuffs\TimeCounter.cs" />
+    <Compile Include="TimeStuffs\TimeSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

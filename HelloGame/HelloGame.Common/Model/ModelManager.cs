@@ -13,10 +13,8 @@ namespace HelloGame.Common.Model
     public class ModelManager
     {
         private readonly ILogger _logger;
-        private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
-        readonly CollisionDetector _collidor = new CollisionDetector();
-        private TimeSpan _lastModelUpdate = TimeSpan.Zero;
-        private readonly EventPerSecond _modelUpdateCounter = new EventPerSecond();
+        readonly CollisionDetector _collidor;
+        private readonly EventPerSecond _modelUpdateCounter;
         private readonly Thread _modelUpdateThread;
         private readonly ThingsList _things = new ThingsList();
         private readonly ConcurrentQueue<ThingBase> _deadThings = new ConcurrentQueue<ThingBase>();
@@ -25,13 +23,19 @@ namespace HelloGame.Common.Model
         private readonly Overlay _overlay;
         public ThingsList Things { get { return _things; } }
         private readonly bool _isServer;
+        private readonly TimeSource _timeSource;
+        private readonly TimeCounter _modelUpdateTimeCounter;
 
-        public ModelManager(ILoggerFactory loggerFactory, Overlay overlay, bool isServer)
+        public ModelManager(ILoggerFactory loggerFactory, TimeSource timeSource, Overlay overlay, bool isServer)
         {
             _isServer = isServer;
             _logger = loggerFactory.CreateLogger(GetType());
             _modelUpdateThread = new Thread(UpdateModel) { IsBackground = true };
             _overlay = overlay;
+            _timeSource = timeSource;
+            _collidor = new CollisionDetector(timeSource);
+            _modelUpdateCounter = new EventPerSecond(timeSource);
+            _modelUpdateTimeCounter = new TimeCounter(timeSource);
         }
 
         public void AddUpdateModelAction(Action action)
@@ -66,60 +70,44 @@ namespace HelloGame.Common.Model
         {
             while (_modelUpdateThread.IsAlive)
             {
-                if (!_isServer)
+                SingleModelUpdate();
+            }
+        }
+
+        public void SingleModelUpdate()
+        {
+            TimeSpan timePassed = _modelUpdateTimeCounter.GetTimeSinceLastCall();
+
+            if (!_isServer)
+            {
+                // Overlay only needed in client.
+                _overlay.Update(this);
+            }
+
+            _modelUpdateCounter.Add();
+
+            IReadOnlyCollection<ThingBase> things = _things.GetThingsReadOnly();
+            foreach (var thing in things)
+            {
+                // Perform the model update.
+                thing.UpdateModel(timePassed, things);
+
+                // Despawn the thing if it should elapse.
+                if (thing.IsTimeToElapse)
                 {
-                    // Overlay only needed in client.
-                    _overlay.Update(this);
-                }
-
-                _modelUpdateCounter.Add();
-
-                TimeSpan now = _stopwatch.Elapsed;
-                if (_lastModelUpdate != TimeSpan.Zero)
-                {
-                    TimeSpan sinceLast = now - _lastModelUpdate;
-
-                    IReadOnlyCollection<ThingBase> things = _things.GetThingsReadOnly();
-                    foreach (var thing in things)
-                    {
-                        // Perform the model update.
-                        thing.UpdateModel(sinceLast, things);
-
-                        // Despawn the thing if it should elapse.
-                        if (thing.IsTimeToElapse)
-                        {
-                            _things.Remove(thing);
-                            _deadThings.Enqueue(thing);
-                        }
-                    }
-
-                    //Parallel.ForEach(things,
-                    //    new ParallelOptions
-                    //    {
-                    //        MaxDegreeOfParallelism = Environment.ProcessorCount
-                    //    },
-                    //    thing =>
-                    //    {
-                    //        // Perform the model update.
-                    //        thing.UpdateModel(sinceLast, things);
-
-                    //        // Despawn the thing if it should elapse.
-                    //        if (thing.IsTimeToElapse)
-                    //        {
-                    //            _things.Remove(thing);
-                    //            _deadThings.Enqueue(thing);
-                    //        }
-                    //    });
-
-                    _collidor.DetectCollisions(_things.GetThingsArray());
-                }
-                _lastModelUpdate = now;
-
-                foreach (var action in _updateModelAction)
-                {
-                    action.Invoke();
+                    _things.Remove(thing);
+                    _deadThings.Enqueue(thing);
                 }
             }
+            _collidor.DetectCollisions(_things.GetThingsArray());
+
+            foreach (var action in _updateModelAction)
+            {
+                action.Invoke();
+            }
+
+            int toSleep = 10 - (int)timePassed.TotalMilliseconds;
+            if (toSleep > 0) { Thread.Sleep(toSleep); }
         }
     }
 }

@@ -104,7 +104,6 @@ namespace HelloGame.Common.Model
             ModelManager.StartModelUpdates();
         }
 
-
         private void SpawnStart()
         {
             if (_isServer)
@@ -125,7 +124,7 @@ namespace HelloGame.Common.Model
         public void StuffDied(List<int> stuffIds)
         {
             var toDespawn = ModelManager.Things.GetByIds(stuffIds);
-            _logger.LogInfo($"Asked to despawn items: {toDespawn.Count} ({String.Join(",", toDespawn.GetType().Name)})");
+            _logger.LogInfo($"Asked to despawn items: {toDespawn.Count} ({String.Join(",", toDespawn.Select(t => t.GetType().Name))})");
             foreach (ThingBase thingToRemove in toDespawn)
             {
                 thingToRemove.Despawn();

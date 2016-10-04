@@ -8,14 +8,15 @@ namespace HelloGame.Common
     /// </summary>
     public class Limiter
     {
-        private static readonly Stopwatch Stopwatch = Stopwatch.StartNew();
         private TimeSpan _lastEvent = TimeSpan.Zero;
         readonly TimeSpan _frequency;
         private readonly object _synchronizer = new object();
+        private readonly TimeSource _timeSource;
 
-        public Limiter(TimeSpan frequency)
+        public Limiter(TimeSpan frequency, TimeSource timeSource)
         {
             _frequency = frequency;
+            _timeSource = timeSource;
         }
 
         public bool CanHappen(bool willHappen = true)
@@ -23,11 +24,11 @@ namespace HelloGame.Common
             lock (_synchronizer)
             {
                 TimeSpan nextEvent = _lastEvent.Add(_frequency);
-                if (Stopwatch.Elapsed > nextEvent)
+                if (_timeSource.ElapsedSinceStart > nextEvent)
                 {
                     if (willHappen)
                     {
-                        _lastEvent = Stopwatch.Elapsed;
+                        _lastEvent = _timeSource.ElapsedSinceStart;
                     }
                     return true;
                 }

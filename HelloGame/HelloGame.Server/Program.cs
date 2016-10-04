@@ -10,7 +10,10 @@ namespace HelloGame.Server
     {
         private static void Main()
         {
-            IResolutionRoot ninject = new StandardKernel(new HelloGameCommonNinjectBindings(true), new HelloGameServerNinjectBindings());
+            IResolutionRoot ninject =
+                new StandardKernel(
+                    new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true),
+                    new HelloGameServerNinjectBindings());
 
             while (true)
             {

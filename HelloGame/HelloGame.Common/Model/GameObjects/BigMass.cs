@@ -20,7 +20,7 @@ namespace HelloGame.Common.Model.GameObjects
             return Color.FromArgb(MathX.Random.Next(0, 255), MathX.Random.Next(0, 255), MathX.Random.Next(0, 255));
         }
 
-        public BigMass(ILogger logger, int size, int? id, ThingBase creator) : base(logger, Settings, creator, id)
+        public BigMass(ThingBaseInjections injections, int size, int? id, ThingBase creator) : base(injections, Settings, creator, id)
         {
             Physics.Size = size;
             Physics.Mass = size * 10000;

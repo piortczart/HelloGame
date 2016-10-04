@@ -17,7 +17,7 @@ namespace HelloGame.Common.Model.GameObjects
             Mass = 5
         };
 
-        public Bomb(ILogger logger, ThingBase creator) : base(logger, Settings, creator)
+        public Bomb(ThingBaseInjections injections, ThingBase creator) : base(injections, Settings, creator)
         {
             Physics.Interia = new Real2DVector();
         }

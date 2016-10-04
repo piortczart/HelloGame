@@ -6,10 +6,15 @@ namespace HelloGame.Common
     public class Overlay
     {
         readonly Font _font = new Font(FontFamily.GenericMonospace, 12);
-        private readonly EventPerSecond _paintCounter = new EventPerSecond();
+        private readonly EventPerSecond _paintCounter;
         int collisionCalculations;
 
         int _thingsCount = 0;
+
+        public Overlay(TimeSource timeSource)
+        {
+            _paintCounter = new EventPerSecond(timeSource);
+        }
 
         internal void Update(ModelManager modelManager)
         {

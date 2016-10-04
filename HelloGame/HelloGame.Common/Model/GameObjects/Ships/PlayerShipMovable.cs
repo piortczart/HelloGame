@@ -8,8 +8,8 @@ namespace HelloGame.Common.Model.GameObjects.Ships
     {
         public KeysInfo KeysInfo { private get; set; }
 
-        public PlayerShipMovable(ILogger logger, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null, ThingBase creator = null) 
-            : base(logger, gameManager, name, size, id, creator)
+        public PlayerShipMovable(ThingBaseInjections injections, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null, ThingBase creator = null) 
+            : base(injections, gameManager, name, size, id, creator)
         {
             // TODO: REDO THIS
             // Just for now. They will be reset for the proper ones.
@@ -54,7 +54,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             {
                 if (BombLimiter.CanHappen())
                 {
-                    var bomb = new Bomb(Logger, this);
+                    var bomb = new Bomb(Injections, this);
                     bomb.Spawn(Physics.GetPointInDirection(10), Physics.TotalForce.GetScaled(1.2m, false));
 
                     GameCoordinator.UpdateThing(bomb);

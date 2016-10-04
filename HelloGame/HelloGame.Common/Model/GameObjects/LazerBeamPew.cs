@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using HelloGame.Common.Logging;
 
 namespace HelloGame.Common.Model.GameObjects
 {
     public class LazerBeamPew : ThingBase
     {
-        private static readonly ThingSettings Settings = new ThingSettings
-        {
-            Aerodynamism = 0,
-            TimeToLive = TimeSpan.FromSeconds(1)
-        };
-
-        public LazerBeamPew(ILogger logger, ThingBase creator, int? id) : base(logger, Settings, creator, id)
+        public LazerBeamPew(ThingBaseInjections injections, ThingBase creator, int? id) 
+            : base(injections, injections.GeneralSettings.LazerBeamSettings, creator, id)
         {
         }
 

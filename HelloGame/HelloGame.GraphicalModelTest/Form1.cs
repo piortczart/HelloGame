@@ -7,7 +7,8 @@ namespace HelloGame.GraphicalModelTest
 {
     public partial class Form1 : HelloGameForm
     {
-        public Form1(Renderer renderer, InitialSetupForm setupForm, GameManager gameManager, ILoggerFactory loggerFactory, CancellationTokenSource cancellation) : base(renderer, setupForm, gameManager, loggerFactory, cancellation, false)
+        public Form1(Renderer renderer, InitialSetupForm setupForm, GameManager gameManager, ILoggerFactory loggerFactory, CancellationTokenSource cancellation) 
+            : base(renderer, setupForm, gameManager, loggerFactory, cancellation, false)
         {
             gameManager.AddPlayer("dupa");
         }

@@ -1,39 +1,48 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
 {
+    public class ShipSettings : ThingSettings
+    {
+        public decimal MaxEnginePower { get; set; }
+        public decimal MaxInteria { get; set; }
+        public TimeSpan DespawnTime { get; set; }
+        public int PointsForKill { get; set; }
+    }
+
     public abstract class ShipBase : ThingBase
     {
-        private readonly ILogger _logger;
         protected readonly GameThingCoordinator GameCoordinator;
         public string Name { get; }
-        protected readonly Limiter BombLimiter = new Limiter(TimeSpan.FromSeconds(1));
+        protected readonly Limiter BombLimiter;
         protected readonly Limiter LaserLimiter;
+        protected readonly ShipSettings ShipSettings;
+        public int Score { get; set; }
 
-        protected ShipBase(ILogger logger, GameThingCoordinator gameCoordinator, ThingSettings settings, decimal size, string name, int? id, ThingBase creator = null)
-            : base(logger, settings, creator, id)
+        protected ShipBase(ThingBaseInjections injections, GameThingCoordinator gameCoordinator, ShipSettings settings, decimal size, string name, int? id, ThingBase creator = null, int score = 0)
+            : base(injections, settings, creator, id)
         {
-            _logger = logger;
             GameCoordinator = gameCoordinator;
             Name = name;
+            ShipSettings = settings;
+            Score = score;
 
-            LaserLimiter = new Limiter(settings.LazerLimit);
+            LaserLimiter = new Limiter(settings.LazerLimit, TimeSource);
+            BombLimiter = new Limiter(TimeSpan.FromSeconds(1), TimeSource);
 
             Physics.Size = size;
-            Physics.SelfPropelling = new Real2DVector(5m);
-            Physics.Interia = new Real2DVector(5);
+            Physics.SelfPropelling = new Real2DVector(settings.MaxEnginePower);
+            Physics.Interia = new Real2DVector(settings.MaxInteria);
         }
 
         protected void PewPew(bool isKeyBased = false)
         {
             if (LaserLimiter.CanHappen())
             {
-                // 
-                var laser = new LazerBeamPew(_logger, this, -1);
+                var laser = new LazerBeamPew(Injections, this, -1);
 
                 Real2DVector inertia = Physics.GetDirection(30);
                 laser.Spawn(Physics.PositionPoint, inertia);
@@ -67,7 +76,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             {
                 var shipPen = new Pen(Brushes.DarkBlue);
 
-                if (this is PlayerShip)
+                if (GeneralSettings.ShowPlayerPhysicsDetails && this is PlayerShip)
                 {
                     g.DrawString($"Ship angle: {Physics.Angle * 57.296m:0}", Font, Brushes.Black, new PointF(155, 155));
                     g.DrawString($"Engine: {Physics.SelfPropelling.Size:0.00}", Font, Brushes.Black, new PointF(155, 185));
@@ -82,9 +91,10 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 // This is the circle around the ship.
                 g.DrawArc(shipPen, new Rectangle((int)(Physics.Position.X - Physics.Size / 2), (int)(Physics.Position.Y - Physics.Size / 2), (int)Physics.Size, (int)Physics.Size), 0, 360);
 
-                Size nameSize = TextRenderer.MeasureText(Name, Font);
+                string text =  $"{Name} ({Score})";
+                Size nameSize = TextRenderer.MeasureText(text, Font);
                 var nameLocation = new PointF((int)Physics.Position.X - nameSize.Width / 2, (int)Physics.Position.Y - nameSize.Height * 2);
-                g.DrawString(Name, Font, Brushes.Black, nameLocation);
+                g.DrawString(text, Font, Brushes.Black, nameLocation);
             }
 
             PaintStuffInternal(g);
@@ -115,7 +125,13 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 }
             }
 
-            Destroy(TimeSpan.FromSeconds(3));
+            ShipBase ship = other.Creator as ShipBase;
+            if (ship != null)
+            {
+                ship.Score += 1;
+            }
+
+            Destroy(ShipSettings.DespawnTime);
         }
     }
 }

@@ -12,12 +12,16 @@ namespace HelloGame.Common.Model
         private readonly bool _isServer;
         private readonly GameThingCoordinator _gameManager;
         private readonly ILogger _logger;
+        private readonly TimeSource _timeSource;
+        private readonly ThingBaseInjections _thingInjections;
 
-        public ThingFactory(bool isServer, GameThingCoordinator gameManager, ILoggerFactory loggerFactory)
+        public ThingFactory(bool isServer, ThingBaseInjections injections, GameThingCoordinator gameManager, ILoggerFactory loggerFactory, TimeSource timeSource)
         {
+            _timeSource = timeSource;
             _isServer = isServer;
             _gameManager = gameManager;
             _logger = loggerFactory.CreateLogger(GetType());
+            _thingInjections = injections;
         }
 
         public ThingBase CreateFromDescription(ThingDescription description)
@@ -76,7 +80,7 @@ namespace HelloGame.Common.Model
                 throw new ArgumentException("The identifier is expected in a non-server environment.", nameof(id));
             }
 
-            var lazer = new LazerBeamPew(_logger, creator, id);
+            var lazer = new LazerBeamPew(_thingInjections, creator, id);
             lazer.Spawn(location);
             return lazer;
         }
@@ -88,11 +92,10 @@ namespace HelloGame.Common.Model
                 throw new ArgumentException("The identifier is expected in a non-server environment.", nameof(id));
             }
 
-            var ship = new PlayerShipMovable(_logger, _gameManager, name, size, id, creator);
+            var ship = new PlayerShipMovable(_thingInjections, _gameManager, name, size, id, creator);
             ship.Spawn(location);
             return ship;
         }
-
 
         public PlayerShipOther GetPlayerShip(int size, Point location, string name, int? id = null, ThingBase creator = null)
         {
@@ -101,21 +104,21 @@ namespace HelloGame.Common.Model
                 throw new ArgumentException("The identifier is expected in a non-server environment.", nameof(id));
             }
 
-            var ship = new PlayerShipOther(_logger, _gameManager, name, size, id, creator);
+            var ship = new PlayerShipOther(_thingInjections, _gameManager, name, size, id, creator);
             ship.Spawn(location);
             return ship;
         }
 
         public AiShip GetAiShip(int size, Point point, string name, int? id = null, ThingBase creator = null)
         {
-            var ship = new AiShip(_logger, _gameManager, name, size, id, creator);
+            var ship = new AiShip(_thingInjections, _gameManager, name, size, id, creator);
             ship.Spawn(point);
             return ship;
         }
 
         public BigMass GetBigMass(int? size = null, Point? point = null, int? id = null, ThingBase creator = null)
         {
-            BigMass mass = new BigMass(_logger, size ?? MathX.Random.Next(10, 50), id, creator);
+            BigMass mass = new BigMass(_thingInjections, size ?? MathX.Random.Next(10, 50), id, creator);
             mass.Spawn(point ?? new Point(MathX.Random.Next(600, 900), MathX.Random.Next(100, 300)));
             return mass;
         }
