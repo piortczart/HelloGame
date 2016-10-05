@@ -28,13 +28,15 @@ namespace HelloGame.Common.Model
         public int Id { get; }
         private readonly object _modelSynchronizer = new object();
         protected readonly Font Font = new Font("monospace", 12, GraphicsUnit.Pixel);
-        protected readonly ThingSettings Settingz;
+        public readonly ThingSettings Settingz;
         protected readonly ThingBaseInjections Injections;
         protected readonly GeneralSettings GeneralSettings;
+        protected readonly GameThingCoordinator Coordinator;
 
         protected ThingBase(ThingBaseInjections injections, ThingSettings baseSettings, ThingBase creator = null, int? id = null)
             : base(baseSettings.TimeToLive, injections.TimeSource)
         {
+            Coordinator = injections.Coordinator;
             GeneralSettings = injections.GeneralSettings;
             Injections = injections;
             Settingz = baseSettings;
@@ -148,7 +150,7 @@ namespace HelloGame.Common.Model
                 var distance = thing.DistanceTo(this);
                 if (distance == 0) { continue; }
 
-                decimal length = 0.01m * Physics.Mass * thing.Physics.Mass / (decimal)Math.Pow((double)distance, 2);
+                decimal length = GeneralSettings.GravityFactor * Physics.Mass * thing.Physics.Mass / (decimal)Math.Pow((double)distance, 2);
                 var grav = new Real2DVector();
 
                 var x = thing.Physics.Position.X - Physics.Position.X;
@@ -161,6 +163,12 @@ namespace HelloGame.Common.Model
                 result.Add(grav);
             }
             return result;
+        }
+
+        public decimal DistanceTo(Position position)
+        {
+            return position.DistanceTo(Physics.Position) - Physics.Size;
+
         }
 
         public decimal DistanceTo(ThingBase another)
@@ -177,7 +185,6 @@ namespace HelloGame.Common.Model
             {
                 Physics.SetInitialPosition(where);
                 Physics.Interia = initialInertia ?? new Real2DVector();
-
             }
         }
 

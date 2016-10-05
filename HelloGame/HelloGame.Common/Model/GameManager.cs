@@ -8,6 +8,7 @@ using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
 using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.Model.GameObjects.Ships;
+using HelloGame.Common.Physicsish;
 
 namespace HelloGame.Common.Model
 {
@@ -24,7 +25,7 @@ namespace HelloGame.Common.Model
         {
             ModelManager = modelManager;
             modelManager.AddUpdateModelAction(ModelUpdated);
-            gameCoordinator.SetActions(AskServerToSpawn, ModelManager.AddOrUpdateThing);
+            gameCoordinator.SetActions(AskServerToSpawn, ModelManager.AddOrUpdateThing, ShootLazer);
             _thingFactory = thingFactory;
             _isServer = isServer;
             _logger = loggerFactory.CreateLogger(GetType());
@@ -67,7 +68,23 @@ namespace HelloGame.Common.Model
             }
         }
 
-        public PlayerShipOther AddPlayer(string name)
+        private Point FindEmptyArea(Rectangle retangle, int minDistance)
+        {
+
+            Position pos;
+            int i = 0;
+            do
+            {
+                pos = MathX.Random.GetRandomPosition(retangle);
+                if (ModelManager.Things.GetThingsReadOnly().All(t => t.DistanceTo(pos) >= minDistance))
+                {
+                    break;
+                }
+            } while (i++ < 10);
+            return new Point((int)pos.X, (int)pos.Y);
+        }
+
+        public PlayerShipOther AddPlayer(string name, ClanEnum clan)
         {
             if (!_isServer)
             {
@@ -75,10 +92,30 @@ namespace HelloGame.Common.Model
             }
 
             _logger.LogInfo($"Adding player: {name}");
-            Point location = MathX.Random.GetRandomPoint(new Rectangle(10, 10, 100, 800));
-            PlayerShipOther newShip = _thingFactory.GetPlayerShip(15, location, name);
+            Point location = FindEmptyArea(new Rectangle(10, 10, 100, 800), 50);
+            // Try to find a relatively empty area.
+            PlayerShipOther newShip = _thingFactory.GetPlayerShip(location, name, clan);
             ModelManager.AddOrUpdateThing(newShip);
             return newShip;
+        }
+
+        public void ShootLazer(ThingBase source)
+        {
+            if (source is PlayerShipMovable)
+            {
+                // Player is shooting. On the client.
+                LazerBeamPew lazer = _thingFactory.GetLazerBeam(-1, source.Physics.GetPointInDirection(source.Settingz.Size / 2), source);
+                AskServerToSpawn(lazer);
+            }
+            else
+            {
+                // AI is shooting. Only server can spawn.
+                if (_isServer)
+                {
+                    LazerBeamPew lazer = _thingFactory.GetLazerBeam(null, source.Physics.GetPointInDirection(source.Settingz.Size / 2), source);
+                    ModelManager.AddOrUpdateThing(lazer);
+                }
+            }
         }
 
         private void AddAiShip()
@@ -90,8 +127,8 @@ namespace HelloGame.Common.Model
             if (_settings.SpawnAi)
             {
                 _logger.LogInfo("Adding AI ship.");
-                Point location = MathX.Random.GetRandomPoint(new Rectangle(100, 300, 300, 800));
-                AiShip newShip = _thingFactory.GetAiShip(15, location, "Stupid AI");
+                Point location = FindEmptyArea(new Rectangle(100, 300, 300, 800), 50);
+                AiShip newShip = _thingFactory.GetAiShip(location, "Stupid AI");
                 ModelManager.AddOrUpdateThing(newShip);
             }
         }
@@ -100,7 +137,7 @@ namespace HelloGame.Common.Model
         {
             _logger.LogInfo("Adding a big thing.");
             int size = MathX.Random.Next(30, 170);
-            var location = MathX.Random.GetRandomPoint(new Rectangle(100, 50, 900, 900));
+            Point location = FindEmptyArea(new Rectangle(100, 50, 900, 900), size+50);
             BigMass bigMass = _thingFactory.GetBigMass(size, location);
             ModelManager.AddOrUpdateThing(bigMass);
         }
@@ -141,8 +178,11 @@ namespace HelloGame.Common.Model
         public void ParseThingDescription(ThingDescription description)
         {
             ThingBase thing = _thingFactory.CreateFromDescription(description);
-            thing.Physics.Update(description.AlmostPhysics, ThingBase.UpdateLocationSettings.All);
-            ModelManager.AddOrUpdateThing(thing);
+            if (thing != null)
+            {
+                thing.Physics.Update(description.AlmostPhysics, ThingBase.UpdateLocationSettings.All);
+                ModelManager.AddOrUpdateThing(thing);
+            }
         }
 
         public void SetKeysInfo(KeysInfo keysMine)

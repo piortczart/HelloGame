@@ -56,7 +56,7 @@ namespace HelloGame.Client
         {
             base.OnPaint(e);
 
-            _renderer.PaintStuff(e.Graphics);
+            _renderer.PaintStuff(e.Graphics, new Size(Width, Height));
 
             PaintLogDetails(e.Graphics);
         }

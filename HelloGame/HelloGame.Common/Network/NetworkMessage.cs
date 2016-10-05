@@ -1,5 +1,6 @@
 ﻿using System;
 using HelloGame.Common.Extensions;
+using HelloGame.Common.Model.GameObjects.Ships;
 
 namespace HelloGame.Common.Network
 {
@@ -13,5 +14,11 @@ namespace HelloGame.Common.Network
         {
             return $"[{Type}] {Payload.SubstringSafe(0, 50)}";
         }
+    }
+
+    public class NetworkMessageHello
+    {
+        public string Name { get; set; }
+        public ClanEnum Clan { get; set; }
     }
 }

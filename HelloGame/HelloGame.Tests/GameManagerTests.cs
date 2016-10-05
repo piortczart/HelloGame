@@ -53,11 +53,11 @@ namespace HelloGame.Tests
             var injections = ninject.Get<ThingBaseInjections>();
 
             // Create an AI Ship.
-            var aiShip = thingFactory.GetAiShip(10, new Point(10, 10), "AI", 1);
+            var aiShip = thingFactory.GetAiShip(new Point(10, 10), "AI", 1);
             gameManager.ModelManager.AddOrUpdateThing(aiShip);
 
             // Create a player.
-            var playerShip = thingFactory.GetPlayerShip(10, new Point(10, 10), "PLAYUR", 2);
+            var playerShip = thingFactory.GetPlayerShip(new Point(10, 10), "PLAYUR", Common.Model.GameObjects.Ships.ClanEnum.Integrations);
             gameManager.ModelManager.AddOrUpdateThing(aiShip);
 
             // Make 1 model update.

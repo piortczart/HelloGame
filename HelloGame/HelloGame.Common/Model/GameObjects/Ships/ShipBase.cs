@@ -14,7 +14,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         protected readonly ShipBaseSettings ShipBaseSettings;
         public int Score { get; set; }
 
-        protected ShipBase(ThingBaseInjections injections, GameThingCoordinator gameCoordinator, ShipBaseSettings baseSettings, decimal size, string name, int? id, ThingBase creator = null, int score = 0)
+        protected ShipBase(ThingBaseInjections injections, GameThingCoordinator gameCoordinator, ShipBaseSettings baseSettings, string name, int? id, ThingBase creator = null, int score = 0)
             : base(injections, baseSettings, creator, id)
         {
             GameCoordinator = gameCoordinator;
@@ -25,29 +25,16 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             LaserLimiter = new Limiter(baseSettings.LazerLimit, TimeSource);
             BombLimiter = new Limiter(TimeSpan.FromSeconds(1), TimeSource);
 
-            Physics.Size = size;
+            Physics.Size = baseSettings.Size;
             Physics.SelfPropelling = new Real2DVector(baseSettings.MaxEnginePower);
             Physics.Interia = new Real2DVector(baseSettings.MaxInteria);
         }
 
-        protected void PewPew(bool isKeyBased = false)
+        protected void PewPew()
         {
             if (LaserLimiter.CanHappen())
             {
-                var laser = new LazerBeamPew(Injections, this, -1);
-
-                Real2DVector inertia = Physics.GetDirection(30);
-                laser.Spawn(Physics.PositionPoint, inertia);
-                laser.Physics.Angle = Physics.Angle;
-
-                if (isKeyBased)
-                {
-                    GameCoordinator.AskServerToSpawn(laser);
-                }
-                else
-                {
-                    GameCoordinator.UpdateThing(laser);
-                }
+                Coordinator.ShootLazer(this);
             }
         }
 
@@ -68,16 +55,8 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             {
                 var shipPen = new Pen(Brushes.DarkBlue);
 
-                if (GeneralSettings.ShowPlayerPhysicsDetails && this is PlayerShip)
-                {
-                    g.DrawString($"Ship angle: {Physics.Angle * 57.296m:0}", Font, Brushes.Black, new PointF(155, 155));
-                    g.DrawString($"Engine: {Physics.SelfPropelling.Size:0.00}", Font, Brushes.Black, new PointF(155, 185));
-                    g.DrawString($"Inertia: {Physics.Interia}", Font, Brushes.Black, new PointF(155, 215));
-                    g.DrawString($"Engine: {Physics.SelfPropelling}", Font, Brushes.Black, new PointF(155, 245));
-                }
-
                 // This vector will point where the ship is going.
-                Point p2 = Physics.GetPointInDirection(10);
+                Point p2 = Physics.GetPointInDirection(Settingz.Size / 2 + 3);
                 g.DrawLine(shipPen, Physics.PositionPoint, p2);
 
                 // This is the circle around the ship.
@@ -96,6 +75,12 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         {
             // AIs can't hurt each other.
             if (this is AiShip && other.Creator is AiShip)
+            {
+                return;
+            }
+
+            // Some stuff ignores planets.
+            if (!Settingz.CollidesWithPlanets && other is BigMass)
             {
                 return;
             }

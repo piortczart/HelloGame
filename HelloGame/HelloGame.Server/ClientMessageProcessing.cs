@@ -72,7 +72,8 @@ namespace HelloGame.Server
             switch (message.Type)
             {
                 case NetworkMessageType.Hello:
-                    PlayerShipOther ship = _gameManager.AddPlayer(message.Payload.SubstringSafe(0, 15));
+                    NetworkMessageHello hello = message.Payload.DeSerializeJson<NetworkMessageHello>();
+                    PlayerShipOther ship = _gameManager.AddPlayer(hello.Name.SubstringSafe(0, 15), hello.Clan);
                     Clients[clientStream] = ship;
                     break;
                 case NetworkMessageType.MyPosition:

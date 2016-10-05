@@ -1,5 +1,6 @@
 ﻿using System;
 using HelloGame.Common.MathStuff;
+using System.Drawing;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
 {
@@ -7,12 +8,25 @@ namespace HelloGame.Common.Model.GameObjects.Ships
     {
         public KeysInfo KeysInfo { private get; set; }
 
-        public PlayerShipMovable(ThingBaseInjections injections, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null, ThingBase creator = null) 
-            : base(injections, gameManager, name, size, id, creator)
+        public PlayerShipMovable(ThingBaseInjections injections, GameThingCoordinator gameManager, string name, ClanEnum clan, int? id = null, ThingBase creator = null) 
+            : base(injections, gameManager, name, clan, id, creator)
         {
             // TODO: REDO THIS
             // Just for now. They will be reset for the proper ones.
             KeysInfo = new KeysInfo();
+        }
+
+        protected override void PaintStuffInternal(Graphics g)
+        {
+            base.PaintStuffInternal(g);
+
+            if (GeneralSettings.ShowPlayerPhysicsDetails)
+            {
+                g.DrawString($"Ship angle: {Physics.Angle * 57.296m:0}", Font, Brushes.Black, new PointF(155, 155));
+                g.DrawString($"Engine: {Physics.SelfPropelling.Size:0.00}", Font, Brushes.Black, new PointF(155, 185));
+                g.DrawString($"Inertia: {Physics.Interia}", Font, Brushes.Black, new PointF(155, 215));
+                g.DrawString($"Engine: {Physics.SelfPropelling}", Font, Brushes.Black, new PointF(155, 245));
+            }
         }
 
         private decimal GetUpdatedShipAngle(decimal shipAngle, TimeSpan timeSinceLastUpdate)
@@ -62,7 +76,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
             if (KeysInfo.IsSpace)
             {
-                PewPew(true);
+                PewPew();
             }
         }
 
@@ -79,7 +93,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             }
             else if (keys.IsS) // S is pressed
             {
-                engineForce.Change(shipAngle, -0.5m);
+                engineForce.Change(shipAngle, -5m);
             }
         }
 

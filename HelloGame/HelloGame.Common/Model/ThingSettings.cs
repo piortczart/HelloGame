@@ -16,5 +16,7 @@ namespace HelloGame.Common.Model
         public bool CanBeMoved { get; set; } = true;
         public decimal Size { get; set; } = 1;
         public TimeSpan LazerLimit { get; set; } = TimeSpan.FromSeconds(2);
+        public bool CollidesWithPlanets { get; set; } = true;
+        public decimal LazerSpeed { get; set; } = 30;
     }
 }

@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using HelloGame.Client.Properties;
 using HelloGame.Common.Model;
 using System.Threading.Tasks;
+using HelloGame.Common.Model.GameObjects.Ships;
+using System.Linq;
 
 namespace HelloGame.Client
 {
@@ -21,6 +23,8 @@ namespace HelloGame.Client
             tbServerName.Text = Settings.Default.ServerName;
             tbPlayerName.Text = Settings.Default.PlayerName;
             cbCreateServer.Checked = Settings.Default.SpawnServer;
+
+            cbClan.DataSource = Enum.GetValues(typeof(ClanEnum)).Cast<ClanEnum>();
         }
 
         private void btnPlay_Click(object sender, EventArgs e)
@@ -54,17 +58,20 @@ namespace HelloGame.Client
                 }
             }
 
+            ClanEnum clan = (ClanEnum)cbClan.SelectedItem;
+            string name = Settings.Default.PlayerName;
+
             if (cbLocalOnly.Checked)
             {
                 // ?
                 GameManager.StartGame();
-                GameManager.AddPlayer(Settings.Default.PlayerName);
+                GameManager.AddPlayer(name, clan);
             }
             else
             {
                 try
                 {
-                    ClientNetwork.StartConnection(Settings.Default.ServerName, Settings.Default.PlayerName, Cancellation);
+                    ClientNetwork.StartConnection(Settings.Default.ServerName, name, clan, Cancellation);
                 }
                 catch (Exception exception)
                 {

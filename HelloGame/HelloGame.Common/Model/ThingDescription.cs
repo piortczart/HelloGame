@@ -27,7 +27,7 @@ namespace HelloGame.Common.Model
             if (player != null)
             {
                 Type = isHisShip ? "PlayerShipMovable" : "PlayerShipAny";
-                ConstructParams = new object[] { player.Name, player.Physics.Size, player.Creator?.Id };
+                ConstructParams = new object[] { player.Name, player.Creator?.Id, player.Clan };
                 return;
             }
 
@@ -43,7 +43,7 @@ namespace HelloGame.Common.Model
             if (ai != null)
             {
                 Type = ai.GetType().Name;
-                ConstructParams = new object[] { ai.Name, ai.Physics.Size, ai.Creator?.Id };
+                ConstructParams = new object[] { ai.Name, ai.Creator?.Id };
                 return;
             }
 

@@ -10,6 +10,7 @@ using HelloGame.Common.Extensions;
 using HelloGame.Common.Logging;
 using HelloGame.Common.Model;
 using HelloGame.Common.Network;
+using HelloGame.Common.Model.GameObjects.Ships;
 
 namespace HelloGame.Client
 {
@@ -21,7 +22,7 @@ namespace HelloGame.Client
     public class ClientNetwork
     {
         private readonly GameManager _gameManager;
-        Stream _stream;
+        private Stream _stream;
         private readonly MessageTransciever _sender = new MessageTransciever();
         private readonly ILogger _logger;
         private readonly Timer _sendMeTimer;
@@ -78,12 +79,12 @@ namespace HelloGame.Client
             _sendMeTimer.Change(PropagateFrequency, Timeout.InfiniteTimeSpan);
         }
 
-        public void StartConnection(string serverAddress, string playerName, CancellationTokenSource cancellation)
+        public void StartConnection(string serverAddress, string playerName, ClanEnum clan, CancellationTokenSource cancellation)
         {
             _logger.LogInfo($"Starting connection to {serverAddress}:{ServerPortNumber}");
 
             Connect(serverAddress, ServerPortNumber);
-            SendMyInfo(playerName);
+            IntroduceMyself(playerName, clan);
 
             Task.Run(async () => { await Receive(cancellation.Token); }, cancellation.Token);
         }
@@ -94,9 +95,13 @@ namespace HelloGame.Client
             _stream = client.GetStream();
         }
 
-        private void SendMyInfo(string playerName)
+        private void IntroduceMyself(string playerName, ClanEnum clan)
         {
-            _sender.Send(new NetworkMessage { Type = NetworkMessageType.Hello, Payload = playerName }, _stream);
+            _sender.Send(new NetworkMessage
+            {
+                Type = NetworkMessageType.Hello,
+                Payload = new NetworkMessageHello { Name = playerName, Clan = clan }.SerializeJson()
+            }, _stream);
         }
 
         private async Task Receive(CancellationToken token)

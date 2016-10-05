@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HelloGame.Common.Physicsish;
+using System;
 using System.Drawing;
 
 namespace HelloGame.Common.Extensions
@@ -10,6 +11,12 @@ namespace HelloGame.Common.Extensions
             int x = random.Next(area.X, area.X + area.Width);
             int y = random.Next(area.Y, area.Y + area.Height);
             return new Point(x, y);
+        }
+
+        public static Position GetRandomPosition(this Random random, Rectangle area)
+        {
+            Point point = random.GetRandomPoint(area);
+            return new Position(point.X, point.Y);
         }
     }
 }

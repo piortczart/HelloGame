@@ -31,26 +31,25 @@ namespace HelloGame.Common.Model
                 case "PlayerShipAny":
                     {
                         string name = (string)description.ConstructParams[0];
-                        int size = (int)(double)description.ConstructParams[1];
-                        int? creator = (int?)description.ConstructParams[2];
+                        int? creator = (int?)description.ConstructParams[1];
+                        ClanEnum clan = (ClanEnum)(int)(long)description.ConstructParams[2];
 
-                        return GetPlayerShip(size, description.AlmostPhysics.PositionPoint, name, description.Id, _gameManager.GetThingById(creator));
+                        return GetPlayerShip(description.AlmostPhysics.PositionPoint, name, clan, description.Id, _gameManager.GetThingById(creator));
                     }
                 case "PlayerShipMovable":
                     {
                         string name = (string)description.ConstructParams[0];
-                        int size = (int)(double)description.ConstructParams[1];
-                        int? creator = (int?)description.ConstructParams[2];
+                        int? creator = (int?)description.ConstructParams[1];
+                        ClanEnum clan = (ClanEnum)(int)(long)description.ConstructParams[2];
 
-                        return GetPlayerShipMovable(size, description.AlmostPhysics.PositionPoint, name, description.Id, _gameManager.GetThingById(creator));
+                        return GetPlayerShipMovable(description.AlmostPhysics.PositionPoint, name, clan, description.Id, _gameManager.GetThingById(creator));
                     }
                 case "AiShip":
                     {
                         string name = (string)description.ConstructParams[0];
-                        int size = (int)(double)description.ConstructParams[1];
-                        int? creator = (int?)description.ConstructParams[2];
+                        int? creator = (int?)description.ConstructParams[1];
 
-                        return GetAiShip(size, description.AlmostPhysics.PositionPoint, name, description.Id, _gameManager.GetThingById(creator));
+                        return GetAiShip(description.AlmostPhysics.PositionPoint, name, description.Id, _gameManager.GetThingById(creator));
                     }
                 case "BigMass":
                     {
@@ -65,15 +64,17 @@ namespace HelloGame.Common.Model
                         // The id comming from the player can be bad.
                         // TODO: This can be spawned by the server too!!
                         int? id = _isServer ? (int?)null : description.Id;
-                        int? creator = (int?)(long?)description.ConstructParams[0];
-                        return GetLazerBeam(id, description.AlmostPhysics.PositionPoint, _gameManager.GetThingById(creator));
+                        int? creatorId = (int?)(long?)description.ConstructParams[0];
+
+                        ThingBase creatorThing = _gameManager.GetThingById(creatorId);
+                        return creatorThing != null ? GetLazerBeam(id, description.AlmostPhysics.PositionPoint, creatorThing) : null;
                     }
             }
 
             throw new NotImplementedException($"Cannot spawn {description.Type}");
         }
 
-        private ThingBase GetLazerBeam(int? id, Point location, ThingBase creator = null)
+        public LazerBeamPew GetLazerBeam(int? id, Point location, ThingBase creator)
         {
             if (!_isServer && !id.HasValue)
             {
@@ -81,37 +82,39 @@ namespace HelloGame.Common.Model
             }
 
             var lazer = new LazerBeamPew(_thingInjections, creator, id);
-            lazer.Spawn(location);
+            Real2DVector lazerInteria = creator.Physics.GetDirection(creator.Settingz.LazerSpeed);
+            lazer.Spawn(location, lazerInteria);
+            lazer.Physics.Angle = creator.Physics.Angle;
             return lazer;
         }
 
-        public PlayerShipMovable GetPlayerShipMovable(int size, Point location, string name, int? id = null, ThingBase creator = null)
+        public PlayerShipMovable GetPlayerShipMovable(Point location, string name, ClanEnum clan, int? id = null, ThingBase creator = null)
         {
             if (!_isServer && !id.HasValue)
             {
                 throw new ArgumentException("The identifier is expected in a non-server environment.", nameof(id));
             }
 
-            var ship = new PlayerShipMovable(_thingInjections, _gameManager, name, size, id, creator);
+            var ship = new PlayerShipMovable(_thingInjections, _gameManager, name, clan, id, creator);
             ship.Spawn(location);
             return ship;
         }
 
-        public PlayerShipOther GetPlayerShip(int size, Point location, string name, int? id = null, ThingBase creator = null)
+        public PlayerShipOther GetPlayerShip(Point location, string name, ClanEnum clan, int? id = null, ThingBase creator = null)
         {
             if (!_isServer && !id.HasValue)
             {
                 throw new ArgumentException("The identifier is expected in a non-server environment.", nameof(id));
             }
 
-            var ship = new PlayerShipOther(_thingInjections, _gameManager, name, size, id, creator);
+            var ship = new PlayerShipOther(_thingInjections, _gameManager, name, clan, id, creator);
             ship.Spawn(location);
             return ship;
         }
 
-        public AiShip GetAiShip(int size, Point point, string name, int? id = null, ThingBase creator = null)
+        public AiShip GetAiShip(Point point, string name, int? id = null, ThingBase creator = null)
         {
-            var ship = new AiShip(_thingInjections, _gameManager, name, size, id, creator);
+            var ship = new AiShip(_thingInjections, _gameManager, name, id, creator);
             ship.Spawn(point);
             return ship;
         }

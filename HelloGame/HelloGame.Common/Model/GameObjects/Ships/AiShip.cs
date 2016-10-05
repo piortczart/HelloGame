@@ -12,8 +12,8 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         private Real2DVector _playerPointer = new Real2DVector();
         private readonly AiShipBaseSettings _aiShipBaseSettings;
 
-        public AiShip(ThingBaseInjections injections, GameThingCoordinator coordinator, string name, decimal size = 10, int? id = null, ThingBase creator = null)
-            : base(injections, coordinator, injections.GeneralSettings.AiShipBaseSettings, size, name, id, creator)
+        public AiShip(ThingBaseInjections injections, GameThingCoordinator coordinator, string name, int? id = null, ThingBase creator = null)
+            : base(injections, coordinator, injections.GeneralSettings.AiShipBaseSettings, name, id, creator)
         {
             _aiShipBaseSettings = injections.GeneralSettings.AiShipBaseSettings;
             _locatePlayerLimiter = new Limiter(_aiShipBaseSettings.LocatePlayerFrequency, TimeSource);

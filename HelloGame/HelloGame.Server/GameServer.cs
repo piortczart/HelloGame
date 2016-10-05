@@ -83,7 +83,7 @@ namespace HelloGame.Server
                     foreach (PlayerShipOther deadPlayer in deadPlayers)
                     {
                         if (deadPlayer == _clientMessageProcessing.Clients[networkStream]) {
-                            PlayerShipOther newShip = _gameManager.AddPlayer(deadPlayer.Name);
+                            PlayerShipOther newShip = _gameManager.AddPlayer(deadPlayer.Name, deadPlayer.Clan);
                             _clientMessageProcessing.Clients[networkStream] = newShip;
                         }
                     }

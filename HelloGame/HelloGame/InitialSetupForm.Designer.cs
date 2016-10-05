@@ -33,7 +33,7 @@
             // 
             // initialSetup1
             // 
-            this.initialSetup1.ClientNetwork = null;
+            //this.initialSetup1.ClientNetwork = null;
             this.initialSetup1.Location = new System.Drawing.Point(12, 12);
             this.initialSetup1.Name = "initialSetup1";
             this.initialSetup1.Size = new System.Drawing.Size(331, 156);

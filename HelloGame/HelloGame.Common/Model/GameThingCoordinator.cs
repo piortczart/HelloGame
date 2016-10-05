@@ -1,4 +1,5 @@
 using System;
+using HelloGame.Common.Model.GameObjects.Ships;
 
 namespace HelloGame.Common.Model
 {
@@ -11,6 +12,7 @@ namespace HelloGame.Common.Model
         private readonly ModelManager _model;
         private Action<ThingBase> _askToSpawnAction;
         private Action<ThingBase> _updateThingAction;
+        private Action<ThingBase> _shootLazerAction;
 
         public GameThingCoordinator(ModelManager model)
         {
@@ -26,18 +28,26 @@ namespace HelloGame.Common.Model
             return _model.Things.GetById(id.Value);
         }
 
-        public void SetActions(Action<ThingBase> askToSpawn, Action<ThingBase> updateThing)
+        public void SetActions(Action<ThingBase> askToSpawn, Action<ThingBase> updateThing, Action<ThingBase> shootLazer)
         {
             _askToSpawnAction = askToSpawn;
             _updateThingAction = updateThing;
+            _shootLazerAction = shootLazer;
         }
 
-        public void AskServerToSpawn(ThingBase thing) {
+        public void AskServerToSpawn(ThingBase thing)
+        {
             _askToSpawnAction(thing);
         }
 
-        public void UpdateThing(ThingBase thing) {
+        public void UpdateThing(ThingBase thing)
+        {
             _updateThingAction(thing);
+        }
+
+        internal void ShootLazer(ShipBase shipBase)
+        {
+            _shootLazerAction(shipBase);
         }
     }
 }

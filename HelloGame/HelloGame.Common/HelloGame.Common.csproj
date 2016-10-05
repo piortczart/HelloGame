@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\GameObjects\Ships\AiShipBaseSettings.cs" />
+    <Compile Include="Model\GameObjects\Ships\ClanEnum.cs" />
     <Compile Include="Model\GameObjects\Ships\ShipBaseSettings.cs" />
     <Compile Include="Model\ThingBaseInjections.cs" />
     <Compile Include="TimeStuffs\EventPerSecond.cs" />
@@ -78,7 +79,7 @@
     <Compile Include="Model\GameObjects\Ships\AiShip.cs" />
     <Compile Include="Model\GameObjects\Ships\ShipBase.cs" />
     <Compile Include="Model\GameObjects\Ships\PlayerShip.cs" />
-    <Compile Include="Model\GameObjects\Ships\PlayerShipAny.cs" />
+    <Compile Include="Model\GameObjects\Ships\PlayerShipOther.cs" />
     <Compile Include="Model\GameObjects\Ships\PlayerShipMovable.cs" />
     <Compile Include="Model\GameThingCoordinator.cs" />
     <Compile Include="Model\KeysInfo.cs" />
