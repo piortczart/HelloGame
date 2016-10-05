@@ -7,23 +7,10 @@ using HelloGame.Common.MathStuff;
 using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Physicsish;
 using System.Windows.Forms;
+using HelloGame.Common.Model.GameObjects;
 
 namespace HelloGame.Common.Model
 {
-    public class ThingBaseInjections
-    {
-        public TimeSource TimeSource { get; set; }
-        public ILoggerFactory LoggerFactory { get; set; }
-        public GeneralSettings GeneralSettings { get; set; }
-
-        public ThingBaseInjections(TimeSource timeSource, ILoggerFactory loggerFactory, GeneralSettings generalSettings)
-        {
-            TimeSource = timeSource;
-            LoggerFactory = loggerFactory;
-            GeneralSettings = generalSettings;
-        }
-    }
-
     public abstract class ThingBase : ElapsingThing
     {
         public enum UpdateLocationSettings
@@ -45,19 +32,19 @@ namespace HelloGame.Common.Model
         protected readonly ThingBaseInjections Injections;
         protected readonly GeneralSettings GeneralSettings;
 
-        protected ThingBase(ThingBaseInjections injections, ThingSettings settings, ThingBase creator = null, int? id = null)
-            : base(settings.TimeToLive, injections.TimeSource)
+        protected ThingBase(ThingBaseInjections injections, ThingSettings baseSettings, ThingBase creator = null, int? id = null)
+            : base(baseSettings.TimeToLive, injections.TimeSource)
         {
             GeneralSettings = injections.GeneralSettings;
             Injections = injections;
-            Settingz = settings;
+            Settingz = baseSettings;
             Logger = injections.LoggerFactory.CreateLogger(GetType());
-            Physics = new AlmostPhysics(settings.Aerodynamism);
+            Physics = new AlmostPhysics(baseSettings.Aerodynamism);
             Creator = creator;
-            Physics.Mass = settings.Mass;
-            Physics.RadPerSecond = settings.RadPerSecond;
-            CanBeMoved = settings.CanBeMoved;
-            ElapseIn(settings.TimeToLive);
+            Physics.Mass = baseSettings.Mass;
+            Physics.RadPerSecond = baseSettings.RadPerSecond;
+            CanBeMoved = baseSettings.CanBeMoved;
+            ElapseIn(baseSettings.TimeToLive);
             Id = id ?? Interlocked.Add(ref _highestId, 1);
         }
 
@@ -108,7 +95,7 @@ namespace HelloGame.Common.Model
                     UpdatePhysics(timeSinceLastUpdate, otherThings);
 
                     // Too far away! DIE!
-                    if (Math.Abs(Physics.Position.X) > 100000 || Math.Abs(Physics.Position.Y) > 100000)
+                    if (Math.Abs(Physics.Position.X) > 10000 || Math.Abs(Physics.Position.Y) > 10000)
                     {
                         Despawn();
                     }

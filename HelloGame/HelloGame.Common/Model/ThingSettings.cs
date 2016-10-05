@@ -7,6 +7,8 @@ namespace HelloGame.Common.Model
     /// </summary>
     public class ThingSettings
     {
+        public static readonly TimeSpan LiveForever = TimeSpan.FromMilliseconds(-1);
+
         public TimeSpan TimeToLive { get; set; }
         public decimal Aerodynamism { get; set; }
         public decimal Mass { get; set; }

@@ -1,5 +1,4 @@
 using HelloGame.Common.Model.GameObjects.Ships;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,13 +10,13 @@ namespace HelloGame.Common.Model
     public class ThingsList
     {
         private readonly List<ThingBase> _interalList = new List<ThingBase>();
-        private static readonly object _lock = new object();
+        private static readonly object Lock = new object();
 
         public int Count
         {
             get
             {
-                lock (_lock)
+                lock (Lock)
                 {
                     return _interalList.Count;
                 }
@@ -26,7 +25,7 @@ namespace HelloGame.Common.Model
 
         public IReadOnlyCollection<ThingBase> GetThingsReadOnly()
         {
-            lock (_lock)
+            lock (Lock)
             {
                 return new List<ThingBase>(_interalList).AsReadOnly();
             }
@@ -37,7 +36,7 @@ namespace HelloGame.Common.Model
         /// </summary>
         public ThingBase[] GetThingsArray()
         {
-            lock (_lock)
+            lock (Lock)
             {
                 var result = new ThingBase[_interalList.Count];
                 _interalList.CopyTo(result);
@@ -47,7 +46,7 @@ namespace HelloGame.Common.Model
 
         public PlayerShipMovable GetPlayerShip()
         {
-            lock (_lock)
+            lock (Lock)
             {
                 return (PlayerShipMovable)_interalList.SingleOrDefault(t => t is PlayerShipMovable);
             }
@@ -59,7 +58,7 @@ namespace HelloGame.Common.Model
         /// </summary>
         public ThingBase AddIfMissing(ThingBase otherThing)
         {
-            lock (_lock)
+            lock (Lock)
             {
                 // Check if it already exists.
                 ThingBase existing = _interalList.Find(t => t.Id == otherThing.Id);
@@ -77,7 +76,7 @@ namespace HelloGame.Common.Model
 
         public ThingBase GetById(int id)
         {
-            lock (_lock)
+            lock (Lock)
             {
                 return _interalList.Find(t => t.Id == id);
             }
@@ -85,7 +84,7 @@ namespace HelloGame.Common.Model
 
         public bool Remove(ThingBase thing)
         {
-            lock (_lock)
+            lock (Lock)
             {
                 // This will not throw an exception if the thing is not there.
                 return _interalList.Remove(thing);
@@ -94,7 +93,7 @@ namespace HelloGame.Common.Model
 
         public IReadOnlyCollection<ThingBase> GetByIds(IList<int> stuffIds)
         {
-            lock (_lock)
+            lock (Lock)
             {
                 return new List<ThingBase>(_interalList.Where(t => stuffIds.Contains(t.Id))).AsReadOnly();
             }

@@ -47,29 +47,22 @@ namespace HelloGame.Server
 
         private async Task HandleClientComm(TcpClient client, CancellationToken cancellation)
         {
-            NetworkStream clientStream = null;
             try
             {
                 TcpClient tcpClient = client;
-                clientStream = tcpClient.GetStream();
+                var clientStream = tcpClient.GetStream();
                 Clients[clientStream] = null;
 
                 // Deserialize the stream into object
                 while (!cancellation.IsCancellationRequested)
                 {
                     NetworkMessage message = await _transciever.GetAsync(clientStream);
-                    //_logger.LogInfo($"Got a client message: {message}");
                     ProcessMessage(message, clientStream);
                 }
             }
             catch (Exception exception)
             {
                 _logger.LogError("Handling client communication failed.", exception);
-                if (clientStream != null)
-                {
-                    PlayerShipOther ship = Clients[clientStream];
-                    ship?.Despawn();
-                }
                 client.Close();
             }
         }

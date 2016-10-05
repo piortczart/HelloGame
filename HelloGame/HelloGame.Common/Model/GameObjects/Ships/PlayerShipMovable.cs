@@ -1,5 +1,4 @@
 ﻿using System;
-using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Common.Model.GameObjects.Ships

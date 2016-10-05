@@ -6,7 +6,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
     public abstract class PlayerShip : ShipBase
     {
         protected PlayerShip(ThingBaseInjections injections, GameThingCoordinator gameManager, string name, decimal size = 10, int? id = null, ThingBase creator = null) 
-            : base(injections, gameManager, injections.GeneralSettings.PlayerShipSettings, size, name, id, creator)
+            : base(injections, gameManager, injections.GeneralSettings.PlayerShipBaseSettings, size, name, id, creator)
         {
         }
 

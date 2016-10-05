@@ -5,37 +5,29 @@ using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
 {
-    public class ShipSettings : ThingSettings
-    {
-        public decimal MaxEnginePower { get; set; }
-        public decimal MaxInteria { get; set; }
-        public TimeSpan DespawnTime { get; set; }
-        public int PointsForKill { get; set; }
-    }
-
     public abstract class ShipBase : ThingBase
     {
         protected readonly GameThingCoordinator GameCoordinator;
         public string Name { get; }
         protected readonly Limiter BombLimiter;
         protected readonly Limiter LaserLimiter;
-        protected readonly ShipSettings ShipSettings;
+        protected readonly ShipBaseSettings ShipBaseSettings;
         public int Score { get; set; }
 
-        protected ShipBase(ThingBaseInjections injections, GameThingCoordinator gameCoordinator, ShipSettings settings, decimal size, string name, int? id, ThingBase creator = null, int score = 0)
-            : base(injections, settings, creator, id)
+        protected ShipBase(ThingBaseInjections injections, GameThingCoordinator gameCoordinator, ShipBaseSettings baseSettings, decimal size, string name, int? id, ThingBase creator = null, int score = 0)
+            : base(injections, baseSettings, creator, id)
         {
             GameCoordinator = gameCoordinator;
             Name = name;
-            ShipSettings = settings;
+            ShipBaseSettings = baseSettings;
             Score = score;
 
-            LaserLimiter = new Limiter(settings.LazerLimit, TimeSource);
+            LaserLimiter = new Limiter(baseSettings.LazerLimit, TimeSource);
             BombLimiter = new Limiter(TimeSpan.FromSeconds(1), TimeSource);
 
             Physics.Size = size;
-            Physics.SelfPropelling = new Real2DVector(settings.MaxEnginePower);
-            Physics.Interia = new Real2DVector(settings.MaxInteria);
+            Physics.SelfPropelling = new Real2DVector(baseSettings.MaxEnginePower);
+            Physics.Interia = new Real2DVector(baseSettings.MaxInteria);
         }
 
         protected void PewPew(bool isKeyBased = false)
@@ -102,11 +94,13 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
         public override void CollidesWith(ThingBase other)
         {
+            // AIs can't hurt each other.
             if (this is AiShip && other.Creator is AiShip)
             {
                 return;
             }
 
+            // Collision with a bomb?
             Bomb bomb = other as Bomb;
             if (bomb != null)
             {
@@ -116,6 +110,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 }
             }
 
+            // Collision with a Lazer?
             LazerBeamPew pew = other as LazerBeamPew;
             if (pew != null)
             {
@@ -125,13 +120,14 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 }
             }
 
+            // Collision with a ship?
             ShipBase ship = other.Creator as ShipBase;
             if (ship != null)
             {
                 ship.Score += 1;
             }
 
-            Destroy(ShipSettings.DespawnTime);
+            Destroy(ShipBaseSettings.DespawnTime);
         }
     }
 }

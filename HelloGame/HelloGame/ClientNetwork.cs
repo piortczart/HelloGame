@@ -13,6 +13,11 @@ using HelloGame.Common.Network;
 
 namespace HelloGame.Client
 {
+    /// <summary>
+    /// Handles the client's network communication.
+    /// Periodically sends client's updated position to the server.
+    /// Receives messages from the server, updates model.
+    /// </summary>
     public class ClientNetwork
     {
         private readonly GameManager _gameManager;
@@ -110,6 +115,7 @@ namespace HelloGame.Client
                         case NetworkMessageType.UpdateStuff:
                             {
                                 List<ThingDescription> stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
+                                _logger.LogInfo($"Server sent update, count: {stuff.Count}");
                                 foreach (ThingDescription description in stuff)
                                 {
                                     _gameManager.ParseThingDescription(description);

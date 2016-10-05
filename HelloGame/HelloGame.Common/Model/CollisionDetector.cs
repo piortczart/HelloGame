@@ -16,11 +16,18 @@
             for (int i = 0; i < things.Length; i++)
             {
                 ThingBase thing1 = things[i];
+                if (thing1.IsDestroyed)
+                {
+                    continue;
+                }
 
-                for (int j = i + 1; j < things.Length; j++)
+                for (int j = 0; j < things.Length; j++)
                 {
                     ThingBase thing2 = things[j];
-
+                    if (thing1 == thing2 || thing2.IsDestroyed)
+                    {
+                        continue;
+                    }
 
                     if (thing1.DistanceTo(thing2) <= 3)
                     {

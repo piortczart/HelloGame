@@ -15,10 +15,11 @@ namespace HelloGame.Client
         [STAThread]
         static void Main()
         {
-            GeneralSettings settings = GeneralSettings.Gameplay;
+            GeneralSettings settings = GeneralSettings.Custom;
                 //new GeneralSettings
                 //{
-                //    ShowThingIds = false
+                //    SpawnAi = false,
+                //    ShowThingIds = false,
                 //};
 
             // A separate server binding (in sense server is a separate application ran inside this process)

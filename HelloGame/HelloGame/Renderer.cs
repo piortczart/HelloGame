@@ -5,11 +5,14 @@ using HelloGame.Common;
 
 namespace HelloGame.Client
 {
+    /// <summary>
+    /// Renders all game objects. Needs to be called from outside.
+    /// </summary>
     public class Renderer : IRenderer
     {
         public Action RepaintAction { get; set; }
         private readonly ModelManager _modelManager;
-        Overlay _overlay;
+        readonly Overlay _overlay;
 
         public Renderer(ModelManager modelManager, Overlay overlay)
         {
@@ -21,8 +24,7 @@ namespace HelloGame.Client
         {
             foreach (ThingBase item in _modelManager.Things.GetThingsReadOnly())
             {
-                if (item != null)
-                    item.RenderBase(graphics);
+                item.RenderBase(graphics);
             }
             _overlay.Render(graphics);
         }

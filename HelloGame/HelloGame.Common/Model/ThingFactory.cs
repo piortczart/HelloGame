@@ -116,10 +116,10 @@ namespace HelloGame.Common.Model
             return ship;
         }
 
-        public BigMass GetBigMass(int? size = null, Point? point = null, int? id = null, ThingBase creator = null)
+        public BigMass GetBigMass(int size, Point point, int? id = null, ThingBase creator = null)
         {
-            BigMass mass = new BigMass(_thingInjections, size ?? MathX.Random.Next(10, 50), id, creator);
-            mass.Spawn(point ?? new Point(MathX.Random.Next(600, 900), MathX.Random.Next(100, 300)));
+            BigMass mass = new BigMass(_thingInjections, size, id, creator);
+            mass.Spawn(point);
             return mass;
         }
     }

@@ -18,11 +18,7 @@ namespace HelloGame.Tests
         {
             // The time is paused now.
             IResolutionRoot ninject = new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true, true));
-            var loggerFactory = new LoggerFactory("");
-            ILogger logger = loggerFactory.CreateLogger(GetType());
             var gameManager = ninject.Get<GameManager>();
-            var gameCoordinator = ninject.Get<GameThingCoordinator>();
-            var thingFactory = ninject.Get<ThingFactory>();
             var timeSource = ninject.Get<TimeSource>();
             var injections = ninject.Get<ThingBaseInjections>();
 

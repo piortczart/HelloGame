@@ -51,6 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\GameObjects\Ships\AiShipBaseSettings.cs" />
+    <Compile Include="Model\GameObjects\Ships\ShipBaseSettings.cs" />
+    <Compile Include="Model\ThingBaseInjections.cs" />
     <Compile Include="TimeStuffs\EventPerSecond.cs" />
     <Compile Include="Extensions\ExtensionsConcurrentQueue.cs" />
     <Compile Include="Extensions\ExtensionsRandom.cs" />

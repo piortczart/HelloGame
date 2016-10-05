@@ -6,8 +6,8 @@ namespace HelloGame.Common.Model
     {
         protected readonly TimeSpan SpawnedAt;
         public TimeSpan Age => TimeSource.ElapsedSinceStart - SpawnedAt;
-        public bool IsTimeToElapse { get; private set; }
-        public TimeSpan TimeToLive { get; private set; }
+        public bool IsTimeToElapse { get; set; }
+        public TimeSpan TimeToLive { get; set; }
         public double AgePercentage => 100 * Age.TotalMilliseconds / TimeToLive.TotalMilliseconds;
         protected readonly TimeSource TimeSource;
 
@@ -30,7 +30,8 @@ namespace HelloGame.Common.Model
 
         protected void UpdateElapsing()
         {
-            if (TimeToLive.TotalMilliseconds > 0 && Age > TimeToLive)
+            // TimeToLive less than 0 means infinite.
+            if (TimeToLive.TotalMilliseconds >= 0 && Age > TimeToLive)
             {
                 IsTimeToElapse = true;
             }

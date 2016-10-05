@@ -18,8 +18,9 @@ namespace HelloGame.Common.Model
         private readonly ILogger _logger;
         public ModelManager ModelManager { get; }
         private readonly ConcurrentQueue<ThingBase> _thingsToSpawn = new ConcurrentQueue<ThingBase>();
+        private GeneralSettings _settings;
 
-        public GameManager(ModelManager modelManager, GameThingCoordinator gameCoordinator, ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
+        public GameManager(GeneralSettings settings, ModelManager modelManager, GameThingCoordinator gameCoordinator, ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
         {
             ModelManager = modelManager;
             modelManager.AddUpdateModelAction(ModelUpdated);
@@ -27,6 +28,7 @@ namespace HelloGame.Common.Model
             _thingFactory = thingFactory;
             _isServer = isServer;
             _logger = loggerFactory.CreateLogger(GetType());
+            _settings = settings;
         }
 
         public void AskServerToSpawn(ThingBase thing)
@@ -73,7 +75,8 @@ namespace HelloGame.Common.Model
             }
 
             _logger.LogInfo($"Adding player: {name}");
-            PlayerShipOther newShip = _thingFactory.GetPlayerShip(15, new Point(100, 100), name);
+            Point location = MathX.Random.GetRandomPoint(new Rectangle(10, 10, 100, 800));
+            PlayerShipOther newShip = _thingFactory.GetPlayerShip(15, location, name);
             ModelManager.AddOrUpdateThing(newShip);
             return newShip;
         }
@@ -84,17 +87,21 @@ namespace HelloGame.Common.Model
             {
                 throw new Exception("Only server can add AI ships.");
             }
-
-            _logger.LogInfo("Adding AI ship.");
-            Point location = MathX.Random.GetRandomPoint(new Rectangle(300, 300, 300, 200));
-            AiShip newShip = _thingFactory.GetAiShip(15, location, "Stupid AI");
-            ModelManager.AddOrUpdateThing(newShip);
+            if (_settings.SpawnAi)
+            {
+                _logger.LogInfo("Adding AI ship.");
+                Point location = MathX.Random.GetRandomPoint(new Rectangle(100, 300, 300, 800));
+                AiShip newShip = _thingFactory.GetAiShip(15, location, "Stupid AI");
+                ModelManager.AddOrUpdateThing(newShip);
+            }
         }
 
         private void AddBigThing()
         {
             _logger.LogInfo("Adding a big thing.");
-            BigMass bigMass = _thingFactory.GetBigMass();
+            int size = MathX.Random.Next(30, 170);
+            var location = MathX.Random.GetRandomPoint(new Rectangle(100, 50, 900, 900));
+            BigMass bigMass = _thingFactory.GetBigMass(size, location);
             ModelManager.AddOrUpdateThing(bigMass);
         }
 
@@ -114,7 +121,7 @@ namespace HelloGame.Common.Model
                 //AddAiShip();
                 AddAiShip();
 
-                for (int i = 0; i < MathX.Random.Next(1, 1); i++)
+                for (int i = 0; i < MathX.Random.Next(5, 10); i++)
                 {
                     AddBigThing();
                 }

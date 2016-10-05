@@ -6,14 +6,17 @@ namespace HelloGame.Common.Model.GameObjects
 {
     public class LazerBeamPew : ThingBase
     {
-        public LazerBeamPew(ThingBaseInjections injections, ThingBase creator, int? id) 
+        public LazerBeamPew(ThingBaseInjections injections, ThingBase creator, int? id)
             : base(injections, injections.GeneralSettings.LazerBeamSettings, creator, id)
         {
         }
 
         public override void CollidesWith(ThingBase other)
         {
-            Destroy(TimeSpan.Zero);
+            if (other != Creator)
+            {
+                Destroy(TimeSpan.Zero);
+            }
         }
 
         protected override void Render(Graphics g)

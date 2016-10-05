@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using HelloGame.Common.Logging;
 using System.Collections.Concurrent;
 using HelloGame.Common.Extensions;
@@ -23,7 +20,6 @@ namespace HelloGame.Common.Model
         private readonly Overlay _overlay;
         public ThingsList Things { get { return _things; } }
         private readonly bool _isServer;
-        private readonly TimeSource _timeSource;
         private readonly TimeCounter _modelUpdateTimeCounter;
 
         public ModelManager(ILoggerFactory loggerFactory, TimeSource timeSource, Overlay overlay, bool isServer)
@@ -32,7 +28,6 @@ namespace HelloGame.Common.Model
             _logger = loggerFactory.CreateLogger(GetType());
             _modelUpdateThread = new Thread(UpdateModel) { IsBackground = true };
             _overlay = overlay;
-            _timeSource = timeSource;
             _collidor = new CollisionDetector(timeSource);
             _modelUpdateCounter = new EventPerSecond(timeSource);
             _modelUpdateTimeCounter = new TimeCounter(timeSource);
@@ -46,10 +41,7 @@ namespace HelloGame.Common.Model
         public void AddOrUpdateThing(ThingBase thingBase)
         {
             ThingBase alreadyExisting = _things.AddIfMissing(thingBase);
-            if (alreadyExisting != null)
-            {
-                alreadyExisting.UpdateLocation(thingBase);
-            }
+            alreadyExisting?.UpdateLocation(thingBase);
         }
 
         /// <summary>

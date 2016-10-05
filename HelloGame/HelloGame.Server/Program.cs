@@ -10,6 +10,7 @@ namespace HelloGame.Server
     {
         private static void Main()
         {
+
             IResolutionRoot ninject =
                 new StandardKernel(
                     new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true),
@@ -20,7 +21,7 @@ namespace HelloGame.Server
                 try
                 {
                     var cts = new CancellationTokenSource();
-                    ninject.Get<GameServer>().Start(cts).Wait();
+                    ninject.Get<GameServer>().Start(cts).Wait(cts.Token);
                 }
                 catch (Exception ex)
                 {

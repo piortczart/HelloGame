@@ -15,7 +15,6 @@ namespace HelloGame.Server
 {
     public class GameServer
     {
-        private readonly MessageTransciever _sender;
         private readonly GameManager _gameManager;
         private readonly ClientMessageProcessing _clientMessageProcessing;
         private readonly ILogger _logger;
@@ -27,7 +26,6 @@ namespace HelloGame.Server
         {
             _gameManager = gameManager;
             _clientMessageProcessing = clientMessageProcessing;
-            _sender = sender;
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
@@ -50,8 +48,8 @@ namespace HelloGame.Server
         {
             IReadOnlyCollection<ThingBase> things = _gameManager.ModelManager.Things.GetThingsReadOnly();
 
-            //string thingIds = string.Join(",", things.Select(t => t.Id + "_" + t.GetType().Name));
-            //_logger.LogInfo($"Propagating. Number of things: {things.Count} (ids: {thingIds})");
+            string thingIds = string.Join(",", things.Select(t => t.Id + "_" + t.GetType().Name));
+            _logger.LogInfo($"Propagating. Number of things: {things.Count} (ids: {thingIds})");
 
             SendUpdateMessage(things);
 
