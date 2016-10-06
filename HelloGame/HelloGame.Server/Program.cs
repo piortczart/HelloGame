@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using HelloGame.Common;
+using HelloGame.Common.Settings;
 using Ninject;
 using Ninject.Syntax;
 
@@ -10,25 +13,32 @@ namespace HelloGame.Server
     {
         private static void Main()
         {
-
             IResolutionRoot ninject =
                 new StandardKernel(
                     new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true),
                     new HelloGameServerNinjectBindings());
 
-            while (true)
+            var cts = new CancellationTokenSource();
+
+            Task.Run(() =>
             {
-                try
+                while (true)
                 {
-                    var cts = new CancellationTokenSource();
-                    ninject.Get<GameServer>().Start(cts).Wait(cts.Token);
+                    try
+                    {
+                        ninject.Get<GameServer>().Start(cts).Wait(cts.Token);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                        Thread.Sleep(10000);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    Thread.Sleep(10000);
-                }
-            }
+            }, cts.Token);
+
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(ninject.Get<ServerSpectatorForm>());
         }
     }
 }

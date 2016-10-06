@@ -2,6 +2,7 @@
 using HelloGame.Client;
 using HelloGame.Common.Logging;
 using HelloGame.Common.Model;
+using HelloGame.Common.Rendering;
 
 namespace HelloGame.GraphicalModelTest
 {

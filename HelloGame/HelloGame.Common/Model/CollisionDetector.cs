@@ -1,11 +1,15 @@
-﻿namespace HelloGame.Common.Model
+﻿using HelloGame.Common.Settings;
+
+namespace HelloGame.Common.Model
 {
     public class CollisionDetector
     {
+        private readonly GeneralSettings _settings;
         public readonly EventPerSecond CollisoinsCounter;
 
-        public CollisionDetector(TimeSource timeSource)
+        public CollisionDetector(TimeSource timeSource, GeneralSettings settings)
         {
+            _settings = settings;
             CollisoinsCounter = new EventPerSecond(timeSource);
         }
 
@@ -29,7 +33,7 @@
                         continue;
                     }
 
-                    if (thing1.DistanceTo(thing2) <= 3)
+                    if (thing1.DistanceTo(thing2) <= _settings.CollisionTolerance)
                     {
                         thing1.CollidesWith(thing2);
                         thing2.CollidesWith(thing1);

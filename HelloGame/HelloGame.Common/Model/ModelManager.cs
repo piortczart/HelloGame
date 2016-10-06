@@ -4,6 +4,7 @@ using System.Threading;
 using HelloGame.Common.Logging;
 using System.Collections.Concurrent;
 using HelloGame.Common.Extensions;
+using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Model
 {
@@ -18,17 +19,18 @@ namespace HelloGame.Common.Model
         private readonly List<Action> _updateModelAction = new List<Action>();
         public EventPerSecond CollisionCalculations => _collidor.CollisoinsCounter;
         private readonly Overlay _overlay;
-        public ThingsList Things { get { return _things; } }
+        public ThingsList Things => _things;
         private readonly bool _isServer;
         private readonly TimeCounter _modelUpdateTimeCounter;
 
-        public ModelManager(ILoggerFactory loggerFactory, TimeSource timeSource, Overlay overlay, bool isServer)
+        public ModelManager(ILoggerFactory loggerFactory, TimeSource timeSource, Overlay overlay, bool isServer,
+            GeneralSettings settings)
         {
             _isServer = isServer;
             _logger = loggerFactory.CreateLogger(GetType());
-            _modelUpdateThread = new Thread(UpdateModel) { IsBackground = true };
+            _modelUpdateThread = new Thread(UpdateModel) {IsBackground = true};
             _overlay = overlay;
-            _collidor = new CollisionDetector(timeSource);
+            _collidor = new CollisionDetector(timeSource, settings);
             _modelUpdateCounter = new EventPerSecond(timeSource);
             _modelUpdateTimeCounter = new TimeCounter(timeSource);
         }
@@ -79,16 +81,19 @@ namespace HelloGame.Common.Model
             _modelUpdateCounter.Add();
 
             IReadOnlyCollection<ThingBase> things = _things.GetThingsReadOnly();
-            foreach (var thing in things)
+            foreach (ThingBase thing in things)
             {
-                // Perform the model update.
-                thing.UpdateModel(timePassed, things);
-
-                // Despawn the thing if it should elapse.
-                if (thing.IsTimeToElapse)
+                if (!thing.IsDestroyed)
                 {
-                    _things.Remove(thing);
-                    _deadThings.Enqueue(thing);
+                    // Perform the model update.
+                    thing.UpdateModel(timePassed, things);
+
+                    // Despawn the thing if it should elapse.
+                    if (thing.IsTimeToElapse)
+                    {
+                        _things.Remove(thing);
+                        _deadThings.Enqueue(thing);
+                    }
                 }
             }
             _collidor.DetectCollisions(_things.GetThingsArray());
@@ -98,8 +103,11 @@ namespace HelloGame.Common.Model
                 action.Invoke();
             }
 
-            int toSleep = 10 - (int)timePassed.TotalMilliseconds;
-            if (toSleep > 0) { Thread.Sleep(toSleep); }
+            int toSleep = 10 - (int) timePassed.TotalMilliseconds;
+            if (toSleep > 0)
+            {
+                Thread.Sleep(toSleep);
+            }
         }
     }
 }

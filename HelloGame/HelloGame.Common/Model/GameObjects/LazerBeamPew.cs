@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Model.GameObjects
 {
     public class LazerBeamPew : ThingBase
     {
         public LazerBeamPew(ThingBaseInjections injections, ThingBase creator, int? id)
-            : base(injections, injections.GeneralSettings.LazerBeamSettings, creator, id)
+            : base(injections, GeneralSettings.LazerBeamSettings, creator, id)
         {
         }
 

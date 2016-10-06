@@ -1,4 +1,5 @@
 ﻿using HelloGame.Common.Logging;
+using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Model
 {
@@ -9,7 +10,8 @@ namespace HelloGame.Common.Model
         public GeneralSettings GeneralSettings { get; set; }
         public GameThingCoordinator Coordinator { get; set; }
 
-        public ThingBaseInjections(TimeSource timeSource, ILoggerFactory loggerFactory, GeneralSettings generalSettings, GameThingCoordinator coordinator)
+        public ThingBaseInjections(TimeSource timeSource, ILoggerFactory loggerFactory, GeneralSettings generalSettings,
+            GameThingCoordinator coordinator)
         {
             TimeSource = timeSource;
             LoggerFactory = loggerFactory;

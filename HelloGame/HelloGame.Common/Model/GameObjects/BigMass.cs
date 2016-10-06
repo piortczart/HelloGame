@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using HelloGame.Common.MathStuff;
+using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Model.GameObjects
 {
@@ -9,11 +10,11 @@ namespace HelloGame.Common.Model.GameObjects
     {
         private Color _color;
 
-        public BigMass(ThingBaseInjections injections, int size, int? id, ThingBase creator) 
-            : base(injections, injections.GeneralSettings.BigMassSettings, creator, id)
+        public BigMass(ThingBaseInjections injections, int size, int? id, ThingBase creator)
+            : base(injections, GeneralSettings.BigMassSettings, creator, id)
         {
             Physics.Size = size;
-            Physics.Mass = size * 10000;
+            Physics.Mass = size*10000;
             _color = GetRandom();
         }
 
@@ -32,7 +33,9 @@ namespace HelloGame.Common.Model.GameObjects
 
         protected override void Render(Graphics g)
         {
-            g.FillEllipse(new SolidBrush(_color), new Rectangle((int)(Physics.Position.X - Physics.Size / 2), (int)(Physics.Position.Y - Physics.Size / 2), (int)Physics.Size, (int)Physics.Size));
+            g.FillEllipse(new SolidBrush(_color),
+                new Rectangle((int) (Physics.Position.X - Physics.Size/2), (int) (Physics.Position.Y - Physics.Size/2),
+                    (int) Physics.Size, (int) Physics.Size));
         }
 
         protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings)

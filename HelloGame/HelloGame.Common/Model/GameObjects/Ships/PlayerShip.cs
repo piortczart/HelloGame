@@ -5,10 +5,11 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 {
     public abstract class PlayerShip : ShipBase
     {
-        public ClanEnum Clan;
+        public readonly ClanEnum Clan;
 
-        protected PlayerShip(ThingBaseInjections injections, GameThingCoordinator gameManager, string name, ClanEnum clan, int? id = null, ThingBase creator = null)
-            : base(injections, gameManager, injections.GeneralSettings.ClanSettings[clan], name, id, creator)
+        protected PlayerShip(ThingBaseInjections injections, GameThingCoordinator gameManager, string name,
+            ClanEnum clan, int? id = null, ThingBase creator = null)
+            : base(injections, gameManager, Common.Settings.ShipBaseSettings.ClanShipSettings[clan], name, id, creator)
         {
             Clan = clan;
         }

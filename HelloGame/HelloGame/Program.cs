@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using HelloGame.Common;
+using HelloGame.Common.Settings;
 using HelloGame.Server;
 using Ninject;
 using Ninject.Syntax;
@@ -15,17 +16,19 @@ namespace HelloGame.Client
         [STAThread]
         static void Main()
         {
-            GeneralSettings settings = GeneralSettings.Custom;
-                //new GeneralSettings
-                //{
-                //    SpawnAi = false,
-                //    ShowThingIds = false,
-                //};
+            GeneralSettings settings = GeneralSettings.Gameplay;
+            //new GeneralSettings
+            //{
+            //    SpawnAi = false,
+            //    ShowThingIds = false,
+            //};
 
             // A separate server binding (in sense server is a separate application ran inside this process)
-            IResolutionRoot serverNinject = new StandardKernel(new HelloGameCommonNinjectBindings(settings, true), new HelloGameServerNinjectBindings());
+            IResolutionRoot serverNinject = new StandardKernel(new HelloGameCommonNinjectBindings(settings, true),
+                new HelloGameServerNinjectBindings());
             // And regular client binding with a server ninject passed to construct a server with separate objects and configuration.
-            IResolutionRoot clientNinject = new StandardKernel(new HelloGameCommonNinjectBindings(settings, false), new HelloGameClientNinjectBindings(serverNinject));
+            IResolutionRoot clientNinject = new StandardKernel(new HelloGameCommonNinjectBindings(settings, false),
+                new HelloGameClientNinjectBindings(serverNinject));
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

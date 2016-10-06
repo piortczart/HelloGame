@@ -27,7 +27,7 @@ namespace HelloGame.Common.Model
             if (player != null)
             {
                 Type = isHisShip ? "PlayerShipMovable" : "PlayerShipAny";
-                ConstructParams = new object[] { player.Name, player.Creator?.Id, player.Clan };
+                ConstructParams = new object[] {player.Name, player.Creator?.Id, player.Clan};
                 return;
             }
 
@@ -35,7 +35,7 @@ namespace HelloGame.Common.Model
             if (big != null)
             {
                 Type = big.GetType().Name;
-                ConstructParams = new object[] { big.Physics.Size, big.Creator?.Id };
+                ConstructParams = new object[] {big.Physics.Size, big.Creator?.Id};
                 return;
             }
 
@@ -43,7 +43,7 @@ namespace HelloGame.Common.Model
             if (ai != null)
             {
                 Type = ai.GetType().Name;
-                ConstructParams = new object[] { ai.Name, ai.Creator?.Id };
+                ConstructParams = new object[] {ai.Name, ai.Creator?.Id, ai.AiType, ai.ShipSettingType};
                 return;
             }
 
@@ -51,12 +51,11 @@ namespace HelloGame.Common.Model
             if (lazer != null)
             {
                 Type = lazer.GetType().Name;
-                ConstructParams = new object[] { lazer.Creator?.Id }; 
+                ConstructParams = new object[] {lazer.Creator?.Id};
                 return;
             }
 
             throw new NotImplementedException($"Cannot create type: {thingBase.GetType().Name}");
         }
-
     }
 }

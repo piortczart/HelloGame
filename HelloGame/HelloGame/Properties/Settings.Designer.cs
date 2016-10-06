@@ -58,5 +58,17 @@ namespace HelloGame.Client.Properties {
                 this["SpawnServer"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int ClanId {
+            get {
+                return ((int)(this["ClanId"]));
+            }
+            set {
+                this["ClanId"] = value;
+            }
+        }
     }
 }

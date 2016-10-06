@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using HelloGame.Common.MathStuff;
+using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
 {
@@ -10,13 +11,18 @@ namespace HelloGame.Common.Model.GameObjects.Ships
     {
         private readonly Limiter _locatePlayerLimiter;
         private Real2DVector _playerPointer = new Real2DVector();
-        private readonly AiShipBaseSettings _aiShipBaseSettings;
+        private readonly AiShipSettings _aiShipBaseSettings;
+        public AiType AiType { get; set; }
+        public ShipSettingType ShipSettingType { get; set; }
 
-        public AiShip(ThingBaseInjections injections, GameThingCoordinator coordinator, string name, int? id = null, ThingBase creator = null)
-            : base(injections, coordinator, injections.GeneralSettings.AiShipBaseSettings, name, id, creator)
+        public AiShip(ThingBaseInjections injections, GameThingCoordinator coordinator, AiType aiType,
+            ShipSettingType shipSettingType, string name, int? id = null, ThingBase creator = null)
+            : base(injections, coordinator, ShipBaseSettings.ShipTypeSettings[shipSettingType], name, id, creator)
         {
-            _aiShipBaseSettings = injections.GeneralSettings.AiShipBaseSettings;
+            _aiShipBaseSettings = AiShipSettings.AiSettings[aiType];
             _locatePlayerLimiter = new Limiter(_aiShipBaseSettings.LocatePlayerFrequency, TimeSource);
+            AiType = aiType;
+            ShipSettingType = shipSettingType;
         }
 
         protected override void PaintStuffInternal(Graphics g)
@@ -44,7 +50,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
                     Physics.Angle = _playerPointer.Angle;
 
-                    if (GeneralSettings.IsAiHostile)
+                    if (Settings.IsAiHostile)
                     {
                         PewPew();
                     }
@@ -53,12 +59,12 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 // Player is far away? Get closer.
                 if (player.Physics.Position.DistanceTo(Physics.Position) > _aiShipBaseSettings.DistanceToPlayer)
                 {
-                    Physics.SelfPropelling.Change(Physics.Angle, _aiShipBaseSettings.MaxEnginePower);
+                    Physics.SelfPropelling.Change(Physics.Angle, ShipBaseSettings.MaxEnginePower);
                 }
                 // Player too close? Go back.
                 else
                 {
-                    Physics.SelfPropelling.Change(Physics.Angle, _aiShipBaseSettings.MaxEnginePower);
+                    Physics.SelfPropelling.Change(Physics.Angle, ShipBaseSettings.MaxEnginePower);
                 }
             }
         }

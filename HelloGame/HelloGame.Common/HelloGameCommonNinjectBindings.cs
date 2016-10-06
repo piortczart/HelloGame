@@ -1,5 +1,6 @@
 ﻿using HelloGame.Common.Logging;
 using HelloGame.Common.Model;
+using HelloGame.Common.Settings;
 using Ninject.Modules;
 
 namespace HelloGame.Common
@@ -22,10 +23,17 @@ namespace HelloGame.Common
             Bind<GameThingCoordinator>().To<GameThingCoordinator>().InSingletonScope();
             Bind<ThingFactory>().To<ThingFactory>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
             Bind<GameManager>().To<GameManager>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
-            Bind<ModelManager>().To<ModelManager>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer); ;
-            Bind<ILoggerFactory>().To<LoggerFactory>().InSingletonScope().WithConstructorArgument("extraInfo", _isServer ? "Server" : "Client");
+            Bind<ModelManager>().To<ModelManager>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
+            ;
+            Bind<ILoggerFactory>()
+                .To<LoggerFactory>()
+                .InSingletonScope()
+                .WithConstructorArgument("extraInfo", _isServer ? "Server" : "Client");
             Bind<Overlay>().To<Overlay>().InSingletonScope();
-            Bind<TimeSource>().To<TimeSource>().InSingletonScope().WithConstructorArgument("startStopwatch", !_pauseTime);
+            Bind<TimeSource>()
+                .To<TimeSource>()
+                .InSingletonScope()
+                .WithConstructorArgument("startStopwatch", !_pauseTime);
             Bind<GeneralSettings>().ToConstant(_generalSettings);
             Bind<ThingBaseInjections>().To<ThingBaseInjections>().InSingletonScope();
         }

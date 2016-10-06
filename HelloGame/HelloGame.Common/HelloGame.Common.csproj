@@ -51,15 +51,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\GameObjects\Ships\AiShipBaseSettings.cs" />
+    <Compile Include="Extensions\ExtensionsType.cs" />
     <Compile Include="Model\GameObjects\Ships\ClanEnum.cs" />
-    <Compile Include="Model\GameObjects\Ships\ShipBaseSettings.cs" />
     <Compile Include="Model\ThingBaseInjections.cs" />
+    <Compile Include="Rendering\IRenderer.cs" />
+    <Compile Include="Rendering\Renderer.cs" />
+    <Compile Include="Settings\AiShipBaseSettings.cs" />
+    <Compile Include="Settings\AiType.cs" />
+    <Compile Include="Settings\ShipBaseSettings.cs" />
+    <Compile Include="Settings\ShipSettingType.cs" />
     <Compile Include="TimeStuffs\EventPerSecond.cs" />
     <Compile Include="Extensions\ExtensionsConcurrentQueue.cs" />
     <Compile Include="Extensions\ExtensionsRandom.cs" />
     <Compile Include="Extensions\ExtensionsString.cs" />
-    <Compile Include="GeneralSettings.cs" />
+    <Compile Include="Settings\GeneralSettings.cs" />
     <Compile Include="HelloGameCommonNinjectBindings.cs" />
     <Compile Include="Logging\ILoggerFactory.cs" />
     <Compile Include="Logging\ILogger.cs" />

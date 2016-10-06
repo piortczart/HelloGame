@@ -8,7 +8,8 @@ namespace HelloGame.Common.Model.GameObjects.Ships
     {
         public KeysInfo KeysInfo { private get; set; }
 
-        public PlayerShipMovable(ThingBaseInjections injections, GameThingCoordinator gameManager, string name, ClanEnum clan, int? id = null, ThingBase creator = null) 
+        public PlayerShipMovable(ThingBaseInjections injections, GameThingCoordinator gameManager, string name,
+            ClanEnum clan, int? id = null, ThingBase creator = null)
             : base(injections, gameManager, name, clan, id, creator)
         {
             // TODO: REDO THIS
@@ -20,9 +21,9 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         {
             base.PaintStuffInternal(g);
 
-            if (GeneralSettings.ShowPlayerPhysicsDetails)
+            if (Settings.ShowPlayerPhysicsDetails)
             {
-                g.DrawString($"Ship angle: {Physics.Angle * 57.296m:0}", Font, Brushes.Black, new PointF(155, 155));
+                g.DrawString($"Ship angle: {Physics.Angle*57.296m:0}", Font, Brushes.Black, new PointF(155, 155));
                 g.DrawString($"Engine: {Physics.SelfPropelling.Size:0.00}", Font, Brushes.Black, new PointF(155, 185));
                 g.DrawString($"Inertia: {Physics.Interia}", Font, Brushes.Black, new PointF(155, 215));
                 g.DrawString($"Engine: {Physics.SelfPropelling}", Font, Brushes.Black, new PointF(155, 245));
@@ -31,7 +32,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
         private decimal GetUpdatedShipAngle(decimal shipAngle, TimeSpan timeSinceLastUpdate)
         {
-            decimal maxAngleChange = Physics.RadPerSecond * (decimal)timeSinceLastUpdate.TotalSeconds;
+            decimal maxAngleChange = Physics.RadPerSecond*(decimal) timeSinceLastUpdate.TotalSeconds;
 
             if (KeysInfo.IsA && KeysInfo.IsD)
             {
@@ -43,15 +44,15 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 shipAngle -= maxAngleChange;
                 if (shipAngle < 0)
                 {
-                    shipAngle = 2 * (decimal)Math.PI - shipAngle;
+                    shipAngle = 2*(decimal) Math.PI - shipAngle;
                 }
             }
             else if (KeysInfo.IsD)
             {
                 shipAngle += maxAngleChange;
-                if (shipAngle > 2 * (decimal)Math.PI)
+                if (shipAngle > 2*(decimal) Math.PI)
                 {
-                    shipAngle -= 2 * (decimal)Math.PI;
+                    shipAngle -= 2*(decimal) Math.PI;
                 }
             }
             return shipAngle;
@@ -96,6 +97,5 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 engineForce.Change(shipAngle, -5m);
             }
         }
-
     }
 }

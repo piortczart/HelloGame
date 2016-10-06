@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using HelloGame.Common.Logging;
 using HelloGame.Common.Model;
 using System;
+using HelloGame.Common.Rendering;
 
 namespace HelloGame.Client
 {
@@ -17,7 +18,8 @@ namespace HelloGame.Client
         private readonly Font _font = new Font(FontFamily.GenericMonospace, 12);
         private readonly SynchronizedCollection<LogDetails> _logDetails = new SynchronizedCollection<LogDetails>();
 
-        public HelloGameForm(Renderer renderer, InitialSetupForm setupForm, GameManager gameManager, ILoggerFactory loggerFactory, CancellationTokenSource cancellation, bool showInitialForm)
+        public HelloGameForm(Renderer renderer, InitialSetupForm setupForm, GameManager gameManager,
+            ILoggerFactory loggerFactory, CancellationTokenSource cancellation, bool showInitialForm)
         {
             _renderer = renderer;
             _gameManager = gameManager;
@@ -39,7 +41,7 @@ namespace HelloGame.Client
             {
                 Interval = 14
             };
-            timer.Tick += new EventHandler((sender,args)=> { this.Invoke(Refresh); });
+            timer.Tick += (sender, args) => { this.Invoke(Refresh); };
             timer.Start();
         }
 
@@ -66,7 +68,7 @@ namespace HelloGame.Client
             for (int i = 0; i < _logDetails.Count; i++)
             {
                 LogDetails log = _logDetails[i];
-                g.DrawString(Logger.FormatLog(log), _font, Brushes.Black, new PointF(600, 15 + 20 * i));
+                g.DrawString(Logger.FormatLog(log), _font, Brushes.Black, new PointF(600, 15 + 20*i));
             }
         }
 

@@ -9,6 +9,7 @@ using HelloGame.Common.MathStuff;
 using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Physicsish;
+using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Model
 {
@@ -21,7 +22,8 @@ namespace HelloGame.Common.Model
         private readonly ConcurrentQueue<ThingBase> _thingsToSpawn = new ConcurrentQueue<ThingBase>();
         private GeneralSettings _settings;
 
-        public GameManager(GeneralSettings settings, ModelManager modelManager, GameThingCoordinator gameCoordinator, ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
+        public GameManager(GeneralSettings settings, ModelManager modelManager, GameThingCoordinator gameCoordinator,
+            ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
         {
             ModelManager = modelManager;
             modelManager.AddUpdateModelAction(ModelUpdated);
@@ -70,7 +72,6 @@ namespace HelloGame.Common.Model
 
         private Point FindEmptyArea(Rectangle retangle, int minDistance)
         {
-
             Position pos;
             int i = 0;
             do
@@ -81,7 +82,7 @@ namespace HelloGame.Common.Model
                     break;
                 }
             } while (i++ < 10);
-            return new Point((int)pos.X, (int)pos.Y);
+            return new Point((int) pos.X, (int) pos.Y);
         }
 
         public PlayerShipOther AddPlayer(string name, ClanEnum clan)
@@ -104,7 +105,8 @@ namespace HelloGame.Common.Model
             if (source is PlayerShipMovable)
             {
                 // Player is shooting. On the client.
-                LazerBeamPew lazer = _thingFactory.GetLazerBeam(-1, source.Physics.GetPointInDirection(source.Settingz.Size / 2), source);
+                LazerBeamPew lazer = _thingFactory.GetLazerBeam(-1,
+                    source.Physics.GetPointInDirection(source.Settingz.Size/2), source);
                 AskServerToSpawn(lazer);
             }
             else
@@ -112,7 +114,8 @@ namespace HelloGame.Common.Model
                 // AI is shooting. Only server can spawn.
                 if (_isServer)
                 {
-                    LazerBeamPew lazer = _thingFactory.GetLazerBeam(null, source.Physics.GetPointInDirection(source.Settingz.Size / 2), source);
+                    LazerBeamPew lazer = _thingFactory.GetLazerBeam(null,
+                        source.Physics.GetPointInDirection(source.Settingz.Size/2), source);
                     ModelManager.AddOrUpdateThing(lazer);
                 }
             }
@@ -128,7 +131,7 @@ namespace HelloGame.Common.Model
             {
                 _logger.LogInfo("Adding AI ship.");
                 Point location = FindEmptyArea(new Rectangle(100, 300, 300, 800), 50);
-                AiShip newShip = _thingFactory.GetAiShip(location, "Stupid AI");
+                AiShip newShip = _thingFactory.GetRandomAiShip(location, null);
                 ModelManager.AddOrUpdateThing(newShip);
             }
         }
@@ -137,7 +140,7 @@ namespace HelloGame.Common.Model
         {
             _logger.LogInfo("Adding a big thing.");
             int size = MathX.Random.Next(30, 170);
-            Point location = FindEmptyArea(new Rectangle(100, 50, 900, 900), size+50);
+            Point location = FindEmptyArea(new Rectangle(100, 50, 900, 900), size + 50);
             BigMass bigMass = _thingFactory.GetBigMass(size, location);
             ModelManager.AddOrUpdateThing(bigMass);
         }
@@ -168,7 +171,8 @@ namespace HelloGame.Common.Model
         public void StuffDied(List<int> stuffIds)
         {
             var toDespawn = ModelManager.Things.GetByIds(stuffIds);
-            _logger.LogInfo($"Asked to despawn items: {toDespawn.Count} ({String.Join(",", toDespawn.Select(t => t.GetType().Name))})");
+            _logger.LogInfo(
+                $"Asked to despawn items: {toDespawn.Count} ({string.Join(",", toDespawn.Select(t => t.GetType().Name))})");
             foreach (ThingBase thingToRemove in toDespawn)
             {
                 thingToRemove.Despawn();

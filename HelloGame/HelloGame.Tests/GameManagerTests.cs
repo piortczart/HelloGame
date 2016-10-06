@@ -7,6 +7,7 @@ using HelloGame.Common.Logging;
 using System.Drawing;
 using System;
 using HelloGame.Common.Model.GameObjects;
+using HelloGame.Common.Settings;
 
 namespace HelloGame.Tests
 {
@@ -17,7 +18,8 @@ namespace HelloGame.Tests
         public void GameManager_LaserDespawn()
         {
             // The time is paused now.
-            IResolutionRoot ninject = new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true, true));
+            IResolutionRoot ninject =
+                new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true, true));
             var gameManager = ninject.Get<GameManager>();
             var timeSource = ninject.Get<TimeSource>();
             var injections = ninject.Get<ThingBaseInjections>();
@@ -43,21 +45,22 @@ namespace HelloGame.Tests
         public void GameManager_CloseLaserVsAiShip()
         {
             // The time is paused now.
-            IResolutionRoot ninject = new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true, true));
+            IResolutionRoot ninject =
+                new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true, true));
             var loggerFactory = new LoggerFactory("");
             ILogger logger = loggerFactory.CreateLogger(GetType());
             var gameManager = ninject.Get<GameManager>();
-            var gameCoordinator = ninject.Get<GameThingCoordinator>();
             var thingFactory = ninject.Get<ThingFactory>();
             var timeSource = ninject.Get<TimeSource>();
             var injections = ninject.Get<ThingBaseInjections>();
 
             // Create an AI Ship.
-            var aiShip = thingFactory.GetAiShip(new Point(10, 10), "AI", 1);
+            var aiShip = thingFactory.GetRandomAiShip(new Point(10, 10), "AI", null, null, 1);
             gameManager.ModelManager.AddOrUpdateThing(aiShip);
 
             // Create a player.
-            var playerShip = thingFactory.GetPlayerShip(new Point(10, 10), "PLAYUR", Common.Model.GameObjects.Ships.ClanEnum.Integrations);
+            var playerShip = thingFactory.GetPlayerShip(new Point(10, 10), "PLAYUR",
+                Common.Model.GameObjects.Ships.ClanEnum.Integrations);
             gameManager.ModelManager.AddOrUpdateThing(aiShip);
 
             // Make 1 model update.

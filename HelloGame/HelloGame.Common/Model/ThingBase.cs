@@ -7,7 +7,7 @@ using HelloGame.Common.MathStuff;
 using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Physicsish;
 using System.Windows.Forms;
-using HelloGame.Common.Model.GameObjects;
+using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Model
 {
@@ -30,14 +30,15 @@ namespace HelloGame.Common.Model
         protected readonly Font Font = new Font("monospace", 12, GraphicsUnit.Pixel);
         public readonly ThingSettings Settingz;
         protected readonly ThingBaseInjections Injections;
-        protected readonly GeneralSettings GeneralSettings;
+        protected readonly GeneralSettings Settings;
         protected readonly GameThingCoordinator Coordinator;
 
-        protected ThingBase(ThingBaseInjections injections, ThingSettings baseSettings, ThingBase creator = null, int? id = null)
+        protected ThingBase(ThingBaseInjections injections, ThingSettings baseSettings, ThingBase creator = null,
+            int? id = null)
             : base(baseSettings.TimeToLive, injections.TimeSource)
         {
             Coordinator = injections.Coordinator;
-            GeneralSettings = injections.GeneralSettings;
+            Settings = injections.GeneralSettings;
             Injections = injections;
             Settingz = baseSettings;
             Logger = injections.LoggerFactory.CreateLogger(GetType());
@@ -54,10 +55,12 @@ namespace HelloGame.Common.Model
         /// Be aware, this is called by the ModelUpdate thread.
         /// </summary>
         protected abstract void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings);
+
         /// <summary>
         /// Be aware, this is called by the GUI thread (WinForms Timer)
         /// </summary>
         protected abstract void Render(Graphics g);
+
         public abstract void CollidesWith(ThingBase other);
 
         public void RenderBase(Graphics g)
@@ -65,11 +68,12 @@ namespace HelloGame.Common.Model
             Render(g);
 
             // Show the creator's id below this thing
-            if (GeneralSettings.ShowThingIds)
+            if (Settings.ShowThingIds)
             {
                 string owner = $"{Id} ({Creator?.Id.ToString() ?? "?"})";
                 Size ownerSize = TextRenderer.MeasureText(owner, Font);
-                var nameLocation = new PointF((int)Physics.Position.X - ownerSize.Width / 2, (int)Physics.Position.Y + (int)Settingz.Size + ownerSize.Height * 2);
+                var nameLocation = new PointF((int) Physics.Position.X - ownerSize.Width/2,
+                    (int) Physics.Position.Y + (int) Settingz.Size + ownerSize.Height*2);
                 g.DrawString(owner, Font, Brushes.Black, nameLocation);
             }
         }
@@ -109,13 +113,13 @@ namespace HelloGame.Common.Model
         {
             if (CanBeMoved)
             {
-                decimal timeBoundary = (decimal)(timeSinceLastUpdate.TotalMilliseconds / 100);
+                decimal timeBoundary = (decimal) (timeSinceLastUpdate.TotalMilliseconds/100);
 
                 // Add the propeller force to the interia.
                 Physics.Interia.Add(Physics.SelfPropelling.GetScaled(timeBoundary));
 
                 // Drag changes the inertia?
-                Physics.Drag = Physics.Interia.GetOpposite().GetScaled(Physics.Aerodynamism * 0.5m * timeBoundary);
+                Physics.Drag = Physics.Interia.GetOpposite().GetScaled(Physics.Aerodynamism*0.5m*timeBoundary);
                 Physics.Interia.Add(Physics.Drag);
 
                 Real2DVector totalForce = Physics.TotalForce;
@@ -124,7 +128,7 @@ namespace HelloGame.Common.Model
                 if (Physics.Mass == 0)
                 {
                     // No mass? 
-                    Physics.PositionDelta(totalForce.X * timeBoundary, totalForce.Y * timeBoundary);
+                    Physics.PositionDelta(totalForce.X*timeBoundary, totalForce.Y*timeBoundary);
                 }
                 else
                 {
@@ -133,8 +137,8 @@ namespace HelloGame.Common.Model
                     totalForce.Add(Physics.Gravity);
 
                     // Move the object.
-                    decimal newX = totalForce.X / Physics.Mass * timeBoundary;
-                    decimal newY = totalForce.Y / Physics.Mass * timeBoundary;
+                    decimal newX = totalForce.X/Physics.Mass*timeBoundary;
+                    decimal newY = totalForce.Y/Physics.Mass*timeBoundary;
                     Physics.PositionDelta(newX, newY);
                 }
             }
@@ -146,11 +150,18 @@ namespace HelloGame.Common.Model
 
             foreach (ThingBase thing in otherThings)
             {
-                if (thing == this) { continue; }
+                if (thing == this)
+                {
+                    continue;
+                }
                 var distance = thing.DistanceTo(this);
-                if (distance == 0) { continue; }
+                if (distance == 0)
+                {
+                    continue;
+                }
 
-                decimal length = GeneralSettings.GravityFactor * Physics.Mass * thing.Physics.Mass / (decimal)Math.Pow((double)distance, 2);
+                decimal length = Settings.GravityFactor*Physics.Mass*thing.Physics.Mass/
+                                 (decimal) Math.Pow((double) distance, 2);
                 var grav = new Real2DVector();
 
                 var x = thing.Physics.Position.X - Physics.Position.X;
@@ -168,14 +179,13 @@ namespace HelloGame.Common.Model
         public decimal DistanceTo(Position position)
         {
             return position.DistanceTo(Physics.Position) - Physics.Size;
-
         }
 
         public decimal DistanceTo(ThingBase another)
         {
             lock (_modelSynchronizer)
             {
-                return Physics.Position.DistanceTo(another.Physics.Position) - ((Physics.Size + another.Physics.Size) / 2);
+                return Physics.Position.DistanceTo(another.Physics.Position) - ((Physics.Size + another.Physics.Size)/2);
             }
         }
 
@@ -200,7 +210,9 @@ namespace HelloGame.Common.Model
                     //throw new Exception($"Position shift too high! {positionShift}");
                 }
 
-                var settings = this is PlayerShipMovable ? UpdateLocationSettings.ExcludeAngle : UpdateLocationSettings.All;
+                var settings = this is PlayerShipMovable
+                    ? UpdateLocationSettings.ExcludeAngle
+                    : UpdateLocationSettings.All;
                 Physics.Update(otherThing.Physics, settings);
 
                 IsDestroyed = otherThing.IsDestroyed;

@@ -25,6 +25,7 @@ namespace HelloGame.Client
             cbCreateServer.Checked = Settings.Default.SpawnServer;
 
             cbClan.DataSource = Enum.GetValues(typeof(ClanEnum)).Cast<ClanEnum>();
+            cbClan.SelectedItem = (ClanEnum) Settings.Default.ClanId;
         }
 
         private void btnPlay_Click(object sender, EventArgs e)
@@ -35,9 +36,12 @@ namespace HelloGame.Client
                 return;
             }
 
+            ClanEnum clan = (ClanEnum) cbClan.SelectedItem;
+
             Settings.Default.ServerName = tbServerName.Text;
             Settings.Default.PlayerName = tbPlayerName.Text;
             Settings.Default.SpawnServer = cbCreateServer.Checked;
+            Settings.Default.ClanId = (int) clan;
             Settings.Default.Save();
 
             if (cbCreateServer.Checked)
@@ -58,7 +62,6 @@ namespace HelloGame.Client
                 }
             }
 
-            ClanEnum clan = (ClanEnum)cbClan.SelectedItem;
             string name = Settings.Default.PlayerName;
 
             if (cbLocalOnly.Checked)
@@ -80,7 +83,7 @@ namespace HelloGame.Client
                 lbLog.Text = "We are in!";
             }
 
-            ((Form)this.TopLevelControl).Close();
+            ((Form) this.TopLevelControl).Close();
         }
 
         private void cbIsLocal_CheckedChanged(object sender, EventArgs e)
