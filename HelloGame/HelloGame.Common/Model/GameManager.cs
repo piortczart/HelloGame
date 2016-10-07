@@ -20,21 +20,21 @@ namespace HelloGame.Common.Model
         private readonly ILogger _logger;
         public ModelManager ModelManager { get; }
         private readonly ConcurrentQueue<ThingBase> _thingsToSpawn = new ConcurrentQueue<ThingBase>();
-        private GeneralSettings _settings;
+        private readonly GeneralSettings _settings;
 
         public GameManager(GeneralSettings settings, ModelManager modelManager, GameThingCoordinator gameCoordinator,
             ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
         {
             ModelManager = modelManager;
             modelManager.AddUpdateModelAction(ModelUpdated);
-            gameCoordinator.SetActions(AskServerToSpawn, ModelManager.AddOrUpdateThing, ShootLazer);
+            gameCoordinator.SetActions(ModelManager.AddThing, ShootLazer);
             _thingFactory = thingFactory;
             _isServer = isServer;
             _logger = loggerFactory.CreateLogger(GetType());
             _settings = settings;
         }
 
-        public void AskServerToSpawn(ThingBase thing)
+        private void AskServerToSpawn(ThingBase thing)
         {
             _thingsToSpawn.Enqueue(thing);
         }
@@ -50,20 +50,15 @@ namespace HelloGame.Common.Model
             return result;
         }
 
-        public void SetUpdateModelAction(Action action)
-        {
-            ModelManager.AddUpdateModelAction(action);
-        }
-
         /// <summary>
         /// Will be called by the model each time it's updated.
         /// </summary>
-        public void ModelUpdated()
+        private void ModelUpdated()
         {
             // Only the server can spawn new ships.
             if (_isServer)
             {
-                if (!ModelManager.Things.GetThingsReadOnly().Any(t => t is AiShip))
+                if (!ModelManager.ThingsThreadSafe.GetThingsReadOnly().Any(t => t is AiShip))
                 {
                     AddAiShip();
                 }
@@ -77,12 +72,17 @@ namespace HelloGame.Common.Model
             do
             {
                 pos = MathX.Random.GetRandomPosition(retangle);
-                if (ModelManager.Things.GetThingsReadOnly().All(t => t.DistanceTo(pos) >= minDistance))
+                if (ModelManager.ThingsThreadSafe.GetThingsReadOnly().All(t => t.DistanceTo(pos) >= minDistance))
                 {
                     break;
                 }
             } while (i++ < 10);
             return new Point((int) pos.X, (int) pos.Y);
+        }
+
+        private Point GetNewPlayerLocation()
+        {
+            return FindEmptyArea(new Rectangle(10, 10, 100, 800), 50);
         }
 
         public PlayerShipOther AddPlayer(string name, ClanEnum clan)
@@ -93,14 +93,14 @@ namespace HelloGame.Common.Model
             }
 
             _logger.LogInfo($"Adding player: {name}");
-            Point location = FindEmptyArea(new Rectangle(10, 10, 100, 800), 50);
+            Point location = GetNewPlayerLocation();
             // Try to find a relatively empty area.
             PlayerShipOther newShip = _thingFactory.GetPlayerShip(location, name, clan);
-            ModelManager.AddOrUpdateThing(newShip);
+            ModelManager.AddThing(newShip);
             return newShip;
         }
 
-        public void ShootLazer(ThingBase source)
+        private void ShootLazer(ThingBase source)
         {
             if (source is PlayerShipMovable)
             {
@@ -116,7 +116,7 @@ namespace HelloGame.Common.Model
                 {
                     LazerBeamPew lazer = _thingFactory.GetLazerBeam(null,
                         source.Physics.GetPointInDirection(source.Settingz.Size/2), source);
-                    ModelManager.AddOrUpdateThing(lazer);
+                    ModelManager.AddThing(lazer);
                 }
             }
         }
@@ -132,17 +132,17 @@ namespace HelloGame.Common.Model
                 _logger.LogInfo("Adding AI ship.");
                 Point location = FindEmptyArea(new Rectangle(100, 300, 300, 800), 50);
                 AiShip newShip = _thingFactory.GetRandomAiShip(location, null);
-                ModelManager.AddOrUpdateThing(newShip);
+                ModelManager.AddThing(newShip);
             }
         }
 
-        private void AddBigThing()
+        public void AddBigThing()
         {
             _logger.LogInfo("Adding a big thing.");
             int size = MathX.Random.Next(30, 170);
             Point location = FindEmptyArea(new Rectangle(100, 50, 900, 900), size + 50);
             BigMass bigMass = _thingFactory.GetBigMass(size, location);
-            ModelManager.AddOrUpdateThing(bigMass);
+            ModelManager.AddThing(bigMass);
         }
 
         public void StartGame()
@@ -170,7 +170,7 @@ namespace HelloGame.Common.Model
 
         public void StuffDied(List<int> stuffIds)
         {
-            var toDespawn = ModelManager.Things.GetByIds(stuffIds);
+            var toDespawn = ModelManager.ThingsThreadSafe.GetByIds(stuffIds);
             _logger.LogInfo(
                 $"Asked to despawn items: {toDespawn.Count} ({string.Join(",", toDespawn.Select(t => t.GetType().Name))})");
             foreach (ThingBase thingToRemove in toDespawn)
@@ -179,19 +179,20 @@ namespace HelloGame.Common.Model
             }
         }
 
-        public void ParseThingDescription(ThingDescription description)
+        public void ParseThingDescription(ThingDescription description, ParseThingSource source)
         {
+            // Create a full "thing" from the description.
+            // It will then be either added as a new thing, or an existing thing will be updated based on it.
             ThingBase thing = _thingFactory.CreateFromDescription(description);
             if (thing != null)
             {
-                thing.Physics.Update(description.AlmostPhysics, ThingBase.UpdateLocationSettings.All);
-                ModelManager.AddOrUpdateThing(thing);
+                ModelManager.HandleNewThing(thing, source);
             }
         }
 
         public void SetKeysInfo(KeysInfo keysMine)
         {
-            PlayerShipMovable shipMovable = ModelManager.Things.GetPlayerShip();
+            PlayerShipMovable shipMovable = ModelManager.ThingsThreadSafe.GetPlayerShip();
             if (shipMovable != null)
             {
                 shipMovable.KeysInfo = keysMine;
@@ -200,14 +201,14 @@ namespace HelloGame.Common.Model
 
         public ThingBase GetMe()
         {
-            return ModelManager.Things.GetPlayerShip();
+            return ModelManager.ThingsThreadSafe.GetPlayerShip();
         }
 
-        public void ParseThingDescriptions(List<ThingDescription> stuff)
+        public void ParseThingDescriptions(List<ThingDescription> stuff, ParseThingSource source)
         {
             foreach (ThingDescription thing in stuff)
             {
-                ParseThingDescription(thing);
+                ParseThingDescription(thing, source);
             }
         }
     }

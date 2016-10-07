@@ -1,6 +1,7 @@
 ﻿using HelloGame.Common.Logging;
 using HelloGame.Common.Model;
 using HelloGame.Common.Settings;
+using HelloGame.Common.TimeStuffs;
 using Ninject.Modules;
 
 namespace HelloGame.Common
@@ -9,7 +10,7 @@ namespace HelloGame.Common
     {
         readonly bool _isServer;
         readonly bool _pauseTime;
-        GeneralSettings _generalSettings;
+        readonly GeneralSettings _generalSettings;
 
         public HelloGameCommonNinjectBindings(GeneralSettings generalSettings, bool isServer, bool pauseTime = false)
         {
@@ -24,7 +25,7 @@ namespace HelloGame.Common
             Bind<ThingFactory>().To<ThingFactory>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
             Bind<GameManager>().To<GameManager>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
             Bind<ModelManager>().To<ModelManager>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
-            ;
+
             Bind<ILoggerFactory>()
                 .To<LoggerFactory>()
                 .InSingletonScope()

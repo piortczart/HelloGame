@@ -63,6 +63,7 @@
     <Compile Include="Real2DVector_Angle_Test.cs" />
     <Compile Include="Real2DVector_Reversability_Tests.cs" />
     <Compile Include="GameManagerTests.cs" />
+    <Compile Include="ThingDescriptionTests.cs" />
     <Compile Include="TimeCounterTests.cs" />
   </ItemGroup>
   <ItemGroup>

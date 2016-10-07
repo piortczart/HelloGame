@@ -7,7 +7,7 @@ namespace HelloGame.Common.Model
     /// <summary>
     /// Poor man's thread-safe list implementaion.
     /// </summary>
-    public class ThingsList
+    public class ThingsThreadSafeList
     {
         private readonly List<ThingBase> _interalList = new List<ThingBase>();
         private static readonly object Lock = new object();
@@ -48,7 +48,7 @@ namespace HelloGame.Common.Model
         {
             lock (Lock)
             {
-                return (PlayerShipMovable)_interalList.SingleOrDefault(t => t is PlayerShipMovable);
+                return (PlayerShipMovable) _interalList.SingleOrDefault(t => t is PlayerShipMovable);
             }
         }
 

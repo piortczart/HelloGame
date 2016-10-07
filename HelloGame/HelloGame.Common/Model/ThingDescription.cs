@@ -1,4 +1,5 @@
 using System;
+using HelloGame.Common.Extensions;
 using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Physicsish;
@@ -8,6 +9,10 @@ namespace HelloGame.Common.Model
     [Serializable]
     public class ThingDescription
     {
+        /**
+         * Getters cannot be made private! Needed for deserialization!
+         */
+
         public AlmostPhysics AlmostPhysics { get; set; }
         public int Id { get; set; }
         public string Type { get; set; }
@@ -27,7 +32,8 @@ namespace HelloGame.Common.Model
             if (player != null)
             {
                 Type = isHisShip ? "PlayerShipMovable" : "PlayerShipAny";
-                ConstructParams = new object[] {player.Name, player.Creator?.Id, player.Clan};
+                ConstructParams = new object[]
+                {player.Name, player.Creator?.Id, player.Clan, thingBase.ElapsingSettings.SerializeJson()};
                 return;
             }
 
@@ -35,7 +41,8 @@ namespace HelloGame.Common.Model
             if (big != null)
             {
                 Type = big.GetType().Name;
-                ConstructParams = new object[] {big.Physics.Size, big.Creator?.Id};
+                ConstructParams = new object[]
+                {big.Physics.Size, big.Creator?.Id, thingBase.ElapsingSettings.SerializeJson()};
                 return;
             }
 
@@ -43,7 +50,8 @@ namespace HelloGame.Common.Model
             if (ai != null)
             {
                 Type = ai.GetType().Name;
-                ConstructParams = new object[] {ai.Name, ai.Creator?.Id, ai.AiType, ai.ShipSettingType};
+                ConstructParams = new object[]
+                {ai.Name, ai.Creator?.Id, ai.AiType, ai.ShipSettingType, thingBase.ElapsingSettings.SerializeJson()};
                 return;
             }
 
@@ -51,7 +59,7 @@ namespace HelloGame.Common.Model
             if (lazer != null)
             {
                 Type = lazer.GetType().Name;
-                ConstructParams = new object[] {lazer.Creator?.Id};
+                ConstructParams = new object[] {lazer.Creator?.Id, thingBase.ElapsingSettings.SerializeJson()};
                 return;
             }
 

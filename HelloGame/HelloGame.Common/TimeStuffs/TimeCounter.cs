@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace HelloGame.Common
+namespace HelloGame.Common.TimeStuffs
 {
     public class TimeCounter
     {
-        private TimeSource _timeSource;
+        private readonly TimeSource _timeSource;
         private TimeSpan _lastCall = TimeSpan.Zero;
         private bool _isFirstCall = true;
 

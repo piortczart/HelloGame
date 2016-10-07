@@ -15,7 +15,7 @@ namespace HelloGame.GraphicalModelTest
         [STAThread]
         static void Main()
         {
-            IKernel ninject = new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.TestingAll, true),
+            IKernel ninject = new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.TestingAll, false),
                 new HelloGameServerNinjectBindings());
 
             Application.EnableVisualStyles();

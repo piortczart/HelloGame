@@ -26,7 +26,10 @@ namespace HelloGame.Client
         private readonly MessageTransciever _sender = new MessageTransciever();
         private readonly ILogger _logger;
         private readonly Timer _sendMeTimer;
-        private static readonly TimeSpan PropagateFrequency = TimeSpan.Parse(ConfigurationManager.AppSettings["PropagateFrequencyClient"]);
+
+        private static readonly TimeSpan PropagateFrequency =
+            TimeSpan.Parse(ConfigurationManager.AppSettings["PropagateFrequencyClient"]);
+
         private static readonly int ServerPortNumber = int.Parse(ConfigurationManager.AppSettings["ServerPortNumber"]);
 
         // This is exclusive for the propagate timer thread.
@@ -79,7 +82,8 @@ namespace HelloGame.Client
             _sendMeTimer.Change(PropagateFrequency, Timeout.InfiniteTimeSpan);
         }
 
-        public void StartConnection(string serverAddress, string playerName, ClanEnum clan, CancellationTokenSource cancellation)
+        public void StartConnection(string serverAddress, string playerName, ClanEnum clan,
+            CancellationTokenSource cancellation)
         {
             _logger.LogInfo($"Starting connection to {serverAddress}:{ServerPortNumber}");
 
@@ -100,7 +104,7 @@ namespace HelloGame.Client
             _sender.Send(new NetworkMessage
             {
                 Type = NetworkMessageType.Hello,
-                Payload = new NetworkMessageHello { Name = playerName, Clan = clan }.SerializeJson()
+                Payload = new NetworkMessageHello {Name = playerName, Clan = clan}.SerializeJson()
             }, _stream);
         }
 
@@ -118,26 +122,25 @@ namespace HelloGame.Client
                     switch (message.Type)
                     {
                         case NetworkMessageType.UpdateStuff:
+                        {
+                            List<ThingDescription> stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
+                            _logger.LogInfo($"Server sent update, count: {stuff.Count}");
+                            foreach (ThingDescription description in stuff)
                             {
-                                List<ThingDescription> stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
-                                _logger.LogInfo($"Server sent update, count: {stuff.Count}");
-                                foreach (ThingDescription description in stuff)
-                                {
-                                    _gameManager.ParseThingDescription(description);
-                                }
+                                _gameManager.ParseThingDescription(description, ParseThingSource.ToClient);
                             }
+                        }
                             break;
                         case NetworkMessageType.DeadStuff:
-                            {
-                                List<int> deadStuff = message.Payload.DeSerializeJson<List<int>>();
-                                _gameManager.StuffDied(deadStuff);
-                                break;
-                            }
+                        {
+                            List<int> deadStuff = message.Payload.DeSerializeJson<List<int>>();
+                            _gameManager.StuffDied(deadStuff);
+                            break;
+                        }
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
                 }
-
             }
             catch (Exception exception)
             {

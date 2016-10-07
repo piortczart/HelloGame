@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
 {
@@ -7,9 +8,11 @@ namespace HelloGame.Common.Model.GameObjects.Ships
     {
         public readonly ClanEnum Clan;
 
-        protected PlayerShip(ThingBaseInjections injections, GameThingCoordinator gameManager, string name,
-            ClanEnum clan, int? id = null, ThingBase creator = null)
-            : base(injections, gameManager, Common.Settings.ShipBaseSettings.ClanShipSettings[clan], name, id, creator)
+        protected PlayerShip(ThingBaseInjections injections, GameThingCoordinator coordinator, string name,
+            ClanEnum clan, int? id = null, ThingBase creator = null, ElapsingThingSettings elapsingThingSettings = null)
+            : base(
+                injections, coordinator, ShipBaseSettings.GetClanShipSetting(clan, elapsingThingSettings), name, id,
+                creator)
         {
             Clan = clan;
         }

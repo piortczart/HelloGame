@@ -31,7 +31,6 @@ namespace HelloGame.Common.Rendering
                     frameGraphics.DrawRectangle(new Pen(Brushes.Black),
                         new Rectangle(0, 0, frame.Width - 1, frame.Height - 1));
 
-
                     Position screenCenter;
                     if (!spectate)
                     {
@@ -40,18 +39,14 @@ namespace HelloGame.Common.Rendering
                     }
                     else
                     {
-                        screenCenter = new Position(500, 500);
+                        screenCenter = new Position(300, 300);
                     }
 
-                    foreach (ThingBase item in _modelManager.Things.GetThingsReadOnly())
+                    foreach (ThingBase item in _modelManager.ThingsThreadSafe.GetThingsReadOnly())
                     {
                         item.RenderBase(frameGraphics);
                     }
                     _overlay.Render(graphics);
-
-                    int x = (windowSize.Width/2) - (int) screenCenter.X;
-                    int y = (windowSize.Height/2) - (int) screenCenter.Y;
-                    Point point = new Point(x, y);
 
                     int xA = (int) screenCenter.X - (windowSize.Width/2);
                     int yA = (int) screenCenter.Y - (windowSize.Height/2);

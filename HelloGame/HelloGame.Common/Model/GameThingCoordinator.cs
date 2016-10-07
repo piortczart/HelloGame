@@ -10,8 +10,8 @@ namespace HelloGame.Common.Model
     public class GameThingCoordinator
     {
         private readonly ModelManager _model;
-        private Action<ThingBase> _askToSpawnAction;
-        private Action<ThingBase> _updateThingAction;
+        //private Action<ThingBase> _askToSpawnAction;
+        private Action<ThingBase> _addThingAction;
         private Action<ThingBase> _shootLazerAction;
 
         public GameThingCoordinator(ModelManager model)
@@ -25,25 +25,30 @@ namespace HelloGame.Common.Model
             {
                 return null;
             }
-            return _model.Things.GetById(id.Value);
+            return _model.ThingsThreadSafe.GetById(id.Value);
         }
 
-        public void SetActions(Action<ThingBase> askToSpawn, Action<ThingBase> updateThing, Action<ThingBase> shootLazer)
+        public void SetActions(Action<ThingBase> addThing, Action<ThingBase> shootLazer)
         {
-            _askToSpawnAction = askToSpawn;
-            _updateThingAction = updateThing;
+            //_askToSpawnAction = askToSpawn;
+            _addThingAction = addThing;
             _shootLazerAction = shootLazer;
         }
 
-        public void AskServerToSpawn(ThingBase thing)
+        public void AddThing(ThingBase thing)
         {
-            _askToSpawnAction(thing);
+            _addThingAction(thing);
         }
 
-        public void UpdateThing(ThingBase thing)
-        {
-            _updateThingAction(thing);
-        }
+        //public void AskServerToSpawn(ThingBase thing)
+        //{
+        //    _askToSpawnAction(thing);
+        //}
+
+        //public void UpdateThing(ThingBase thing, ThingBase.UpdateLocationSettings settings)
+        //{
+        //    _updateThingAction(thing, settings);
+        //}
 
         internal void ShootLazer(ShipBase shipBase)
         {

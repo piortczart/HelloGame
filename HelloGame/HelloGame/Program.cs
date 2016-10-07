@@ -16,7 +16,7 @@ namespace HelloGame.Client
         [STAThread]
         static void Main()
         {
-            GeneralSettings settings = GeneralSettings.Gameplay;
+            GeneralSettings settings = GeneralSettings.Custom;
             //new GeneralSettings
             //{
             //    SpawnAi = false,

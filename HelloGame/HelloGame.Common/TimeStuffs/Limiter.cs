@@ -1,6 +1,6 @@
 using System;
 
-namespace HelloGame.Common
+namespace HelloGame.Common.TimeStuffs
 {
     /// <summary>
     /// Can be used to limit occurance of an event to the given frequency.

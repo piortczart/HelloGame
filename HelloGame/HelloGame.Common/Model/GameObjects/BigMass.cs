@@ -10,8 +10,9 @@ namespace HelloGame.Common.Model.GameObjects
     {
         private Color _color;
 
-        public BigMass(ThingBaseInjections injections, int size, int? id, ThingBase creator)
-            : base(injections, GeneralSettings.BigMassSettings, creator, id)
+        public BigMass(ThingBaseInjections injections, int size, int? id, ThingBase creator,
+            ElapsingThingSettings elapsingThingSettings = null)
+            : base(injections, ThingSettings.GetBigMassSettings(elapsingThingSettings), creator, id)
         {
             Physics.Size = size;
             Physics.Mass = size*10000;

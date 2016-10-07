@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HelloGame.Common;
+using HelloGame.Common.TimeStuffs;
 
 namespace HelloGame.Tests
 {

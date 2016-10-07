@@ -1,5 +1,6 @@
 ﻿using HelloGame.Common.Logging;
 using HelloGame.Common.Settings;
+using HelloGame.Common.TimeStuffs;
 
 namespace HelloGame.Common.Model
 {

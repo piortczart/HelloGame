@@ -4,9 +4,10 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 {
     public class PlayerShipOther : PlayerShip
     {
-
-        public PlayerShipOther(ThingBaseInjections injections, GameThingCoordinator gameManager, string name, ClanEnum clan, int? id = null, ThingBase creator = null)
-            : base(injections, gameManager, name, clan, id, creator)
+        public PlayerShipOther(ThingBaseInjections injections, GameThingCoordinator coordinator, string name,
+            ClanEnum clan, int? id = null, ThingBase creator = null,
+            ElapsingThingSettings etsElapsingThingSettings = null)
+            : base(injections, coordinator, name, clan, id, creator, etsElapsingThingSettings)
         {
         }
 

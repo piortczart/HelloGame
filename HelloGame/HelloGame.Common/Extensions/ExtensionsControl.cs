@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace HelloGame.Client
+namespace HelloGame.Common.Extensions
 {
     public static class ExtensionsControl
     {

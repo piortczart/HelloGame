@@ -64,24 +64,15 @@ namespace HelloGame.Client
 
             string name = Settings.Default.PlayerName;
 
-            if (cbLocalOnly.Checked)
+            try
             {
-                // ?
-                GameManager.StartGame();
-                GameManager.AddPlayer(name, clan);
+                ClientNetwork.StartConnection(Settings.Default.ServerName, name, clan, Cancellation);
             }
-            else
+            catch (Exception exception)
             {
-                try
-                {
-                    ClientNetwork.StartConnection(Settings.Default.ServerName, name, clan, Cancellation);
-                }
-                catch (Exception exception)
-                {
-                    lbLog.Text = "Connecting to server failed: " + exception.Message;
-                }
-                lbLog.Text = "We are in!";
+                lbLog.Text = "Connecting to server failed: " + exception.Message;
             }
+            lbLog.Text = "We are in!";
 
             ((Form) this.TopLevelControl).Close();
         }

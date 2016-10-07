@@ -19,9 +19,12 @@ namespace HelloGame.Server
         private readonly GameManager _gameManager;
         private readonly MessageTransciever _transciever;
         private readonly ILogger _logger;
-        public readonly ConcurrentDictionary<NetworkStream, PlayerShipOther> Clients = new ConcurrentDictionary<NetworkStream, PlayerShipOther>();
 
-        public ClientMessageProcessing(GameManager gameManager, ILoggerFactory loggerFactory, MessageTransciever transciever)
+        public readonly ConcurrentDictionary<NetworkStream, PlayerShipOther> Clients =
+            new ConcurrentDictionary<NetworkStream, PlayerShipOther>();
+
+        public ClientMessageProcessing(GameManager gameManager, ILoggerFactory loggerFactory,
+            MessageTransciever transciever)
         {
             _gameManager = gameManager;
             _transciever = transciever;
@@ -72,16 +75,26 @@ namespace HelloGame.Server
             switch (message.Type)
             {
                 case NetworkMessageType.Hello:
+                {
                     NetworkMessageHello hello = message.Payload.DeSerializeJson<NetworkMessageHello>();
                     PlayerShipOther ship = _gameManager.AddPlayer(hello.Name.SubstringSafe(0, 15), hello.Clan);
                     Clients[clientStream] = ship;
                     break;
+                }
                 case NetworkMessageType.MyPosition:
-                    _gameManager.ParseThingDescription(message.Payload.DeSerializeJson<ThingDescription>());
+                {
+                    // He can still think he is alive, we cannot simply update his position if he's not.
+                    PlayerShipOther ship = Clients[clientStream];
+                    if (!ship.IsDestroyed)
+                    {
+                        _gameManager.ParseThingDescription(message.Payload.DeSerializeJson<ThingDescription>(),
+                            ParseThingSource.ToServer_PlayerPosition);
+                    }
                     break;
+                }
                 case NetworkMessageType.PleaseSpawn:
                     var stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
-                    _gameManager.ParseThingDescriptions(stuff);
+                    _gameManager.ParseThingDescriptions(stuff, ParseThingSource.ToServer_SpawnRequest);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

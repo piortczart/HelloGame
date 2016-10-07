@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using HelloGame.Common.MathStuff;
 using HelloGame.Common.Model;
 
@@ -12,14 +13,17 @@ namespace HelloGame.Common.Physicsish
         public decimal Aerodynamism { get; set; }
 
         public decimal Mass { get; set; }
+
         /// <summary>
         /// Anything propeling the object.
         /// </summary>
         public Real2DVector SelfPropelling { get; set; }
+
         /// <summary>
         /// Current interia of the object.
         /// </summary>
         public Real2DVector Interia { get; set; }
+
         /// <summary>
         /// Current drag.
         /// </summary>
@@ -34,7 +38,7 @@ namespace HelloGame.Common.Physicsish
         public decimal Angle { get; set; }
         public Position Position { get; set; }
 
-        public Point PositionPoint => new Point((int)Position.X, (int)Position.Y);
+        public Point PositionPoint => new Point((int) Position.X, (int) Position.Y);
 
         public decimal Size { get; set; }
 
@@ -65,25 +69,52 @@ namespace HelloGame.Common.Physicsish
         public Point GetPointInDirection(decimal bigness)
         {
             Real2DVector direction = GetDirection(bigness);
-            return new Point((int)(direction.X + Position.X), (int)(direction.Y + Position.Y));
+            return new Point((int) (direction.X + Position.X), (int) (direction.Y + Position.Y));
         }
 
         public void Update(AlmostPhysics other, ThingBase.UpdateLocationSettings settings)
         {
-            Position = new Position(other.Position.X, other.Position.Y);
-
-            if (settings != ThingBase.UpdateLocationSettings.ExcludeAngle)
+            switch (settings)
             {
-                Angle = other.Angle;
+                case ThingBase.UpdateLocationSettings.All:
+                    Position = new Position(other.Position.X, other.Position.Y);
+                    Angle = other.Angle;
+                    Drag = other.Drag;
+                    RadPerSecond = other.RadPerSecond;
+                    SelfPropelling = other.SelfPropelling;
+                    Aerodynamism = other.Aerodynamism;
+                    Mass = other.Mass;
+                    Gravity = other.Gravity;
+                    Interia = other.Interia;
+                    Size = other.Size;
+                    break;
+                case ThingBase.UpdateLocationSettings.ExcludePositionAndAngle:
+                    //Position = new Position(other.Position.X, other.Position.Y);
+                    //Angle = other.Angle;
+                    Drag = other.Drag;
+                    RadPerSecond = other.RadPerSecond;
+                    SelfPropelling = other.SelfPropelling;
+                    Aerodynamism = other.Aerodynamism;
+                    Mass = other.Mass;
+                    Gravity = other.Gravity;
+                    Interia = other.Interia;
+                    Size = other.Size;
+                    break;
+                case ThingBase.UpdateLocationSettings.AngleAndEngineAndPosition:
+                    Position = new Position(other.Position.X, other.Position.Y);
+                    Angle = other.Angle;
+                    //Drag = other.Drag;
+                    //RadPerSecond = other.RadPerSecond;
+                    SelfPropelling = other.SelfPropelling;
+                    //Aerodynamism = other.Aerodynamism;
+                    //Mass = other.Mass;
+                    //Gravity = other.Gravity;
+                    //Interia = other.Interia;
+                    //Size = other.Size;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(settings), settings, null);
             }
-
-            Drag = other.Drag;
-            RadPerSecond = other.RadPerSecond;
-            SelfPropelling = other.SelfPropelling;
-            Aerodynamism = other.Aerodynamism;
-            Mass = other.Mass;
-            Gravity = other.Gravity;
-            Interia = other.Interia;
         }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace HelloGame.Common
+namespace HelloGame.Common.TimeStuffs
 {
     public class EventPerSecond
     {
@@ -14,9 +14,9 @@ namespace HelloGame.Common
             _timeSource = timeSource;
         }
 
-        private object _synchro = new object();
+        private readonly object _synchro = new object();
 
-        private int CurrentSecond => (int)Math.Floor(_timeSource.ElapsedSinceStart.TotalSeconds);
+        private int CurrentSecond => (int) Math.Floor(_timeSource.ElapsedSinceStart.TotalSeconds);
 
         public void Add()
         {

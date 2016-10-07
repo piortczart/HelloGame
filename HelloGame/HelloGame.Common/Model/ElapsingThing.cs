@@ -1,4 +1,6 @@
 ﻿using System;
+using HelloGame.Common.Model.GameObjects;
+using HelloGame.Common.TimeStuffs;
 
 namespace HelloGame.Common.Model
 {
@@ -8,14 +10,17 @@ namespace HelloGame.Common.Model
         public TimeSpan Age => TimeSource.ElapsedSinceStart - SpawnedAt;
         public bool IsTimeToElapse { get; set; }
         public TimeSpan TimeToLive { get; set; }
-        public double AgePercentage => 100 * Age.TotalMilliseconds / TimeToLive.TotalMilliseconds;
+        public double AgePercentage => 100*Age.TotalMilliseconds/TimeToLive.TotalMilliseconds;
         protected readonly TimeSource TimeSource;
 
-        protected ElapsingThing(TimeSpan timeToLive, TimeSource timeSource)
+        public ElapsingThingSettings ElapsingSettings
+            => new ElapsingThingSettings {SpawnedAt = SpawnedAt, TimeToLive = TimeToLive};
+
+        protected ElapsingThing(TimeSpan timeToLive, TimeSource timeSource, TimeSpan? spawnedAt)
         {
             TimeToLive = timeToLive;
             TimeSource = timeSource;
-            SpawnedAt = TimeSource.ElapsedSinceStart;
+            SpawnedAt = spawnedAt ?? TimeSource.ElapsedSinceStart;
         }
 
         protected void ElapseIn(TimeSpan lifeLeft)

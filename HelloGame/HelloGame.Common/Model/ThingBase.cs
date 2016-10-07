@@ -16,7 +16,8 @@ namespace HelloGame.Common.Model
         public enum UpdateLocationSettings
         {
             All,
-            ExcludeAngle
+            ExcludePositionAndAngle,
+            AngleAndEngineAndPosition
         }
 
         protected readonly ILogger Logger;
@@ -33,21 +34,21 @@ namespace HelloGame.Common.Model
         protected readonly GeneralSettings Settings;
         protected readonly GameThingCoordinator Coordinator;
 
-        protected ThingBase(ThingBaseInjections injections, ThingSettings baseSettings, ThingBase creator = null,
+        protected ThingBase(ThingBaseInjections injections, ThingSettings settings, ThingBase creator = null,
             int? id = null)
-            : base(baseSettings.TimeToLive, injections.TimeSource)
+            : base(settings.TimeToLive, injections.TimeSource, settings.SpawnedAt)
         {
             Coordinator = injections.Coordinator;
             Settings = injections.GeneralSettings;
             Injections = injections;
-            Settingz = baseSettings;
+            Settingz = settings;
             Logger = injections.LoggerFactory.CreateLogger(GetType());
-            Physics = new AlmostPhysics(baseSettings.Aerodynamism);
+            Physics = new AlmostPhysics(settings.Aerodynamism);
             Creator = creator;
-            Physics.Mass = baseSettings.Mass;
-            Physics.RadPerSecond = baseSettings.RadPerSecond;
-            CanBeMoved = baseSettings.CanBeMoved;
-            ElapseIn(baseSettings.TimeToLive);
+            Physics.Mass = settings.Mass;
+            Physics.RadPerSecond = settings.RadPerSecond;
+            CanBeMoved = settings.CanBeMoved;
+            ElapseIn(settings.TimeToLive);
             Id = id ?? Interlocked.Add(ref _highestId, 1);
         }
 
@@ -73,8 +74,18 @@ namespace HelloGame.Common.Model
                 string owner = $"{Id} ({Creator?.Id.ToString() ?? "?"})";
                 Size ownerSize = TextRenderer.MeasureText(owner, Font);
                 var nameLocation = new PointF((int) Physics.Position.X - ownerSize.Width/2,
-                    (int) Physics.Position.Y + (int) Settingz.Size + ownerSize.Height*2);
+                    (int) Physics.Position.Y + (int) Settingz.Size + ownerSize.Height*4);
                 g.DrawString(owner, Font, Brushes.Black, nameLocation);
+            }
+
+            if (Settings.ShowTimeToLive)
+            {
+                string text = TimeToLive.ToString();
+                Size textSize = TextRenderer.MeasureText(text, Font);
+
+                var nameLocation = new PointF((int) Physics.Position.X - textSize.Width/2,
+                    (int) Physics.Position.Y + (int) Settingz.Size + textSize.Height*2);
+                g.DrawString(text, Font, Brushes.Black, nameLocation);
             }
         }
 
@@ -198,25 +209,28 @@ namespace HelloGame.Common.Model
             }
         }
 
-        public void UpdateLocation(ThingBase otherThing)
+        public void UpdateLocation(ThingBase otherThing, UpdateLocationSettings settings)
         {
             lock (_modelSynchronizer)
             {
-                decimal positionShift = Physics.Position.DistanceTo(otherThing.Physics.Position);
-                //Logger.LogInfo($"Total thing position shift: {positionShift}");
-
-                if (positionShift > 20)
-                {
-                    //throw new Exception($"Position shift too high! {positionShift}");
-                }
-
-                var settings = this is PlayerShipMovable
-                    ? UpdateLocationSettings.ExcludeAngle
-                    : UpdateLocationSettings.All;
+                // Update this object's physics.
                 Physics.Update(otherThing.Physics, settings);
 
-                IsDestroyed = otherThing.IsDestroyed;
-                ElapseIn(otherThing.TimeToLive);
+                switch (settings)
+                {
+                    case UpdateLocationSettings.All:
+                        IsDestroyed = otherThing.IsDestroyed;
+                        ElapseIn(otherThing.TimeToLive);
+                        break;
+                    case UpdateLocationSettings.ExcludePositionAndAngle:
+                        IsDestroyed = otherThing.IsDestroyed;
+                        ElapseIn(otherThing.TimeToLive);
+                        break;
+                    case UpdateLocationSettings.AngleAndEngineAndPosition:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(settings), settings, null);
+                }
             }
         }
     }

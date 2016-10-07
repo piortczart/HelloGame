@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using HelloGame.Common.MathStuff;
 using HelloGame.Common.Settings;
+using HelloGame.Common.TimeStuffs;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
 {
@@ -16,8 +17,11 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         public ShipSettingType ShipSettingType { get; set; }
 
         public AiShip(ThingBaseInjections injections, GameThingCoordinator coordinator, AiType aiType,
-            ShipSettingType shipSettingType, string name, int? id = null, ThingBase creator = null)
-            : base(injections, coordinator, ShipBaseSettings.ShipTypeSettings[shipSettingType], name, id, creator)
+            ShipSettingType shipSettingType, string name, int? id = null, ThingBase creator = null,
+            ElapsingThingSettings elapsingThingSettings = null)
+            : base(
+                injections, coordinator, ShipBaseSettings.GetShipTypeSettings(shipSettingType, elapsingThingSettings),
+                name, id, creator)
         {
             _aiShipBaseSettings = AiShipSettings.AiSettings[aiType];
             _locatePlayerLimiter = new Limiter(_aiShipBaseSettings.LocatePlayerFrequency, TimeSource);
@@ -59,12 +63,12 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 // Player is far away? Get closer.
                 if (player.Physics.Position.DistanceTo(Physics.Position) > _aiShipBaseSettings.DistanceToPlayer)
                 {
-                    Physics.SelfPropelling.Change(Physics.Angle, ShipBaseSettings.MaxEnginePower);
+                    Physics.SelfPropelling.Change(Physics.Angle, ShipSettings.MaxEnginePower);
                 }
                 // Player too close? Go back.
                 else
                 {
-                    Physics.SelfPropelling.Change(Physics.Angle, ShipBaseSettings.MaxEnginePower);
+                    Physics.SelfPropelling.Change(Physics.Angle, ShipSettings.MaxEnginePower);
                 }
             }
         }

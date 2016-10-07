@@ -51,9 +51,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\ExtensionsControl.cs" />
     <Compile Include="Extensions\ExtensionsType.cs" />
+    <Compile Include="Model\ElapsingThingSettings.cs" />
     <Compile Include="Model\GameObjects\Ships\ClanEnum.cs" />
+    <Compile Include="Model\ParseThingSource.cs" />
     <Compile Include="Model\ThingBaseInjections.cs" />
+    <Compile Include="Model\ThingsToRespawnThreadSafe.cs" />
+    <Compile Include="Model\ThingToRespawn.cs" />
     <Compile Include="Rendering\IRenderer.cs" />
     <Compile Include="Rendering\Renderer.cs" />
     <Compile Include="Settings\AiShipBaseSettings.cs" />
@@ -92,8 +97,8 @@
     <Compile Include="Model\ThingBase.cs" />
     <Compile Include="Model\ThingDescription.cs" />
     <Compile Include="Model\ThingFactory.cs" />
-    <Compile Include="Model\ThingSettings.cs" />
-    <Compile Include="Model\ThreadSafeList.cs" />
+    <Compile Include="Settings\ThingSettings.cs" />
+    <Compile Include="Model\ThingsThreadSafeList.cs" />
     <Compile Include="Network\NetworkMessage.cs" />
     <Compile Include="Network\NetworkMessageType.cs" />
     <Compile Include="Network\NetworkStuff.cs" />

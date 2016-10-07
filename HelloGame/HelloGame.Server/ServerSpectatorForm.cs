@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 using HelloGame.Common.Rendering;
+using HelloGame.Common.Extensions;
 
 namespace HelloGame.Server
 {
@@ -13,6 +14,13 @@ namespace HelloGame.Server
             InitializeComponent();
             _renderer = renderer;
             _renderer.RepaintAction = Refresh;
+
+            var timer = new Timer
+            {
+                Interval = 14
+            };
+            timer.Tick += (sender, args) => { this.Invoke(Refresh); };
+            timer.Start();
         }
 
         protected override void OnPaint(PaintEventArgs e)

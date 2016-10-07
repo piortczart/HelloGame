@@ -4,7 +4,9 @@ using System.Threading;
 using HelloGame.Common.Logging;
 using System.Collections.Concurrent;
 using HelloGame.Common.Extensions;
+using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Settings;
+using HelloGame.Common.TimeStuffs;
 
 namespace HelloGame.Common.Model
 {
@@ -14,18 +16,22 @@ namespace HelloGame.Common.Model
         readonly CollisionDetector _collidor;
         private readonly EventPerSecond _modelUpdateCounter;
         private readonly Thread _modelUpdateThread;
-        private readonly ThingsList _things = new ThingsList();
+        private readonly ThingsThreadSafeList _thingsThreadSafe = new ThingsThreadSafeList();
         private readonly ConcurrentQueue<ThingBase> _deadThings = new ConcurrentQueue<ThingBase>();
         private readonly List<Action> _updateModelAction = new List<Action>();
         public EventPerSecond CollisionCalculations => _collidor.CollisoinsCounter;
         private readonly Overlay _overlay;
-        public ThingsList Things => _things;
+        public ThingsThreadSafeList ThingsThreadSafe => _thingsThreadSafe;
+        private readonly TimeSource _timeSource;
         private readonly bool _isServer;
         private readonly TimeCounter _modelUpdateTimeCounter;
+        public readonly ThingsToRespawnThreadSafe ThingsToRespawn;
 
         public ModelManager(ILoggerFactory loggerFactory, TimeSource timeSource, Overlay overlay, bool isServer,
             GeneralSettings settings)
         {
+            ThingsToRespawn = new ThingsToRespawnThreadSafe(timeSource);
+            _timeSource = timeSource;
             _isServer = isServer;
             _logger = loggerFactory.CreateLogger(GetType());
             _modelUpdateThread = new Thread(UpdateModel) {IsBackground = true};
@@ -40,17 +46,35 @@ namespace HelloGame.Common.Model
             _updateModelAction.Add(action);
         }
 
-        public void AddOrUpdateThing(ThingBase thingBase)
+        public void AddThing(ThingBase thing)
         {
-            ThingBase alreadyExisting = _things.AddIfMissing(thingBase);
-            alreadyExisting?.UpdateLocation(thingBase);
+            if (_thingsThreadSafe.AddIfMissing(thing) != null)
+            {
+                throw new Exception("An exiting thing was asked to be added!");
+            }
+        }
+
+        public void UpdateThing(ThingBase sourceThing, ThingBase.UpdateLocationSettings settings)
+        {
+            ThingBase existing = _thingsThreadSafe.AddIfMissing(sourceThing);
+            if (existing == null)
+            {
+                throw new Exception("A non-exiting thing was asked to be updated!");
+            }
+            existing.UpdateLocation(sourceThing, settings);
+        }
+
+        public void AddOrUpdateThing(ThingBase sourceThing, ThingBase.UpdateLocationSettings settings)
+        {
+            ThingBase alreadyExisting = _thingsThreadSafe.AddIfMissing(sourceThing);
+            alreadyExisting?.UpdateLocation(sourceThing, settings);
         }
 
         /// <summary>
         /// Returns all things that have been despawned since last call of this method.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ThingBase> GetDeadThings()
+        public IEnumerable<ThingBase> ConsumeDeadThings()
         {
             return _deadThings.GetAll();
         }
@@ -80,7 +104,7 @@ namespace HelloGame.Common.Model
 
             _modelUpdateCounter.Add();
 
-            IReadOnlyCollection<ThingBase> things = _things.GetThingsReadOnly();
+            IReadOnlyCollection<ThingBase> things = _thingsThreadSafe.GetThingsReadOnly();
             foreach (ThingBase thing in things)
             {
                 if (!thing.IsDestroyed)
@@ -91,12 +115,16 @@ namespace HelloGame.Common.Model
                     // Despawn the thing if it should elapse.
                     if (thing.IsTimeToElapse)
                     {
-                        _things.Remove(thing);
+                        _thingsThreadSafe.Remove(thing);
                         _deadThings.Enqueue(thing);
+                        if (_isServer)
+                        {
+                            Afterlife(thing);
+                        }
                     }
                 }
             }
-            _collidor.DetectCollisions(_things.GetThingsArray());
+            _collidor.DetectCollisions(_thingsThreadSafe.GetThingsArray());
 
             foreach (var action in _updateModelAction)
             {
@@ -107,6 +135,48 @@ namespace HelloGame.Common.Model
             if (toSleep > 0)
             {
                 Thread.Sleep(toSleep);
+            }
+        }
+
+        /// <summary>
+        /// What to do with a dead thing?
+        /// </summary>
+        private void Afterlife(ThingBase deadThing)
+        {
+            if (deadThing is PlayerShip)
+            {
+                TimeSpan whenToRespawn = _timeSource.ElapsedSinceStart.Add(TimeSpan.FromSeconds(3));
+                ThingsToRespawn.Add(new ThingToRespawn(whenToRespawn, deadThing));
+            }
+        }
+
+        public void HandleNewThing(ThingBase thing, ParseThingSource source)
+        {
+            switch (source)
+            {
+                case ParseThingSource.ToClient:
+
+                    if (thing is PlayerShipMovable)
+                    {
+                        // Do not update the player's angle. That is what he always controls.
+                        // The player's position should not be updated because server does not have the latest engine info (has it with a big delay)
+                        // This migh tbe the first time we are asked to spawn our ship?...
+                        AddOrUpdateThing(thing, ThingBase.UpdateLocationSettings.ExcludePositionAndAngle);
+                    }
+                    else
+                    {
+                        // We were sent a new thing or an update of something else. Update or add totally.
+                        AddOrUpdateThing(thing, ThingBase.UpdateLocationSettings.All);
+                    }
+                    break;
+                case ParseThingSource.ToServer_PlayerPosition:
+                    UpdateThing(thing, ThingBase.UpdateLocationSettings.AngleAndEngineAndPosition);
+                    break;
+                case ParseThingSource.ToServer_SpawnRequest:
+                    AddThing(thing);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(source), source, null);
             }
         }
     }

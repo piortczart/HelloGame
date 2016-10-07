@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using HelloGame.Common.Logging;
 using HelloGame.Common.Model;
 using System;
+using HelloGame.Common.Extensions;
 using HelloGame.Common.Rendering;
 
 namespace HelloGame.Client

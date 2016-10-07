@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace HelloGame.Common
+namespace HelloGame.Common.TimeStuffs
 {
     public class TimeSource
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
 
-        public TimeSpan ElapsedSinceStart { get { return _stopwatch.Elapsed + _offset; } }
+        public TimeSpan ElapsedSinceStart
+        {
+            get { return _stopwatch.Elapsed + _offset; }
+        }
 
         private TimeSpan _offset = TimeSpan.Zero;
 

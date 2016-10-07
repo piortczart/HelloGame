@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using HelloGame.Common.MathStuff;
 using HelloGame.Common.Settings;
+using HelloGame.Common.TimeStuffs;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
 {
@@ -12,24 +13,24 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         public string Name { get; }
         protected readonly Limiter BombLimiter;
         protected readonly Limiter LaserLimiter;
-        protected readonly ShipBaseSettings ShipBaseSettings;
+        protected readonly ShipBaseSettings ShipSettings;
         public int Score { get; set; }
 
         protected ShipBase(ThingBaseInjections injections, GameThingCoordinator gameCoordinator,
-            ShipBaseSettings baseSettings, string name, int? id, ThingBase creator = null, int score = 0)
-            : base(injections, baseSettings, creator, id)
+            ShipBaseSettings settings, string name, int? id, ThingBase creator = null, int score = 0)
+            : base(injections, settings, creator, id)
         {
             GameCoordinator = gameCoordinator;
             Name = name;
-            ShipBaseSettings = baseSettings;
+            ShipSettings = settings;
             Score = score;
 
-            LaserLimiter = new Limiter(baseSettings.LazerLimit, TimeSource);
+            LaserLimiter = new Limiter(settings.LazerLimit, TimeSource);
             BombLimiter = new Limiter(TimeSpan.FromSeconds(1), TimeSource);
 
-            Physics.Size = baseSettings.Size;
-            Physics.SelfPropelling = new Real2DVector(baseSettings.MaxEnginePower);
-            Physics.Interia = new Real2DVector(baseSettings.MaxInteria);
+            Physics.Size = settings.Size;
+            Physics.SelfPropelling = new Real2DVector(settings.MaxEnginePower);
+            Physics.Interia = new Real2DVector(settings.MaxInteria);
         }
 
         protected void PewPew()
@@ -119,7 +120,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 ship.Score += 1;
             }
 
-            Destroy(ShipBaseSettings.DespawnTime);
+            Destroy(ShipSettings.DespawnTime);
         }
     }
 }

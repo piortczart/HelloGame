@@ -19,10 +19,14 @@ namespace HelloGame.Server
         private readonly ClientMessageProcessing _clientMessageProcessing;
         private readonly ILogger _logger;
         private Timer _propagateTimer;
-        private static readonly TimeSpan PropagateFrequency = TimeSpan.Parse(ConfigurationManager.AppSettings["PropagateFrequencyServer"]);
+
+        private static readonly TimeSpan PropagateFrequency =
+            TimeSpan.Parse(ConfigurationManager.AppSettings["PropagateFrequencyServer"]);
+
         private static readonly int ServerPortNumber = int.Parse(ConfigurationManager.AppSettings["ServerPortNumber"]);
 
-        public GameServer(GameManager gameManager, ILoggerFactory loggerFactory, ClientMessageProcessing clientMessageProcessing, MessageTransciever sender)
+        public GameServer(GameManager gameManager, ILoggerFactory loggerFactory,
+            ClientMessageProcessing clientMessageProcessing)
         {
             _gameManager = gameManager;
             _clientMessageProcessing = clientMessageProcessing;
@@ -41,12 +45,20 @@ namespace HelloGame.Server
             _propagateTimer = new Timer(state => { Propagate(); }, null, PropagateFrequency, Timeout.InfiniteTimeSpan);
 
             _logger.LogInfo("Starting the listen thread. This operation will block (if awaited on).");
-            await Task.Run(() => { _clientMessageProcessing.Process(cancellationTokenSource.Token); }, cancellationTokenSource.Token);
+            await
+                Task.Run(() => { _clientMessageProcessing.Process(cancellationTokenSource.Token); },
+                    cancellationTokenSource.Token);
         }
 
         private void Propagate()
         {
-            IReadOnlyCollection<ThingBase> things = _gameManager.ModelManager.Things.GetThingsReadOnly();
+            // Check if something needs respawning.
+            foreach (ThingToRespawn respawn in _gameManager.ModelManager.ThingsToRespawn.GetReady())
+            {
+                ;
+            }
+
+            IReadOnlyCollection<ThingBase> things = _gameManager.ModelManager.ThingsThreadSafe.GetThingsReadOnly();
 
             string thingIds = string.Join(",", things.Select(t => t.Id + "_" + t.GetType().Name));
             _logger.LogInfo($"Propagating. Number of things: {things.Count} (ids: {thingIds})");
@@ -58,8 +70,10 @@ namespace HelloGame.Server
 
         private void SendUpdateMessage(IReadOnlyCollection<ThingBase> things)
         {
-            List<ThingBase> deadThings = _gameManager.ModelManager.GetDeadThings().ToList();
-            List<PlayerShipOther> deadPlayers = deadThings.Where(t => t is PlayerShipOther).Cast<PlayerShipOther>().ToList();
+            // This list is created so clients can be informed about all deaths/despawns.
+            // Getting this list clears the dead things list in model manager.
+            List<ThingBase> deadThings = _gameManager.ModelManager.ConsumeDeadThings().ToList();
+
             foreach (var client in _clientMessageProcessing.Clients)
             {
                 NetworkStream networkStream = client.Key;
@@ -79,15 +93,6 @@ namespace HelloGame.Server
 
                 if (deadThings.Any())
                 {
-                    
-                    foreach (PlayerShipOther deadPlayer in deadPlayers)
-                    {
-                        if (deadPlayer == _clientMessageProcessing.Clients[networkStream]) {
-                            PlayerShipOther newShip = _gameManager.AddPlayer(deadPlayer.Name, deadPlayer.Clan);
-                            _clientMessageProcessing.Clients[networkStream] = newShip;
-                        }
-                    }
-
                     List<int> deadThingIds = deadThings.Select(t => t.Id).ToList();
                     var message2 = new NetworkMessage
                     {
