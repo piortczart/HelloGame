@@ -2,6 +2,7 @@
 using System.Drawing;
 using HelloGame.Common.Model;
 using HelloGame.Common.Physicsish;
+using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Rendering
 {
@@ -13,21 +14,25 @@ namespace HelloGame.Common.Rendering
         public Action RepaintAction { get; set; }
         private readonly ModelManager _modelManager;
         readonly Overlay _overlay;
+        private readonly GeneralSettings _generalSettings;
         private readonly GameManager _gameManager;
 
-        public Renderer(ModelManager modelManager, GameManager gameManager, Overlay overlay)
+        public Renderer(ModelManager modelManager, GameManager gameManager, Overlay overlay,
+            GeneralSettings generalSettings)
         {
             _modelManager = modelManager;
             _overlay = overlay;
+            _generalSettings = generalSettings;
             _gameManager = gameManager;
         }
 
         public void PaintStuff(Graphics graphics, Size windowSize, bool spectate = false)
         {
-            using (var frame = new Bitmap(windowSize.Width*2, windowSize.Height*2))
+            using (var frame = new Bitmap(_generalSettings.GameSize.Width, _generalSettings.GameSize.Height))
             {
                 using (Graphics frameGraphics = Graphics.FromImage(frame))
                 {
+                    // Draw the boundaries of the game.
                     frameGraphics.DrawRectangle(new Pen(Brushes.Black),
                         new Rectangle(0, 0, frame.Width - 1, frame.Height - 1));
 
@@ -46,13 +51,16 @@ namespace HelloGame.Common.Rendering
                     {
                         item.RenderBase(frameGraphics);
                     }
+
                     _overlay.Render(graphics);
 
+                    // Draw the rendered frame.
                     int xA = (int) screenCenter.X - (windowSize.Width/2);
                     int yA = (int) screenCenter.Y - (windowSize.Height/2);
-
                     graphics.DrawImage(frame, 0, 0, new RectangleF(xA, yA, windowSize.Width, windowSize.Height),
                         GraphicsUnit.Pixel);
+
+                    _overlay.UpdatePositions(screenCenter, windowSize, new Point(xA, yA));
                 }
             }
         }

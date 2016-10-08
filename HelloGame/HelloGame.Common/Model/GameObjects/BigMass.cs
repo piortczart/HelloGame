@@ -8,15 +8,15 @@ namespace HelloGame.Common.Model.GameObjects
 {
     public class BigMass : ThingBase
     {
-        private Color _color;
+        public Color Color { get; private set; }
 
         public BigMass(ThingBaseInjections injections, int size, int? id, ThingBase creator,
-            ElapsingThingSettings elapsingThingSettings = null)
+            Color? color, ElapsingThingSettings elapsingThingSettings = null)
             : base(injections, ThingSettings.GetBigMassSettings(elapsingThingSettings), creator, id)
         {
             Physics.Size = size;
             Physics.Mass = size*10000;
-            _color = GetRandom();
+            Color = color ?? GetRandom();
         }
 
         private static Color GetRandom()
@@ -24,17 +24,17 @@ namespace HelloGame.Common.Model.GameObjects
             return Color.FromArgb(MathX.Random.Next(0, 255), MathX.Random.Next(0, 255), MathX.Random.Next(0, 255));
         }
 
-        public override void CollidesWith(ThingBase other)
+        protected override void CollidesWithInternal(ThingBase other)
         {
             if (!other.IsDestroyed)
             {
-                _color = Color.FromArgb(Math.Min(_color.R + 10, 255), _color.G, _color.B);
+                Color = Color.FromArgb(Math.Min(Color.R + 10, 255), Color.G, Color.B);
             }
         }
 
         protected override void Render(Graphics g)
         {
-            g.FillEllipse(new SolidBrush(_color),
+            g.FillEllipse(new SolidBrush(Color),
                 new Rectangle((int) (Physics.Position.X - Physics.Size/2), (int) (Physics.Position.Y - Physics.Size/2),
                     (int) Physics.Size, (int) Physics.Size));
         }

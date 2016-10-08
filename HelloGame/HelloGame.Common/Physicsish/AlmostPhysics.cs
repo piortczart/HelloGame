@@ -55,10 +55,10 @@ namespace HelloGame.Common.Physicsish
             Position = new Position(point.X, point.Y);
         }
 
-        public void PositionDelta(decimal X, decimal Y)
+        public void PositionDelta(decimal deltaX, decimal deltaY)
         {
-            Position.X += X;
-            Position.Y += Y;
+            Position.X += deltaX;
+            Position.Y += deltaY;
         }
 
         public Real2DVector GetDirection(decimal bigness)
@@ -115,6 +115,16 @@ namespace HelloGame.Common.Physicsish
                 default:
                     throw new ArgumentOutOfRangeException(nameof(settings), settings, null);
             }
+        }
+
+        public void Reset(Position position)
+        {
+            Angle = 0;
+            Drag = Real2DVector.GetZero();
+            Gravity = Real2DVector.GetZero();
+            Interia = Real2DVector.GetZero();
+            Position = position;
+            SelfPropelling = Real2DVector.GetZero();
         }
     }
 }

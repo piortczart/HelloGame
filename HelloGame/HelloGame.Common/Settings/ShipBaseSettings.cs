@@ -1,6 +1,5 @@
 using System;
 using HelloGame.Common.Model;
-using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.Model.GameObjects.Ships;
 
 namespace HelloGame.Common.Settings
@@ -11,6 +10,7 @@ namespace HelloGame.Common.Settings
         public decimal MaxInteria { get; set; }
         public TimeSpan DespawnTime { get; set; }
         public int PointsForKill { get; set; }
+        public TimeSpan RespawnTime { get; set; }
 
         private ShipBaseSettings(TimeSpan? spawnedAt) : base(spawnedAt)
         {
@@ -28,7 +28,8 @@ namespace HelloGame.Common.Settings
                 MaxInteria = 5,
                 DespawnTime = TimeSpan.FromSeconds(5),
                 PointsForKill = 4,
-                Size = 10
+                Size = 10,
+                RespawnTime = TimeSpan.FromSeconds(3)
             };
 
         private static ShipBaseSettings BigSlow(ElapsingThingSettings elapsingThingSettings) =>
@@ -43,7 +44,8 @@ namespace HelloGame.Common.Settings
                 MaxInteria = 5,
                 DespawnTime = TimeSpan.FromSeconds(5),
                 PointsForKill = 4,
-                Size = 30
+                Size = 30,
+                RespawnTime = TimeSpan.FromSeconds(7)
             };
 
         private static ShipBaseSettings Balanced(ElapsingThingSettings elapsingThingSettings) =>
@@ -59,7 +61,8 @@ namespace HelloGame.Common.Settings
                 DespawnTime = TimeSpan.FromSeconds(5),
                 PointsForKill = 4,
                 Size = 15,
-                LazerSpeed = 50
+                LazerSpeed = 50,
+                RespawnTime = TimeSpan.FromSeconds(5)
             };
 
 

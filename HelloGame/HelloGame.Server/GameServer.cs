@@ -19,6 +19,7 @@ namespace HelloGame.Server
         private readonly ClientMessageProcessing _clientMessageProcessing;
         private readonly ILogger _logger;
         private Timer _propagateTimer;
+        private readonly ServersClients _serversClients;
 
         private static readonly TimeSpan PropagateFrequency =
             TimeSpan.Parse(ConfigurationManager.AppSettings["PropagateFrequencyServer"]);
@@ -26,10 +27,11 @@ namespace HelloGame.Server
         private static readonly int ServerPortNumber = int.Parse(ConfigurationManager.AppSettings["ServerPortNumber"]);
 
         public GameServer(GameManager gameManager, ILoggerFactory loggerFactory,
-            ClientMessageProcessing clientMessageProcessing)
+            ClientMessageProcessing clientMessageProcessing, ServersClients serversClients)
         {
             _gameManager = gameManager;
             _clientMessageProcessing = clientMessageProcessing;
+            _serversClients = serversClients;
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
@@ -55,7 +57,7 @@ namespace HelloGame.Server
             // Check if something needs respawning.
             foreach (ThingToRespawn respawn in _gameManager.ModelManager.ThingsToRespawn.GetReady())
             {
-                ;
+                _gameManager.Resurrect(respawn.Thing);
             }
 
             IReadOnlyCollection<ThingBase> things = _gameManager.ModelManager.ThingsThreadSafe.GetThingsReadOnly();
@@ -74,7 +76,7 @@ namespace HelloGame.Server
             // Getting this list clears the dead things list in model manager.
             List<ThingBase> deadThings = _gameManager.ModelManager.ConsumeDeadThings().ToList();
 
-            foreach (var client in _clientMessageProcessing.Clients)
+            foreach (var client in _serversClients.GetAllReadOnly())
             {
                 NetworkStream networkStream = client.Key;
                 PlayerShipOther ship = client.Value;

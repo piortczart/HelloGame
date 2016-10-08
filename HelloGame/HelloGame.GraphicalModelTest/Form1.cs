@@ -8,10 +8,11 @@ namespace HelloGame.GraphicalModelTest
 {
     public partial class Form1 : HelloGameForm
     {
-        public Form1(Renderer renderer, InitialSetupForm setupForm, GameManager gameManager, ILoggerFactory loggerFactory, CancellationTokenSource cancellation)
+        public Form1(Renderer renderer, InitialSetupForm setupForm, GameManager gameManager,
+            ILoggerFactory loggerFactory, CancellationTokenSource cancellation)
             : base(renderer, setupForm, gameManager, loggerFactory, cancellation, false)
         {
-            gameManager.AddPlayer("dupa", Common.Model.GameObjects.Ships.ClanEnum.RMS);
+            gameManager.AddPlayerRandom("dupa", Common.Model.GameObjects.Ships.ClanEnum.RMS);
         }
     }
 }

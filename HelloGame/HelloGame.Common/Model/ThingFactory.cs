@@ -79,13 +79,14 @@ namespace HelloGame.Common.Model
                 case "BigMass":
                 {
                     int size = (int) (double) description.ConstructParams[0];
-                    int? creator = (int?) description.ConstructParams[1];
+                    Color color = ((string) description.ConstructParams[1]).DeSerializeJson<Color>();
+                    int? creator = (int?) description.ConstructParams[2];
                     ElapsingThingSettings elapsing =
-                        description.ConstructParams.Length > 2
-                            ? ((string) description.ConstructParams[2]).DeSerializeJson<ElapsingThingSettings>()
+                        description.ConstructParams.Length > 3
+                            ? ((string) description.ConstructParams[3]).DeSerializeJson<ElapsingThingSettings>()
                             : null;
 
-                    result = GetBigMass(size, description.AlmostPhysics.PositionPoint, description.Id,
+                    result = GetBigMass(size, description.AlmostPhysics.PositionPoint, color, description.Id,
                         _gameManager.GetThingById(creator), elapsing);
                     break;
                 }
@@ -166,7 +167,7 @@ namespace HelloGame.Common.Model
             ElapsingThingSettings elapsingThingSettings = null)
         {
             ShipSettingType shipSettingTypeValue = shipSettingType ?? EnumHelper.GetRandomEnumValue<ShipSettingType>();
-            AiType aiTypeValue = aiType ?? EnumHelper.GetRandomEnumValue<AiType>();
+            AiType aiTypeValue = AiType.Regular; //aiType ?? EnumHelper.GetRandomEnumValue<AiType>();
 
             var ship = new AiShip(_thingInjections, _gameManager, aiTypeValue, shipSettingTypeValue, name, id, creator,
                 elapsingThingSettings);
@@ -174,10 +175,10 @@ namespace HelloGame.Common.Model
             return ship;
         }
 
-        public BigMass GetBigMass(int size, Point point, int? id = null, ThingBase creator = null,
+        public BigMass GetBigMass(int size, Point point, Color? color, int? id = null, ThingBase creator = null,
             ElapsingThingSettings elapsingThingSettings = null)
         {
-            BigMass mass = new BigMass(_thingInjections, size, id, creator, elapsingThingSettings);
+            BigMass mass = new BigMass(_thingInjections, size, id, creator, color, elapsingThingSettings);
             mass.Spawn(point);
             return mass;
         }

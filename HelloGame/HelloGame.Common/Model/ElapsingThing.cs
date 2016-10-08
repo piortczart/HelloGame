@@ -1,5 +1,4 @@
 ﻿using System;
-using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.TimeStuffs;
 
 namespace HelloGame.Common.Model

@@ -52,6 +52,20 @@ namespace HelloGame.Common.Model
             }
         }
 
+        public bool AddNewThing(ThingBase thing)
+        {
+            lock (Lock)
+            {
+                ThingBase existing = _interalList.Find(t => t.Id == thing.Id);
+                if (existing != null)
+                {
+                    return false;
+                }
+                _interalList.Add(thing);
+                return true;
+            }
+        }
+
         /// <summary>
         /// Adds the thing if it's not already there.
         /// Returns null if it added the new thing or existing thing if there is something with the given id.

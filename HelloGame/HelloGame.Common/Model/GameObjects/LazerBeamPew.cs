@@ -13,7 +13,7 @@ namespace HelloGame.Common.Model.GameObjects
         {
         }
 
-        public override void CollidesWith(ThingBase other)
+        protected override void CollidesWithInternal(ThingBase other)
         {
             if (other != Creator)
             {

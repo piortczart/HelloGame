@@ -4,9 +4,9 @@ using System.Drawing;
 using System.Threading;
 using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
-using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Physicsish;
 using System.Windows.Forms;
+using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Model
@@ -27,6 +27,8 @@ namespace HelloGame.Common.Model
         public bool IsDestroyed { get; private set; }
         private static int _highestId;
         public int Id { get; }
+        public int Deaths { get; set; }
+
         private readonly object _modelSynchronizer = new object();
         protected readonly Font Font = new Font("monospace", 12, GraphicsUnit.Pixel);
         public readonly ThingSettings Settingz;
@@ -62,7 +64,19 @@ namespace HelloGame.Common.Model
         /// </summary>
         protected abstract void Render(Graphics g);
 
-        public abstract void CollidesWith(ThingBase other);
+        protected abstract void CollidesWithInternal(ThingBase other);
+
+        public void CollidesWith(ThingBase other)
+        {
+            CollidesWithInternal(other);
+
+            // If the owner is a ship and the "other" thing was destoryed, we score points!
+            var shipBase = Creator as ShipBase;
+            if (shipBase != null && other.IsDestroyed)
+            {
+                shipBase.Score += Settingz.PointsForKilling;
+            }
+        }
 
         public void RenderBase(Graphics g)
         {
@@ -104,7 +118,7 @@ namespace HelloGame.Common.Model
             {
                 UpdateElapsing();
 
-                if (!IsTimeToElapse)
+                if (!IsTimeToElapse && !IsDestroyed)
                 {
                     // Update stuff like propelling.
                     UpdateModelInternal(timeSinceLastUpdate, otherThings);
@@ -112,7 +126,11 @@ namespace HelloGame.Common.Model
                     UpdatePhysics(timeSinceLastUpdate, otherThings);
 
                     // Too far away! DIE!
-                    if (Math.Abs(Physics.Position.X) > 10000 || Math.Abs(Physics.Position.Y) > 10000)
+                    if (
+                        Physics.Position.X > Settings.GameSize.Width ||
+                        Physics.Position.X < 0 ||
+                        Physics.Position.Y > Settings.GameSize.Height ||
+                        Physics.Position.Y < 0)
                     {
                         Despawn();
                     }
@@ -148,9 +166,9 @@ namespace HelloGame.Common.Model
                     totalForce.Add(Physics.Gravity);
 
                     // Move the object.
-                    decimal newX = totalForce.X/Physics.Mass*timeBoundary;
-                    decimal newY = totalForce.Y/Physics.Mass*timeBoundary;
-                    Physics.PositionDelta(newX, newY);
+                    decimal deltaX = totalForce.X/Physics.Mass*timeBoundary;
+                    decimal deltaY = totalForce.Y/Physics.Mass*timeBoundary;
+                    Physics.PositionDelta(deltaX, deltaY);
                 }
             }
         }

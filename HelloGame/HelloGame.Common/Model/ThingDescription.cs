@@ -42,7 +42,12 @@ namespace HelloGame.Common.Model
             {
                 Type = big.GetType().Name;
                 ConstructParams = new object[]
-                {big.Physics.Size, big.Creator?.Id, thingBase.ElapsingSettings.SerializeJson()};
+                {
+                    big.Physics.Size,
+                    big.Color.SerializeJson(),
+                    big.Creator?.Id,
+                    thingBase.ElapsingSettings.SerializeJson()
+                };
                 return;
             }
 

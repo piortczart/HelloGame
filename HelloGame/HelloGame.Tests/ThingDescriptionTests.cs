@@ -2,6 +2,7 @@
 using HelloGame.Common;
 using HelloGame.Common.Extensions;
 using HelloGame.Common.Model;
+using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Ninject;
@@ -19,16 +20,16 @@ namespace HelloGame.Tests
                 new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true, true));
 
             var facto = ninject.Get<ThingFactory>();
-            var t = facto.GetBigMass(1, Point.Empty);
+            BigMass mass = facto.GetBigMass(1, Point.Empty, Color.AliceBlue);
 
-            var td = new ThingDescription(t, false);
-            var ts = td.SerializeJson();
+            ThingDescription massDescription = new ThingDescription(mass, false);
+            string serialized = massDescription.SerializeJson();
 
-            var tsd = ts.DeSerializeJson<ThingDescription>();
+            ThingDescription deserialized = serialized.DeSerializeJson<ThingDescription>();
 
-            Assert.AreEqual(1, tsd.Id);
-            Assert.AreEqual("BigMass", tsd.Type);
-            Assert.AreEqual(3, tsd.ConstructParams.Length);
+            Assert.AreEqual(mass.Physics.Size, deserialized.AlmostPhysics.Size);
+            Assert.AreEqual("BigMass", deserialized.Type);
+            Assert.AreEqual(3, deserialized.ConstructParams.Length);
         }
     }
 }

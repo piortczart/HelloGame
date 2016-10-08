@@ -48,7 +48,7 @@ namespace HelloGame.Client
 
         private void SendMyItems()
         {
-            List<ThingBase> unsentThings = _gameManager.GetThingsToSpawn();
+            List<ThingBase> unsentThings = _gameManager.GetAndDequeueThingsToSpawn();
             if (unsentThings.Any())
             {
                 var message = new NetworkMessage

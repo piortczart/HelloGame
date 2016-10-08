@@ -6,6 +6,7 @@ using System.Linq;
 using HelloGame.Common.Extensions;
 using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
+using HelloGame.Common.Model.GameEvents;
 using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Physicsish;
@@ -21,15 +22,17 @@ namespace HelloGame.Common.Model
         public ModelManager ModelManager { get; }
         private readonly ConcurrentQueue<ThingBase> _thingsToSpawn = new ConcurrentQueue<ThingBase>();
         private readonly GeneralSettings _settings;
+        private readonly GameEventBusSameThread _eventBus;
 
         public GameManager(GeneralSettings settings, ModelManager modelManager, GameThingCoordinator gameCoordinator,
-            ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory)
+            ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory, GameEventBusSameThread eventBus)
         {
             ModelManager = modelManager;
             modelManager.AddUpdateModelAction(ModelUpdated);
             gameCoordinator.SetActions(ModelManager.AddThing, ShootLazer);
             _thingFactory = thingFactory;
             _isServer = isServer;
+            _eventBus = eventBus;
             _logger = loggerFactory.CreateLogger(GetType());
             _settings = settings;
         }
@@ -39,7 +42,11 @@ namespace HelloGame.Common.Model
             _thingsToSpawn.Enqueue(thing);
         }
 
-        public List<ThingBase> GetThingsToSpawn()
+        /// <summary>
+        /// Gets the and dequeues the things which are waiting to be spawned.
+        /// </summary>
+        /// <returns></returns>
+        public List<ThingBase> GetAndDequeueThingsToSpawn()
         {
             var result = new List<ThingBase>();
             ThingBase thing;
@@ -55,14 +62,6 @@ namespace HelloGame.Common.Model
         /// </summary>
         private void ModelUpdated()
         {
-            // Only the server can spawn new ships.
-            if (_isServer)
-            {
-                if (!ModelManager.ThingsThreadSafe.GetThingsReadOnly().Any(t => t is AiShip))
-                {
-                    AddAiShip();
-                }
-            }
         }
 
         private Point FindEmptyArea(Rectangle retangle, int minDistance)
@@ -80,12 +79,27 @@ namespace HelloGame.Common.Model
             return new Point((int) pos.X, (int) pos.Y);
         }
 
-        private Point GetNewPlayerLocation()
+        private Point GetRandomEmptyLocation(int distanceToStuff = 50)
         {
-            return FindEmptyArea(new Rectangle(10, 10, 100, 800), 50);
+            return FindEmptyArea(new Rectangle(distanceToStuff, distanceToStuff,
+                _settings.GameSize.Width - distanceToStuff, _settings.GameSize.Height - distanceToStuff),
+                distanceToStuff);
         }
 
-        public PlayerShipOther AddPlayer(string name, ClanEnum clan)
+        private void ResurrectPlayerRandom(PlayerShipOther deadShip, string name, ClanEnum clan)
+        {
+            if (!_isServer)
+            {
+                throw new Exception("Only server can add players.");
+            }
+
+            PlayerShipOther newShip = AddPlayerRandom(name, clan);
+            newShip.Score = deadShip.Score;
+            _eventBus.ThePlayerSpawned(deadShip, newShip);
+        }
+
+
+        public PlayerShipOther AddPlayerRandom(string name, ClanEnum clan)
         {
             if (!_isServer)
             {
@@ -93,9 +107,8 @@ namespace HelloGame.Common.Model
             }
 
             _logger.LogInfo($"Adding player: {name}");
-            Point location = GetNewPlayerLocation();
-            // Try to find a relatively empty area.
-            PlayerShipOther newShip = _thingFactory.GetPlayerShip(location, name, clan);
+            Point trueLocation = GetRandomEmptyLocation();
+            PlayerShipOther newShip = _thingFactory.GetPlayerShip(trueLocation, name, clan);
             ModelManager.AddThing(newShip);
             return newShip;
         }
@@ -104,6 +117,11 @@ namespace HelloGame.Common.Model
         {
             if (source is PlayerShipMovable)
             {
+                if (_isServer)
+                {
+                    throw new Exception("PlayerShipMovable can't exist on the server.");
+                }
+
                 // Player is shooting. On the client.
                 LazerBeamPew lazer = _thingFactory.GetLazerBeam(-1,
                     source.Physics.GetPointInDirection(source.Settingz.Size/2), source);
@@ -121,7 +139,7 @@ namespace HelloGame.Common.Model
             }
         }
 
-        private void AddAiShip()
+        private void AddAiShipRandom()
         {
             if (!_isServer)
             {
@@ -130,18 +148,18 @@ namespace HelloGame.Common.Model
             if (_settings.SpawnAi)
             {
                 _logger.LogInfo("Adding AI ship.");
-                Point location = FindEmptyArea(new Rectangle(100, 300, 300, 800), 50);
+                Point location = GetRandomEmptyLocation();
                 AiShip newShip = _thingFactory.GetRandomAiShip(location, null);
                 ModelManager.AddThing(newShip);
             }
         }
 
-        public void AddBigThing()
+        public void AddBigThingRandom()
         {
             _logger.LogInfo("Adding a big thing.");
             int size = MathX.Random.Next(30, 170);
-            Point location = FindEmptyArea(new Rectangle(100, 50, 900, 900), size + 50);
-            BigMass bigMass = _thingFactory.GetBigMass(size, location);
+            Point location = GetRandomEmptyLocation(size + 50);
+            BigMass bigMass = _thingFactory.GetBigMass(size, location, null);
             ModelManager.AddThing(bigMass);
         }
 
@@ -155,15 +173,14 @@ namespace HelloGame.Common.Model
         {
             if (_isServer)
             {
-                // The server can spawn items without giving them ids.
-                //AddThing(_thingFactory.GetPlayerShip(25, new Point(100, 100)));
-
-                //AddAiShip();
-                AddAiShip();
-
-                for (int i = 0; i < MathX.Random.Next(5, 10); i++)
+                for (int i = 0; i < _settings.AiShipCount; i++)
                 {
-                    AddBigThing();
+                    AddAiShipRandom();
+                }
+
+                for (int i = 0; i < _settings.PlanetsCount; i++)
+                {
+                    AddBigThingRandom();
                 }
             }
         }
@@ -209,6 +226,20 @@ namespace HelloGame.Common.Model
             foreach (ThingDescription thing in stuff)
             {
                 ParseThingDescription(thing, source);
+            }
+        }
+
+        public void Resurrect(ThingBase thing)
+        {
+            if (!_isServer)
+            {
+                throw new ArgumentException("Can only be called by the server.");
+            }
+
+            var ship = thing as PlayerShipOther;
+            if (ship != null)
+            {
+                ResurrectPlayerRandom(ship, ship.Name, ship.Clan);
             }
         }
     }

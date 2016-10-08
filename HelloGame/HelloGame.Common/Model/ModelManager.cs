@@ -48,7 +48,7 @@ namespace HelloGame.Common.Model
 
         public void AddThing(ThingBase thing)
         {
-            if (_thingsThreadSafe.AddIfMissing(thing) != null)
+            if (!_thingsThreadSafe.AddNewThing(thing))
             {
                 throw new Exception("An exiting thing was asked to be added!");
             }
@@ -56,7 +56,7 @@ namespace HelloGame.Common.Model
 
         public void UpdateThing(ThingBase sourceThing, ThingBase.UpdateLocationSettings settings)
         {
-            ThingBase existing = _thingsThreadSafe.AddIfMissing(sourceThing);
+            ThingBase existing = _thingsThreadSafe.GetById(sourceThing.Id);
             if (existing == null)
             {
                 throw new Exception("A non-exiting thing was asked to be updated!");
@@ -99,7 +99,7 @@ namespace HelloGame.Common.Model
             if (!_isServer)
             {
                 // Overlay only needed in client.
-                _overlay.Update(this);
+                _overlay.UpdateDuringModelUpdate(this);
             }
 
             _modelUpdateCounter.Add();
@@ -107,20 +107,17 @@ namespace HelloGame.Common.Model
             IReadOnlyCollection<ThingBase> things = _thingsThreadSafe.GetThingsReadOnly();
             foreach (ThingBase thing in things)
             {
-                if (!thing.IsDestroyed)
-                {
-                    // Perform the model update.
-                    thing.UpdateModel(timePassed, things);
+                // Perform the model update.
+                thing.UpdateModel(timePassed, things);
 
-                    // Despawn the thing if it should elapse.
-                    if (thing.IsTimeToElapse)
+                // Despawn the thing if it should elapse.
+                if (thing.IsTimeToElapse)
+                {
+                    _thingsThreadSafe.Remove(thing);
+                    _deadThings.Enqueue(thing);
+                    if (_isServer)
                     {
-                        _thingsThreadSafe.Remove(thing);
-                        _deadThings.Enqueue(thing);
-                        if (_isServer)
-                        {
-                            Afterlife(thing);
-                        }
+                        Afterlife(thing);
                     }
                 }
             }
@@ -143,9 +140,10 @@ namespace HelloGame.Common.Model
         /// </summary>
         private void Afterlife(ThingBase deadThing)
         {
-            if (deadThing is PlayerShip)
+            var ship = deadThing as ShipBase;
+            if (ship != null)
             {
-                TimeSpan whenToRespawn = _timeSource.ElapsedSinceStart.Add(TimeSpan.FromSeconds(3));
+                TimeSpan whenToRespawn = _timeSource.ElapsedSinceStart.Add(ship.ShipSettings.RespawnTime);
                 ThingsToRespawn.Add(new ThingToRespawn(whenToRespawn, deadThing));
             }
         }

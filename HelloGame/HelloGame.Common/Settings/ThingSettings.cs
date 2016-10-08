@@ -1,6 +1,5 @@
 using System;
 using HelloGame.Common.Model;
-using HelloGame.Common.Model.GameObjects;
 
 namespace HelloGame.Common.Settings
 {
@@ -9,7 +8,7 @@ namespace HelloGame.Common.Settings
     /// </summary>
     public class ThingSettings
     {
-        protected static readonly TimeSpan LiveForever = TimeSpan.FromMilliseconds(-1);
+        public static readonly TimeSpan LiveForever = TimeSpan.FromMilliseconds(-1);
 
         public TimeSpan? SpawnedAt { get; set; }
         public TimeSpan TimeToLive { get; set; }
@@ -21,6 +20,7 @@ namespace HelloGame.Common.Settings
         public TimeSpan LazerLimit { get; set; } = TimeSpan.FromSeconds(2);
         public bool CollidesWithPlanets { get; set; } = true;
         public decimal LazerSpeed { get; set; } = 30;
+        public int PointsForKilling { get; set; } = 1;
 
         public static ThingSettings GetLazerBeamSettings(ElapsingThingSettings elapsingThingSettings)
         {

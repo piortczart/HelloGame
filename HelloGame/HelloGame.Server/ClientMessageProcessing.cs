@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -8,26 +9,96 @@ using System.Threading.Tasks;
 using HelloGame.Common.Extensions;
 using HelloGame.Common.Logging;
 using HelloGame.Common.Model;
+using HelloGame.Common.Model.GameEvents;
 using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Network;
 
 namespace HelloGame.Server
 {
+    public class ServersClients
+    {
+        private readonly Dictionary<NetworkStream, PlayerShipOther> _clientsShips =
+            new Dictionary<NetworkStream, PlayerShipOther>();
+
+        private readonly object _synchro = new object();
+
+        public ServersClients(GameEventBusSameThread gameEvents)
+        {
+            // This class wants to know when player's ship gets replaced. It will happen in the GameManager.
+            gameEvents.AddObserver(new GameEventObserver(ReplacePlayersShip));
+        }
+
+        public Dictionary<NetworkStream, PlayerShipOther> GetAllReadOnly()
+        {
+            lock (_synchro)
+            {
+                return new Dictionary<NetworkStream, PlayerShipOther>(_clientsShips);
+            }
+        }
+
+        private void ReplacePlayersShip(PlayerShipOther oldShip, PlayerShipOther newShip)
+        {
+            lock (_synchro)
+            {
+                NetworkStream key = _clientsShips.Single(s => s.Value == oldShip).Key;
+                if (key == null)
+                {
+                    throw new ArgumentException("Could not find the player!");
+                }
+                _clientsShips[key] = newShip;
+            }
+        }
+
+        public void NewClient(NetworkStream clientStream)
+        {
+            lock (_synchro)
+            {
+                _clientsShips[clientStream] = null;
+            }
+        }
+
+        public void SetShip(NetworkStream clientStream, PlayerShipOther ship)
+        {
+            lock (_synchro)
+            {
+                _clientsShips[clientStream] = ship;
+            }
+        }
+
+        public PlayerShipOther GetShip(NetworkStream clientStream)
+        {
+            lock (_synchro)
+            {
+                return _clientsShips[clientStream];
+            }
+        }
+
+        public void Disconnected(NetworkStream client)
+        {
+            lock (_synchro)
+            {
+                PlayerShipOther ship = _clientsShips[client];
+                _clientsShips.Remove(client);
+                // Despawn the ship.
+                ship.Despawn();
+            }
+        }
+    }
+
     public class ClientMessageProcessing
     {
         private TcpListener _tcpListener;
         private readonly GameManager _gameManager;
         private readonly MessageTransciever _transciever;
         private readonly ILogger _logger;
-
-        public readonly ConcurrentDictionary<NetworkStream, PlayerShipOther> Clients =
-            new ConcurrentDictionary<NetworkStream, PlayerShipOther>();
+        private readonly ServersClients _serversClients;
 
         public ClientMessageProcessing(GameManager gameManager, ILoggerFactory loggerFactory,
-            MessageTransciever transciever)
+            MessageTransciever transciever, ServersClients serversClients)
         {
             _gameManager = gameManager;
             _transciever = transciever;
+            _serversClients = serversClients;
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
@@ -54,7 +125,7 @@ namespace HelloGame.Server
             {
                 TcpClient tcpClient = client;
                 var clientStream = tcpClient.GetStream();
-                Clients[clientStream] = null;
+                _serversClients.NewClient(clientStream);
 
                 // Deserialize the stream into object
                 while (!cancellation.IsCancellationRequested)
@@ -77,14 +148,14 @@ namespace HelloGame.Server
                 case NetworkMessageType.Hello:
                 {
                     NetworkMessageHello hello = message.Payload.DeSerializeJson<NetworkMessageHello>();
-                    PlayerShipOther ship = _gameManager.AddPlayer(hello.Name.SubstringSafe(0, 15), hello.Clan);
-                    Clients[clientStream] = ship;
+                    PlayerShipOther ship = _gameManager.AddPlayerRandom(hello.Name.SubstringSafe(0, 15), hello.Clan);
+                    _serversClients.SetShip(clientStream, ship);
                     break;
                 }
                 case NetworkMessageType.MyPosition:
                 {
                     // He can still think he is alive, we cannot simply update his position if he's not.
-                    PlayerShipOther ship = Clients[clientStream];
+                    PlayerShipOther ship = _serversClients.GetShip(clientStream);
                     if (!ship.IsDestroyed)
                     {
                         _gameManager.ParseThingDescription(message.Payload.DeSerializeJson<ThingDescription>(),
@@ -117,13 +188,7 @@ namespace HelloGame.Server
 
         private void Disconnect(NetworkStream client)
         {
-            PlayerShipOther ship;
-            // Remove from the clients list.
-            if (Clients.TryRemove(client, out ship))
-            {
-                // Despawn the ship.
-                ship.Despawn();
-            }
+            _serversClients.Disconnected(client);
         }
     }
 }

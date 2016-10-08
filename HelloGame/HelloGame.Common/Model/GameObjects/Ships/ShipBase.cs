@@ -13,7 +13,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         public string Name { get; }
         protected readonly Limiter BombLimiter;
         protected readonly Limiter LaserLimiter;
-        protected readonly ShipBaseSettings ShipSettings;
+        public readonly ShipBaseSettings ShipSettings;
         public int Score { get; set; }
 
         protected ShipBase(ThingBaseInjections injections, GameThingCoordinator gameCoordinator,
@@ -33,12 +33,14 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             Physics.Interia = new Real2DVector(settings.MaxInteria);
         }
 
-        protected void PewPew()
+        public bool PewPew()
         {
             if (LaserLimiter.CanHappen())
             {
                 Coordinator.ShootLazer(this);
+                return true;
             }
+            return false;
         }
 
         protected virtual void PaintStuffInternal(Graphics g)
@@ -79,7 +81,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             PaintStuffInternal(g);
         }
 
-        public override void CollidesWith(ThingBase other)
+        protected override void CollidesWithInternal(ThingBase other)
         {
             // AIs can't hurt each other.
             if (this is AiShip && other.Creator is AiShip)
