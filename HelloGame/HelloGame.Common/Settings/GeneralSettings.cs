@@ -11,9 +11,9 @@ namespace HelloGame.Common.Settings
         public bool ShowPlayerPhysicsDetails { get; set; }
         public decimal GravityFactor { get; set; } = 0.01m;
         public decimal CollisionTolerance { get; set; } = 0;
-        public Size GameSize { get; set; } = new Size(2000, 2000);
+        public Size GameSize { get; set; } = new Size(600, 600);
         public int PlanetsCount { get; set; } = 2;
-        public int AiShipCount { get; set; } = 3;
+        public int AiShipCount { get; set; } = 1;
 
         public static GeneralSettings Gameplay => new GeneralSettings
         {

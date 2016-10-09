@@ -54,14 +54,15 @@ namespace HelloGame.Common.Model
             }
         }
 
-        public void UpdateThing(ThingBase sourceThing, ThingBase.UpdateLocationSettings settings)
+        public bool UpdateThing(ThingBase sourceThing, ThingBase.UpdateLocationSettings settings)
         {
             ThingBase existing = _thingsThreadSafe.GetById(sourceThing.Id);
             if (existing == null)
             {
-                throw new Exception("A non-exiting thing was asked to be updated!");
+                return false;
             }
             existing.UpdateLocation(sourceThing, settings);
+            return true;
         }
 
         public void AddOrUpdateThing(ThingBase sourceThing, ThingBase.UpdateLocationSettings settings)
@@ -148,7 +149,7 @@ namespace HelloGame.Common.Model
             }
         }
 
-        public void HandleNewThing(ThingBase thing, ParseThingSource source)
+        public ParseThingResult HandleThingInfo(ThingBase thing, ParseThingSource source)
         {
             switch (source)
             {
@@ -166,13 +167,17 @@ namespace HelloGame.Common.Model
                         // We were sent a new thing or an update of something else. Update or add totally.
                         AddOrUpdateThing(thing, ThingBase.UpdateLocationSettings.All);
                     }
-                    break;
+                    return ParseThingResult.Unknown;
                 case ParseThingSource.ToServer_PlayerPosition:
-                    UpdateThing(thing, ThingBase.UpdateLocationSettings.AngleAndEngineAndPosition);
-                    break;
+                    if (!UpdateThing(thing, ThingBase.UpdateLocationSettings.AngleAndEngineAndPosition))
+                    {
+                        // Player thinks he is alive, but he is dead.
+                        return ParseThingResult.UpdateFailedThingMissing;
+                    }
+                    return ParseThingResult.UpdateSuccess;
                 case ParseThingSource.ToServer_SpawnRequest:
                     AddThing(thing);
-                    break;
+                    return ParseThingResult.Unknown;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(source), source, null);
             }

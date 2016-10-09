@@ -16,6 +16,7 @@ namespace HelloGame.Common.Rendering
         readonly Overlay _overlay;
         private readonly GeneralSettings _generalSettings;
         private readonly GameManager _gameManager;
+        private Position _lastScreenCenter = null;
 
         public Renderer(ModelManager modelManager, GameManager gameManager, Overlay overlay,
             GeneralSettings generalSettings)
@@ -40,12 +41,14 @@ namespace HelloGame.Common.Rendering
                     if (!spectate)
                     {
                         ThingBase you = _gameManager.GetMe();
-                        screenCenter = you != null ? you.Physics.Position : new Position(500, 500);
+                        screenCenter = you != null ? you.Physics.Position : _lastScreenCenter ?? new Position(500, 500);
                     }
                     else
                     {
                         screenCenter = new Position(300, 300);
                     }
+
+                    _lastScreenCenter = screenCenter;
 
                     foreach (ThingBase item in _modelManager.ThingsThreadSafe.GetThingsReadOnly())
                     {

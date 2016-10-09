@@ -9,8 +9,9 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         public KeysInfo KeysInfo { private get; set; }
 
         public PlayerShipMovable(ThingBaseInjections injections, GameThingCoordinator coordinator, string name,
-            ClanEnum clan, int? id = null, ThingBase creator = null, ElapsingThingSettings elapsingThingSettings = null)
-            : base(injections, coordinator, name, clan, id, creator, elapsingThingSettings)
+            ClanEnum clan, int? id = null, ThingBase creator = null, ElapsingThingSettings elapsingThingSettings = null,
+            int score = 0)
+            : base(injections, coordinator, name, clan, id, creator, elapsingThingSettings, score)
         {
             // TODO: REDO THIS
             // Just for now. They will be reset for the proper ones.

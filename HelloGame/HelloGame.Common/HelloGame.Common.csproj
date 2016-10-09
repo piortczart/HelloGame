@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\ExtensionsArray.cs" />
     <Compile Include="Extensions\ExtensionsControl.cs" />
     <Compile Include="Extensions\ExtensionsType.cs" />
     <Compile Include="Model\ElapsingThingSettings.cs" />

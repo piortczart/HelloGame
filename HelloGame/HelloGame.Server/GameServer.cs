@@ -76,7 +76,7 @@ namespace HelloGame.Server
             // Getting this list clears the dead things list in model manager.
             List<ThingBase> deadThings = _gameManager.ModelManager.ConsumeDeadThings().ToList();
 
-            foreach (var client in _serversClients.GetAllReadOnly())
+            foreach (KeyValuePair<NetworkStream, PlayerShipOther> client in _serversClients.GetAllReadOnly())
             {
                 NetworkStream networkStream = client.Key;
                 PlayerShipOther ship = client.Value;

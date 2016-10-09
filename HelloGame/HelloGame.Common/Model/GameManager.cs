@@ -93,13 +93,13 @@ namespace HelloGame.Common.Model
                 throw new Exception("Only server can add players.");
             }
 
-            PlayerShipOther newShip = AddPlayerRandom(name, clan);
+            PlayerShipOther newShip = AddPlayerRandom(name, clan, deadShip.Score);
             newShip.Score = deadShip.Score;
             _eventBus.ThePlayerSpawned(deadShip, newShip);
         }
 
 
-        public PlayerShipOther AddPlayerRandom(string name, ClanEnum clan)
+        public PlayerShipOther AddPlayerRandom(string name, ClanEnum clan, int score = 0)
         {
             if (!_isServer)
             {
@@ -139,7 +139,7 @@ namespace HelloGame.Common.Model
             }
         }
 
-        private void AddAiShipRandom()
+        private AiShip AddAiShipRandom(string name = null)
         {
             if (!_isServer)
             {
@@ -149,9 +149,11 @@ namespace HelloGame.Common.Model
             {
                 _logger.LogInfo("Adding AI ship.");
                 Point location = GetRandomEmptyLocation();
-                AiShip newShip = _thingFactory.GetRandomAiShip(location, null);
+                AiShip newShip = _thingFactory.GetRandomAiShip(location, name ?? AiShipSettings.GetRandomAiShipName());
                 ModelManager.AddThing(newShip);
+                return newShip;
             }
+            return null;
         }
 
         public void AddBigThingRandom()
@@ -196,15 +198,16 @@ namespace HelloGame.Common.Model
             }
         }
 
-        public void ParseThingDescription(ThingDescription description, ParseThingSource source)
+        public ParseThingResult ParseThingDescription(ThingDescription description, ParseThingSource source)
         {
             // Create a full "thing" from the description.
             // It will then be either added as a new thing, or an existing thing will be updated based on it.
             ThingBase thing = _thingFactory.CreateFromDescription(description);
             if (thing != null)
             {
-                ModelManager.HandleNewThing(thing, source);
+                return ModelManager.HandleThingInfo(thing, source);
             }
+            return ParseThingResult.Unknown;
         }
 
         public void SetKeysInfo(KeysInfo keysMine)
@@ -236,11 +239,35 @@ namespace HelloGame.Common.Model
                 throw new ArgumentException("Can only be called by the server.");
             }
 
+            var ai = thing as AiShip;
+            if (ai != null)
+            {
+                ResurrectAiRandom(ai);
+                return;
+            }
+
             var ship = thing as PlayerShipOther;
             if (ship != null)
             {
                 ResurrectPlayerRandom(ship, ship.Name, ship.Clan);
             }
         }
+
+        private void ResurrectAiRandom(AiShip ai)
+        {
+            if (!_isServer)
+            {
+                throw new Exception("Only server can add players.");
+            }
+
+            AddAiShipRandom(ai.Name);
+        }
+    }
+
+    public enum ParseThingResult
+    {
+        Unknown,
+        UpdateSuccess,
+        UpdateFailedThingMissing
     }
 }

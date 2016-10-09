@@ -149,7 +149,7 @@ namespace HelloGame.Common.Model
         }
 
         public PlayerShipOther GetPlayerShip(Point location, string name, ClanEnum clan, int? id = null,
-            ThingBase creator = null, ElapsingThingSettings elapsingThingSettings = null)
+            ThingBase creator = null, ElapsingThingSettings elapsingThingSettings = null, int score = 0)
         {
             if (!_isServer && !id.HasValue)
             {
@@ -157,7 +157,7 @@ namespace HelloGame.Common.Model
             }
 
             var ship = new PlayerShipOther(_thingInjections, _gameManager, name, clan, id, creator,
-                elapsingThingSettings);
+                elapsingThingSettings, score);
             ship.Spawn(location);
             return ship;
         }
