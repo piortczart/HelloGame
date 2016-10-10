@@ -17,7 +17,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         public ShipSettingType ShipSettingType { get; set; }
 
         public AiShip(ThingBaseInjections injections, GameThingCoordinator coordinator, AiType aiType,
-            ShipSettingType shipSettingType, string name, int? id = null, ThingAdditionalInfo additionalInfo = null,
+            ShipSettingType shipSettingType, string name, ThingAdditionalInfo additionalInfo, int? id = null,
             ElapsingThingSettings elapsingThingSettings = null)
             : base(
                 injections, coordinator, ShipBaseSettings.GetShipTypeSettings(shipSettingType, elapsingThingSettings),
@@ -43,7 +43,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             ThingBase player = otherThings.FirstOrDefault(s => s is PlayerShip);
             if (player != null)
             {
-                if (_locatePlayerLimiter.CanHappen())
+                if (_locatePlayerLimiter.CanHappen() && !player.IsDestroyed && !player.IsTimeToElapse)
                 {
                     // Locate a player's ship.
 

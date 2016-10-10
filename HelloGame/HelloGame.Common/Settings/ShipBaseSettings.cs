@@ -11,6 +11,8 @@ namespace HelloGame.Common.Settings
         public TimeSpan DespawnTime { get; set; }
         public int PointsForKill { get; set; }
         public TimeSpan RespawnTime { get; set; }
+        public TimeSpan LazerLimit { get; set; } = TimeSpan.FromSeconds(2);
+        public TimeSpan BombLimit { get; set; } = TimeSpan.FromSeconds(2);
 
         private ShipBaseSettings(TimeSpan? spawnedAt) : base(spawnedAt)
         {
@@ -24,6 +26,7 @@ namespace HelloGame.Common.Settings
                 Mass = 2,
                 RadPerSecond = (decimal) Math.PI,
                 LazerLimit = TimeSpan.FromMilliseconds(1000),
+                BombLimit = TimeSpan.FromMilliseconds(2000),
                 MaxEnginePower = 5,
                 MaxInteria = 5,
                 DespawnTime = TimeSpan.FromSeconds(5),
@@ -40,6 +43,7 @@ namespace HelloGame.Common.Settings
                 Mass = 5,
                 RadPerSecond = (decimal) Math.PI*3/4,
                 LazerLimit = TimeSpan.FromMilliseconds(150),
+                BombLimit = TimeSpan.FromMilliseconds(2000),
                 MaxEnginePower = 4,
                 MaxInteria = 5,
                 DespawnTime = TimeSpan.FromSeconds(5),
@@ -56,6 +60,7 @@ namespace HelloGame.Common.Settings
                 Mass = 3,
                 RadPerSecond = (decimal) Math.PI,
                 LazerLimit = TimeSpan.FromMilliseconds(300),
+                BombLimit = TimeSpan.FromMilliseconds(2000),
                 MaxEnginePower = 5,
                 MaxInteria = 5,
                 DespawnTime = TimeSpan.FromSeconds(5),

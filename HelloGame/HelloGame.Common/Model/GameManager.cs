@@ -24,12 +24,17 @@ namespace HelloGame.Common.Model
         private readonly GeneralSettings _settings;
         private readonly GameEventBusSameThread _eventBus;
 
+        /// <summary>
+        /// Others mightbe interested in knowing when the client wants to spawn somehting (like the network classes which will immediatelly send info to the server).
+        /// </summary>
+        public event Action<ThingBase> OnAskedServerToSpawn;
+
         public GameManager(GeneralSettings settings, ModelManager modelManager, GameThingCoordinator gameCoordinator,
             ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory, GameEventBusSameThread eventBus)
         {
             ModelManager = modelManager;
             modelManager.AddUpdateModelAction(ModelUpdated);
-            gameCoordinator.SetActions(ModelManager.AddThing, ShootLazer);
+            gameCoordinator.OnClientShootRequest += ClientShootRequest;
             _thingFactory = thingFactory;
             _isServer = isServer;
             _eventBus = eventBus;
@@ -40,6 +45,9 @@ namespace HelloGame.Common.Model
         private void AskServerToSpawn(ThingBase thing)
         {
             _thingsToSpawn.Enqueue(thing);
+
+            // Inform that the event has happened.
+            OnAskedServerToSpawn?.Invoke(thing);
         }
 
         /// <summary>
@@ -113,7 +121,7 @@ namespace HelloGame.Common.Model
             return newShip;
         }
 
-        private void ShootLazer(ThingBase source)
+        private void ClientShootRequest(ThingBase source, Weapon weapon)
         {
             if (source is PlayerShipMovable)
             {
@@ -122,19 +130,39 @@ namespace HelloGame.Common.Model
                     throw new Exception("PlayerShipMovable can't exist on the server.");
                 }
 
-                // Player is shooting. On the client.
-                LazerBeamPew lazer = _thingFactory.GetLazerBeam(-1,
-                    source.Physics.GetPointInDirection(source.Settingz.Size/2), ThingAdditionalInfo.GetNew(source));
-                AskServerToSpawn(lazer);
+                ThingBase projectile;
+                // Player is shooting. On the client side. This only asks server to spawn a lazer.
+                switch (weapon.WeaponType)
+                {
+                    case WeaponType.Lazer:
+                        projectile = _thingFactory.GetLazerBeam(-1,
+                            source.Physics.GetPointInDirection(source.Settingz.Size/2),
+                            ThingAdditionalInfo.GetNew(source));
+                        break;
+                    case WeaponType.Bomb:
+                        projectile = _thingFactory.GetBomb(-1, ThingAdditionalInfo.GetNew(source));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                AskServerToSpawn(projectile);
             }
             else
             {
                 // AI is shooting. Only server can spawn.
                 if (_isServer)
                 {
-                    LazerBeamPew lazer = _thingFactory.GetLazerBeam(null,
-                        source.Physics.GetPointInDirection(source.Settingz.Size/2), ThingAdditionalInfo.GetNew(source));
-                    ModelManager.AddThing(lazer);
+                    switch (weapon.WeaponType)
+                    {
+                        case WeaponType.Lazer:
+                            LazerBeamPew lazer = _thingFactory.GetLazerBeam(null,
+                                source.Physics.GetPointInDirection(source.Settingz.Size/2),
+                                ThingAdditionalInfo.GetNew(source));
+                            ModelManager.AddThing(lazer);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                 }
             }
         }
@@ -187,6 +215,9 @@ namespace HelloGame.Common.Model
             }
         }
 
+        /// <summary>
+        /// Called when the server sends the "Stuff Died" message.
+        /// </summary>
         public void StuffDied(List<int> stuffIds)
         {
             var toDespawn = ModelManager.ThingsThreadSafe.GetByIds(stuffIds);

@@ -11,41 +11,6 @@ using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Model
 {
-    public class ThingAdditionalInfo
-    {
-        public bool IsDestroyed { get; set; }
-        public int? CreatorId { get; set; }
-        public int? Score { get; set; }
-        public ThingBase Creator { get; private set; }
-
-        public static ThingAdditionalInfo GetNew(ThingBase creator)
-        {
-            var result = new ThingAdditionalInfo();
-            // 0 score, not destoryed, possibly a creator.
-            result.Creator = creator;
-            if (creator != null)
-            {
-                result.CreatorId = creator.Id;
-            }
-            return result;
-        }
-
-        public void SetCreator(ThingBase creator)
-        {
-            Creator = creator;
-        }
-
-        public void SetCreator(GameThingCoordinator coordinator)
-        {
-            Creator = coordinator.GetThingById(CreatorId);
-        }
-
-        public void SetCreator(ThingsThreadSafeList thingsThreadSafe)
-        {
-            Creator = CreatorId.HasValue ? thingsThreadSafe.GetById(CreatorId.Value) : null;
-        }
-    }
-
     public abstract class ThingBase : ElapsingThing
     {
         public enum UpdateLocationSettings
@@ -63,17 +28,19 @@ namespace HelloGame.Common.Model
         private static int _highestId;
         public int Id { get; }
         public int Deaths { get; set; }
-
         private readonly object _modelSynchronizer = new object();
+        public Weapons Weapons { get; private set; }
         protected readonly Font Font = new Font("monospace", 12, GraphicsUnit.Pixel);
         public readonly ThingSettings Settingz;
         protected readonly ThingBaseInjections Injections;
         protected readonly GeneralSettings Settings;
         protected readonly GameThingCoordinator Coordinator;
 
-        public ThingAdditionalInfo ThingSerializationExtras => new ThingAdditionalInfo { IsDestroyed = IsDestroyed, CreatorId = Creator?.Id };
 
-        protected ThingBase(ThingBaseInjections injections, ThingSettings settings, ThingAdditionalInfo additionalInfo = null,
+        public virtual ThingAdditionalInfo ThingSerializationExtras
+            => new ThingAdditionalInfo {IsDestroyed = IsDestroyed, CreatorId = Creator?.Id};
+
+        protected ThingBase(ThingBaseInjections injections, ThingSettings settings, ThingAdditionalInfo additionalInfo,
             int? id = null)
             : base(settings.TimeToLive, injections.TimeSource, settings.SpawnedAt)
         {
@@ -146,6 +113,7 @@ namespace HelloGame.Common.Model
             lock (_modelSynchronizer)
             {
                 IsDestroyed = true;
+                Deaths++;
                 ElapseIn(elapseIn);
             }
         }

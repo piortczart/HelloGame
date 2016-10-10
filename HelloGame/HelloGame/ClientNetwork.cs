@@ -45,6 +45,8 @@ namespace HelloGame.Client
                 SendMyPosition();
                 SendMyItems();
             }, null, PropagateFrequency, Timeout.InfiniteTimeSpan);
+
+            gameManager.OnAskedServerToSpawn += t => SendMyItems();
         }
 
         private void SendMyItems()
@@ -142,21 +144,21 @@ namespace HelloGame.Client
             switch (message.Type)
             {
                 case NetworkMessageType.UpdateStuff:
+                {
+                    List<ThingDescription> stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
+                    _logger.LogInfo($"Server sent update, count: {stuff.Count}");
+                    foreach (ThingDescription description in stuff)
                     {
-                        List<ThingDescription> stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
-                        _logger.LogInfo($"Server sent update, count: {stuff.Count}");
-                        foreach (ThingDescription description in stuff)
-                        {
-                            _gameManager.ParseThingDescription(description, ParseThingSource.ToClient);
-                        }
+                        _gameManager.ParseThingDescription(description, ParseThingSource.ToClient);
                     }
+                }
                     break;
                 case NetworkMessageType.DeadStuff:
-                    {
-                        List<int> deadStuff = message.Payload.DeSerializeJson<List<int>>();
-                        _gameManager.StuffDied(deadStuff);
-                        break;
-                    }
+                {
+                    List<int> deadStuff = message.Payload.DeSerializeJson<List<int>>();
+                    _gameManager.StuffDied(deadStuff);
+                    break;
+                }
                 default:
                     throw new ArgumentOutOfRangeException();
             }

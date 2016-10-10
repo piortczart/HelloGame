@@ -9,7 +9,8 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         public KeysInfo KeysInfo { private get; set; }
 
         public PlayerShipMovable(ThingBaseInjections injections, GameThingCoordinator coordinator, string name,
-            ClanEnum clan, int? id = null, ThingAdditionalInfo additionalInfo = null, ElapsingThingSettings elapsingThingSettings = null)
+            ClanEnum clan, int? id = null, ThingAdditionalInfo additionalInfo = null,
+            ElapsingThingSettings elapsingThingSettings = null)
             : base(injections, coordinator, name, clan, id, additionalInfo, elapsingThingSettings)
         {
             // TODO: REDO THIS
@@ -68,11 +69,10 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             {
                 if (BombLimiter.CanHappen())
                 {
-                    var thingSe = new ThingAdditionalInfo { CreatorId = Id };
+                    var thingSe = new ThingAdditionalInfo {CreatorId = Id};
                     thingSe.SetCreator(this);
-                    var bomb = new Bomb(Injections, thingSe);
-                    bomb.Spawn(Physics.GetPointInDirection(10), Physics.TotalForce.GetScaled(4m, false));
-                    GameCoordinator.AddThing(bomb);
+
+                    GameCoordinator.Shoot(this, Weapons.Secondary);
                 }
             }
 

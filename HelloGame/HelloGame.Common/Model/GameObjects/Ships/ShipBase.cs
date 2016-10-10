@@ -16,8 +16,18 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         public readonly ShipBaseSettings ShipSettings;
         public int Score { get; set; }
 
+        public override ThingAdditionalInfo ThingSerializationExtras
+        {
+            get
+            {
+                var result = base.ThingSerializationExtras;
+                result.Score = Score;
+                return result;
+            }
+        }
+
         protected ShipBase(ThingBaseInjections injections, GameThingCoordinator gameCoordinator,
-            ShipBaseSettings settings, string name, int? id, ThingAdditionalInfo additionalInfo = null)
+            ShipBaseSettings settings, string name, int? id, ThingAdditionalInfo additionalInfo)
             : base(injections, settings, additionalInfo, id)
         {
             GameCoordinator = gameCoordinator;
@@ -26,7 +36,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             Score = additionalInfo.Score ?? 0;
 
             LaserLimiter = new Limiter(settings.LazerLimit, TimeSource);
-            BombLimiter = new Limiter(TimeSpan.FromSeconds(1), TimeSource);
+            BombLimiter = new Limiter(settings.BombLimit, TimeSource);
 
             Physics.Size = settings.Size;
             Physics.SelfPropelling = new Real2DVector(settings.MaxEnginePower);
@@ -37,7 +47,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         {
             if (LaserLimiter.CanHappen())
             {
-                Coordinator.ShootLazer(this);
+                Coordinator.Shoot(this, Weapons.Main);
                 return true;
             }
             return false;

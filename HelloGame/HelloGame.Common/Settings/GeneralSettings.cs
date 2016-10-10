@@ -21,6 +21,9 @@ namespace HelloGame.Common.Settings
             IsAiHostile = true,
             SpawnAi = true,
             ShowPlayerPhysicsDetails = false,
+            GameSize = new Size(2000, 2000),
+            PlanetsCount = 15,
+            AiShipCount = 2
         };
 
         public static GeneralSettings TestingAll => new GeneralSettings
@@ -38,6 +41,7 @@ namespace HelloGame.Common.Settings
             IsAiHostile = true,
             SpawnAi = false,
             ShowPlayerPhysicsDetails = false,
+            GameSize = new Size(600, 600)
         };
     }
 }

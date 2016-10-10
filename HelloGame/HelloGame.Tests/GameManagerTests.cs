@@ -52,7 +52,7 @@ namespace HelloGame.Tests
             var originalPosition = new Point(10, 10);
             PlayerShip playerShip = serverThingFactory.GetPlayerShip(originalPosition, "hula", ClanEnum.Support);
             // Pretend it's already moving. Going up...
-            playerShip.Physics.Interia = new Real2DVector((decimal)Math.PI / 2, 20);
+            playerShip.Physics.Interia = new Real2DVector((decimal) Math.PI/2, 20);
             var things = new List<ThingBase>
             {
                 playerShip
@@ -143,7 +143,7 @@ namespace HelloGame.Tests
 
         private static G GetNthAs<T, G>(IReadOnlyCollection<T> list, int position)
         {
-            return (G)Convert.ChangeType(list.Skip(position).First(), typeof(G));
+            return (G) Convert.ChangeType(list.Skip(position).First(), typeof(G));
         }
 
         [TestMethod]
@@ -206,7 +206,7 @@ namespace HelloGame.Tests
             Assert.IsTrue(newShip.IsTimeToElapse);
             Assert.IsTrue(timeTakenToDespawn.TotalMilliseconds >= expectedTimeToDespawn.TotalMilliseconds);
             Assert.IsTrue(timeTakenToDespawn.TotalMilliseconds <
-                          expectedTimeToDespawn.TotalMilliseconds + step.TotalMilliseconds * 2);
+                          expectedTimeToDespawn.TotalMilliseconds + step.TotalMilliseconds*2);
         }
 
         [TestMethod]
@@ -221,7 +221,7 @@ namespace HelloGame.Tests
             var injections = ninject.Get<ThingBaseInjections>();
 
             TimeSpan timeToLive = ThingSettings.GetLazerBeamSettings(null).TimeToLive;
-            TimeSpan halfTimeToLive = TimeSpan.FromMilliseconds(timeToLive.TotalMilliseconds / 2);
+            TimeSpan halfTimeToLive = TimeSpan.FromMilliseconds(timeToLive.TotalMilliseconds/2);
 
             // Spawn a lazzzer close to the ship.
             var lazer = new LazerBeamPew(injections, null, -1);
@@ -282,7 +282,7 @@ namespace HelloGame.Tests
 
             // Make the player shoot a lazer.
             // There is a limiter, make sure enough time has passed.
-            timeSource.SkipTime(playerShip.Settingz.LazerLimit.Add(TimeSpan.FromMilliseconds(10)));
+            timeSource.SkipTime(playerShip.ShipSettings.LazerLimit.Add(TimeSpan.FromMilliseconds(10)));
             gameManager.ModelManager.SingleModelUpdate();
 
             // TODO: what if a thing is spawned between two long model updates? (player shoots)

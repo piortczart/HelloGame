@@ -60,9 +60,14 @@
     <Compile Include="Model\GameObjects\Ships\ClanEnum.cs" />
     <Compile Include="Model\ParseThingSource.cs" />
     <Compile Include="Model\SpawnOption.cs" />
+    <Compile Include="Model\ThingAdditionalInfo.cs" />
     <Compile Include="Model\ThingBaseInjections.cs" />
     <Compile Include="Model\ThingsToRespawnThreadSafe.cs" />
     <Compile Include="Model\ThingToRespawn.cs" />
+    <Compile Include="Model\Weapon.cs" />
+    <Compile Include="Model\Weapons.cs" />
+    <Compile Include="Model\WeaponType.cs" />
+    <Compile Include="Network\IMessageTransciever.cs" />
     <Compile Include="Rendering\IRenderer.cs" />
     <Compile Include="Rendering\Renderer.cs" />
     <Compile Include="Settings\AiShipBaseSettings.cs" />

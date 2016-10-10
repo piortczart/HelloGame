@@ -10,9 +10,8 @@ namespace HelloGame.Common.Model
     public class GameThingCoordinator
     {
         private readonly ModelManager _model;
-        //private Action<ThingBase> _askToSpawnAction;
-        private Action<ThingBase> _addThingAction;
-        private Action<ThingBase> _shootLazerAction;
+
+        public event Action<ThingBase, Weapon> OnClientShootRequest;
 
         public GameThingCoordinator(ModelManager model)
         {
@@ -28,31 +27,9 @@ namespace HelloGame.Common.Model
             return _model.ThingsThreadSafe.GetById(id.Value);
         }
 
-        public void SetActions(Action<ThingBase> addThing, Action<ThingBase> shootLazer)
+        public void Shoot(ShipBase shooter, Weapon weapon)
         {
-            //_askToSpawnAction = askToSpawn;
-            _addThingAction = addThing;
-            _shootLazerAction = shootLazer;
-        }
-
-        public void AddThing(ThingBase thing)
-        {
-            _addThingAction(thing);
-        }
-
-        //public void AskServerToSpawn(ThingBase thing)
-        //{
-        //    _askToSpawnAction(thing);
-        //}
-
-        //public void UpdateThing(ThingBase thing, ThingBase.UpdateLocationSettings settings)
-        //{
-        //    _updateThingAction(thing, settings);
-        //}
-
-        internal void ShootLazer(ShipBase shipBase)
-        {
-            _shootLazerAction(shipBase);
+            OnClientShootRequest?.Invoke(shooter, weapon);
         }
     }
 }

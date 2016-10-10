@@ -13,14 +13,16 @@ namespace HelloGame.Server
     {
         private static void Main()
         {
+            bool showForm = false;
+
             IResolutionRoot ninject =
                 new StandardKernel(
-                    new HelloGameCommonNinjectBindings(GeneralSettings.Custom, true),
+                    new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true),
                     new HelloGameServerNinjectBindings());
 
             var cts = new CancellationTokenSource();
 
-            Task.Run(() =>
+            Task serverTask = Task.Run(() =>
             {
                 while (true)
                 {
@@ -36,9 +38,16 @@ namespace HelloGame.Server
                 }
             }, cts.Token);
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(ninject.Get<ServerSpectatorForm>());
+            if (showForm)
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(ninject.Get<ServerSpectatorForm>());
+            }
+            else
+            {
+                serverTask.Wait(cts.Token);
+            }
         }
     }
 }

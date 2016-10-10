@@ -17,7 +17,7 @@ namespace HelloGame.Server
         public ServersClients(GameEventBusSameThread gameEvents)
         {
             // This class wants to know when player's ship gets replaced. It will happen in the GameManager.
-            gameEvents.AddObserver(new GameEventObserver(ReplacePlayersShip));
+            gameEvents.OnPlayerSpawned += ReplacePlayersShip;
         }
 
         public Dictionary<NetworkStream, PlayerShipOther> GetAllReadOnly()
