@@ -4,7 +4,14 @@ using System.Threading.Tasks;
 
 namespace HelloGame.Common.Network
 {
-    public class MessageTransciever
+    public interface IMessageTransciever
+    {
+        bool Send(NetworkMessage message, Stream stream);
+        NetworkMessage Get(Stream stream);
+        Task<NetworkMessage> GetAsync(Stream stream);
+    }
+
+    public class MessageTransciever : IMessageTransciever
     {
         readonly BinaryFormatter _formatter = new BinaryFormatter();
 

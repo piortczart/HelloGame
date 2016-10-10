@@ -2,6 +2,7 @@
 using Ninject;
 using Ninject.Modules;
 using Ninject.Syntax;
+using HelloGame.Common.Network;
 
 namespace HelloGame.Client
 {
@@ -16,6 +17,7 @@ namespace HelloGame.Client
 
         public override void Load()
         {
+            Bind<IMessageTransciever>().To<MessageTransciever>();
             Bind<Server.GameServer>().ToConstant(_serverNinject.Get<Server.GameServer>()).InSingletonScope();
             Bind<CancellationTokenSource>().ToConstant(new CancellationTokenSource()).InSingletonScope();
             Bind<HelloGameForm>().To<HelloGameForm>().WithConstructorArgument("showInitialForm", true);

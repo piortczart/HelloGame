@@ -105,7 +105,7 @@
     <Compile Include="Model\ThingsThreadSafeList.cs" />
     <Compile Include="Network\NetworkMessage.cs" />
     <Compile Include="Network\NetworkMessageType.cs" />
-    <Compile Include="Network\NetworkStuff.cs" />
+    <Compile Include="Network\MessageTransciever.cs" />
     <Compile Include="Network\ThingInfo.cs" />
     <Compile Include="Extensions\ExtensionsObject.cs" />
     <Compile Include="Overlay.cs" />

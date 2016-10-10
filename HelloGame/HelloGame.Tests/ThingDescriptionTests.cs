@@ -29,7 +29,7 @@ namespace HelloGame.Tests
 
             Assert.AreEqual(mass.Physics.Size, deserialized.AlmostPhysics.Size);
             Assert.AreEqual("BigMass", deserialized.Type);
-            Assert.AreEqual(3, deserialized.ConstructParams.Length);
+            Assert.AreEqual(4, deserialized.ConstructParams.Length);
         }
     }
 }

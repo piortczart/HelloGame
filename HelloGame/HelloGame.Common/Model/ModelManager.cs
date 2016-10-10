@@ -17,7 +17,7 @@ namespace HelloGame.Common.Model
         private readonly EventPerSecond _modelUpdateCounter;
         private readonly Thread _modelUpdateThread;
         private readonly ThingsThreadSafeList _thingsThreadSafe = new ThingsThreadSafeList();
-        private readonly ConcurrentQueue<ThingBase> _deadThings = new ConcurrentQueue<ThingBase>();
+        private readonly ConcurrentQueue<ThingBase> _elapsedThings = new ConcurrentQueue<ThingBase>();
         private readonly List<Action> _updateModelAction = new List<Action>();
         public EventPerSecond CollisionCalculations => _collidor.CollisoinsCounter;
         private readonly Overlay _overlay;
@@ -61,23 +61,23 @@ namespace HelloGame.Common.Model
             {
                 return false;
             }
-            existing.UpdateLocation(sourceThing, settings);
+            existing.UpdateState(sourceThing, settings);
             return true;
         }
 
         public void AddOrUpdateThing(ThingBase sourceThing, ThingBase.UpdateLocationSettings settings)
         {
             ThingBase alreadyExisting = _thingsThreadSafe.AddIfMissing(sourceThing);
-            alreadyExisting?.UpdateLocation(sourceThing, settings);
+            alreadyExisting?.UpdateState(sourceThing, settings);
         }
 
         /// <summary>
         /// Returns all things that have been despawned since last call of this method.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ThingBase> ConsumeDeadThings()
+        public IEnumerable<ThingBase> ConsumeElapsedThings()
         {
-            return _deadThings.GetAll();
+            return _elapsedThings.GetAll();
         }
 
         public void StartModelUpdates()
@@ -115,7 +115,8 @@ namespace HelloGame.Common.Model
                 if (thing.IsTimeToElapse)
                 {
                     _thingsThreadSafe.Remove(thing);
-                    _deadThings.Enqueue(thing);
+                    _elapsedThings.Enqueue(thing);
+                    // Only the server has the afterlife with resurrect/respawn options.
                     if (_isServer)
                     {
                         Afterlife(thing);
@@ -141,6 +142,7 @@ namespace HelloGame.Common.Model
         /// </summary>
         private void Afterlife(ThingBase deadThing)
         {
+            // Any ship will get ressurected (the object itself will be recreated though).
             var ship = deadThing as ShipBase;
             if (ship != null)
             {
@@ -157,6 +159,24 @@ namespace HelloGame.Common.Model
 
                     if (thing is PlayerShipMovable)
                     {
+                        if (thing.Age > thing.TimeToLive && thing.TimeToLive != ThingSettings.LiveForever)
+                        {
+                            ;
+                        }
+
+                        ThingBase shipBefore = _thingsThreadSafe.GetById(thing.Id);
+                        if (shipBefore != null)
+                        {
+                            bool wasDestoryed = shipBefore.IsDestroyed;
+                            bool isDestroyed = thing.IsDestroyed;
+
+                            if (wasDestoryed && !isDestroyed)
+                            {
+                                var newAge = thing.Age;
+                                ;
+                            }
+                        }
+
                         // Do not update the player's angle. That is what he always controls.
                         // The player's position should not be updated because server does not have the latest engine info (has it with a big delay)
                         // This migh tbe the first time we are asked to spawn our ship?...

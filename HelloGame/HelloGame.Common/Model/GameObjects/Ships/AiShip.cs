@@ -17,11 +17,11 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         public ShipSettingType ShipSettingType { get; set; }
 
         public AiShip(ThingBaseInjections injections, GameThingCoordinator coordinator, AiType aiType,
-            ShipSettingType shipSettingType, string name, int? id = null, ThingBase creator = null,
-            ElapsingThingSettings elapsingThingSettings = null, int score = 0)
+            ShipSettingType shipSettingType, string name, int? id = null, ThingAdditionalInfo additionalInfo = null,
+            ElapsingThingSettings elapsingThingSettings = null)
             : base(
                 injections, coordinator, ShipBaseSettings.GetShipTypeSettings(shipSettingType, elapsingThingSettings),
-                name, id, creator, score)
+                name, id, additionalInfo)
         {
             _aiShipBaseSettings = AiShipSettings.AiSettings[aiType];
             _locatePlayerLimiter = new Limiter(_aiShipBaseSettings.LocatePlayerFrequency, TimeSource);

@@ -11,6 +11,41 @@ using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Model
 {
+    public class ThingAdditionalInfo
+    {
+        public bool IsDestroyed { get; set; }
+        public int? CreatorId { get; set; }
+        public int? Score { get; set; }
+        public ThingBase Creator { get; private set; }
+
+        public static ThingAdditionalInfo GetNew(ThingBase creator)
+        {
+            var result = new ThingAdditionalInfo();
+            // 0 score, not destoryed, possibly a creator.
+            result.Creator = creator;
+            if (creator != null)
+            {
+                result.CreatorId = creator.Id;
+            }
+            return result;
+        }
+
+        public void SetCreator(ThingBase creator)
+        {
+            Creator = creator;
+        }
+
+        public void SetCreator(GameThingCoordinator coordinator)
+        {
+            Creator = coordinator.GetThingById(CreatorId);
+        }
+
+        public void SetCreator(ThingsThreadSafeList thingsThreadSafe)
+        {
+            Creator = CreatorId.HasValue ? thingsThreadSafe.GetById(CreatorId.Value) : null;
+        }
+    }
+
     public abstract class ThingBase : ElapsingThing
     {
         public enum UpdateLocationSettings
@@ -36,7 +71,9 @@ namespace HelloGame.Common.Model
         protected readonly GeneralSettings Settings;
         protected readonly GameThingCoordinator Coordinator;
 
-        protected ThingBase(ThingBaseInjections injections, ThingSettings settings, ThingBase creator = null,
+        public ThingAdditionalInfo ThingSerializationExtras => new ThingAdditionalInfo { IsDestroyed = IsDestroyed, CreatorId = Creator?.Id };
+
+        protected ThingBase(ThingBaseInjections injections, ThingSettings settings, ThingAdditionalInfo additionalInfo = null,
             int? id = null)
             : base(settings.TimeToLive, injections.TimeSource, settings.SpawnedAt)
         {
@@ -46,12 +83,13 @@ namespace HelloGame.Common.Model
             Settingz = settings;
             Logger = injections.LoggerFactory.CreateLogger(GetType());
             Physics = new AlmostPhysics(settings.Aerodynamism);
-            Creator = creator;
+            Creator = additionalInfo.Creator;
             Physics.Mass = settings.Mass;
             Physics.RadPerSecond = settings.RadPerSecond;
             CanBeMoved = settings.CanBeMoved;
             ElapseIn(settings.TimeToLive);
             Id = id ?? Interlocked.Add(ref _highestId, 1);
+            IsDestroyed = additionalInfo.IsDestroyed;
         }
 
         /// <summary>
@@ -227,7 +265,7 @@ namespace HelloGame.Common.Model
             }
         }
 
-        public void UpdateLocation(ThingBase otherThing, UpdateLocationSettings settings)
+        public void UpdateState(ThingBase otherThing, UpdateLocationSettings settings)
         {
             lock (_modelSynchronizer)
             {

@@ -18,7 +18,10 @@ namespace HelloGame.Common
         private Position _screenCenterGeneral = new Position(0, 0);
         private Size _windowSize = Size.Empty;
         private List<Position> _shipPositionsGeneral = new List<Position>();
-        Point _overlayPositionGeneral = Point.Empty;
+        private Point _overlayPositionGeneral = Point.Empty;
+
+        private PlayerShipMovable _shipRemoveMe = null;
+        private Queue<bool?> _isDestroyeds = new Queue<bool?>();
 
         public Overlay(TimeSource timeSource)
         {
@@ -34,6 +37,8 @@ namespace HelloGame.Common
                     .Where(t => t is ShipBase)
                     .Select(t => t.Physics.Position)
                     .ToList();
+
+            _shipRemoveMe = (PlayerShipMovable) modelManager.ThingsThreadSafe.GetThingsReadOnly().Where(t=> t is PlayerShipMovable).FirstOrDefault();
         }
 
         public void Render(Graphics graphics)
@@ -44,6 +49,13 @@ namespace HelloGame.Common
             graphics.DrawString($"Collision calc/s: {_collisionCalculations}", _font, Brushes.Black, new PointF(10, 30));
             graphics.DrawString($"Things: {_thingsCount}", _font, Brushes.Black, new PointF(10, 45));
             graphics.DrawString($"Centered at: {_screenCenterGeneral}", _font, Brushes.Black, new PointF(10, 60));
+
+            _isDestroyeds.Enqueue(_shipRemoveMe?.IsDestroyed);
+            if (_isDestroyeds.Count > 10)
+            {
+                _isDestroyeds.Dequeue();
+            }
+            graphics.DrawString($"{string.Join(",", _isDestroyeds.ToList())}", _font, Brushes.Black, new PointF(10, 75));
 
             DrawShipPointers(graphics);
         }

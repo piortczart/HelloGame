@@ -74,33 +74,42 @@ namespace HelloGame.Server
             switch (message.Type)
             {
                 case NetworkMessageType.Hello:
-                {
-                    NetworkMessageHello hello = message.Payload.DeSerializeJson<NetworkMessageHello>();
-                    PlayerShipOther ship = _gameManager.AddPlayerRandom(hello.Name.SubstringSafe(0, 15), hello.Clan);
-                    _serversClients.SetShip(clientStream, ship);
-                    break;
-                }
-                case NetworkMessageType.MyPosition:
-                {
-                    // He can still think he is alive, we cannot simply update his position if he's not.
-                    PlayerShipOther ship = _serversClients.GetShip(clientStream);
-                    if (!ship.IsDestroyed)
                     {
-                        ParseThingResult parseResult =
-                            _gameManager.ParseThingDescription(message.Payload.DeSerializeJson<ThingDescription>(),
-                                ParseThingSource.ToServer_PlayerPosition);
-                        // The client does not know he's dead.
-                        if (parseResult == ParseThingResult.UpdateFailedThingMissing)
-                        {
-                            // TODO: So we ignore it?
-                        }
+                        NetworkMessageHello hello = message.Payload.DeSerializeJson<NetworkMessageHello>();
+                        PlayerShipOther ship = _gameManager.AddPlayerRandom(hello.Name.SubstringSafe(0, 15), hello.Clan);
+                        _serversClients.SetShip(clientStream, ship);
+                        break;
                     }
-                    break;
-                }
+                case NetworkMessageType.MyPosition:
+                    {
+                        // He can still think he is alive, we cannot simply update his position if he's not.
+                        PlayerShipOther ship = _serversClients.GetShip(clientStream);
+                        if (!ship.IsDestroyed)
+                        {
+                            ParseThingResult parseResult =
+                                _gameManager.ParseThingDescription(message.Payload.DeSerializeJson<ThingDescription>(),
+                                    ParseThingSource.ToServer_PlayerPosition);
+                            // The client does not know he's dead.
+                            if (parseResult == ParseThingResult.UpdateFailedThingMissing)
+                            {
+                                // TODO: So we ignore it?
+                            }
+                        }
+                        break;
+                    }
                 case NetworkMessageType.PleaseSpawn:
-                    var stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
-                    _gameManager.ParseThingDescriptions(stuff, ParseThingSource.ToServer_SpawnRequest);
-                    break;
+                    {
+                        var stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
+                        // Player can't spawn anything if he is dead.
+                        PlayerShipOther ship = _serversClients.GetShip(clientStream);
+                        {
+                            if (!ship.IsDestroyed)
+                            {
+                                _gameManager.ParseThingDescriptions(stuff, ParseThingSource.ToServer_SpawnRequest);
+                            }
+                        }
+                        break;
+                    }
                 default:
                     throw new ArgumentOutOfRangeException();
             }

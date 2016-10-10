@@ -17,13 +17,13 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         public int Score { get; set; }
 
         protected ShipBase(ThingBaseInjections injections, GameThingCoordinator gameCoordinator,
-            ShipBaseSettings settings, string name, int? id, ThingBase creator = null, int score = 0)
-            : base(injections, settings, creator, id)
+            ShipBaseSettings settings, string name, int? id, ThingAdditionalInfo additionalInfo = null)
+            : base(injections, settings, additionalInfo, id)
         {
             GameCoordinator = gameCoordinator;
             Name = name;
             ShipSettings = settings;
-            Score = score;
+            Score = additionalInfo.Score ?? 0;
 
             LaserLimiter = new Limiter(settings.LazerLimit, TimeSource);
             BombLimiter = new Limiter(TimeSpan.FromSeconds(1), TimeSource);
@@ -115,13 +115,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 }
             }
 
-            // Collision with a ship?
-            ShipBase ship = other.Creator as ShipBase;
-            if (ship != null)
-            {
-                ship.Score += 1;
-            }
-
+            // Collides with anything else - gets destroyed.
             Destroy(ShipSettings.DespawnTime);
         }
     }

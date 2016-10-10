@@ -12,6 +12,13 @@ using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Physicsish;
 using HelloGame.Common.Settings;
 using HelloGame.Common.TimeStuffs;
+using HelloGame.Client;
+using HelloGame.Common.Network;
+using NSubstitute;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Configuration;
+using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Tests
 {
@@ -19,7 +26,128 @@ namespace HelloGame.Tests
     public class GameManagerTests
     {
         [TestMethod]
-        public void GameManager_ShipPlanetCollision()
+        public async Task GameManager_Client_ShipPlanetCollision()
+        {
+            ConfigurationManager.AppSettings["PropagateFrequencyServer"] = "00:00:00.050";
+            ConfigurationManager.AppSettings["PropagateFrequencyClient"] = "00:00:00.050";
+            ConfigurationManager.AppSettings["ServerPortNumber"] = "4450";
+
+            var settings = new GeneralSettings
+            {
+                SpawnAi = false,
+                CollisionTolerance = 5, // So we will get a hit initially even though the ship is moving a bit...
+                GravityFactor = 0.01m,
+            };
+            IResolutionRoot serverNinject =
+                new StandardKernel(new HelloGameCommonNinjectBindings(settings, true, true));
+
+            IKernel ninject = new StandardKernel(
+                new HelloGameCommonNinjectBindings(settings, false, true),
+                new HelloGameClientNinjectBindings(serverNinject));
+
+            var tran = Substitute.For<IMessageTransciever>();
+            ninject.Rebind<IMessageTransciever>().ToConstant(tran);
+
+            var serverThingFactory = serverNinject.Get<ThingFactory>();
+            var originalPosition = new Point(10, 10);
+            PlayerShip playerShip = serverThingFactory.GetPlayerShip(originalPosition, "hula", ClanEnum.Support);
+            // Pretend it's already moving. Going up...
+            playerShip.Physics.Interia = new Real2DVector((decimal)Math.PI / 2, 20);
+            var things = new List<ThingBase>
+            {
+                playerShip
+            };
+
+            // First message - the player only.
+            Task<NetworkMessage> first = Task.FromResult(new NetworkMessage
+            {
+                Type = NetworkMessageType.UpdateStuff,
+                Payload = things.Select(t => new ThingDescription(t, true)).SerializeJson()
+            });
+
+
+            // Second message - the player and a lazer on him.
+            AiShip ai = serverThingFactory.GetRandomAiShip(new Point(100, 40), "hyhy");
+            LazerBeamPew lazer = serverThingFactory.GetLazerBeam(null, originalPosition, ThingAdditionalInfo.GetNew(ai));
+            things.Add(ai);
+            things.Add(lazer);
+            Task<NetworkMessage> second = Task.FromResult(new NetworkMessage
+            {
+                Type = NetworkMessageType.UpdateStuff,
+                Payload = things.Select(t => new ThingDescription(t, true)).SerializeJson()
+            });
+
+            // Return the messages one by one.
+            tran.GetAsync(null).ReturnsForAnyArgs(first, second);
+
+            var gameManager = ninject.Get<GameManager>();
+            var thingFactory = ninject.Get<ThingFactory>();
+            var modelManager = gameManager.ModelManager;
+            var timeSource = ninject.Get<TimeSource>();
+            var clientNetwork = ninject.Get<ClientNetwork>();
+
+            TimeSpan step = TimeSpan.FromMilliseconds(20);
+
+            timeSource.SkipTime(step);
+            modelManager.SingleModelUpdate();
+
+            var stuff = modelManager.ThingsThreadSafe.GetThingsReadOnly();
+            Assert.AreEqual(0, stuff.Count);
+
+            // This should parse the "first" message - the player is spawning.
+            await clientNetwork.WaitAndParseMessageTest();
+
+            stuff = modelManager.ThingsThreadSafe.GetThingsReadOnly();
+            Assert.AreEqual(1, stuff.Count);
+
+            ThingBase shipNow = stuff.Single();
+
+            Assert.AreEqual(originalPosition, shipNow.Physics.PositionPoint);
+
+            // Make an update of the model.
+            timeSource.SkipTime(step);
+            modelManager.SingleModelUpdate();
+
+            // Make sure it has moved (up, so Y axis only)
+            // If a small iteria force is simulated and a small time is passed, this might still be the same.
+            // In this case increase the step or the initial force.
+            Assert.AreEqual(originalPosition.X, shipNow.Physics.PositionPoint.X);
+            Assert.AreNotEqual(originalPosition.Y, shipNow.Physics.PositionPoint.Y);
+
+            // This should parse the "second" message. The player is hit by a lazer.
+            await clientNetwork.WaitAndParseMessageTest();
+
+            stuff = modelManager.ThingsThreadSafe.GetThingsReadOnly();
+            Assert.AreEqual(3, stuff.Count);
+
+            // Make an update of the model. Lazer destroys the ship. Lazer gets destroyed.
+            timeSource.SkipTime(step);
+            modelManager.SingleModelUpdate();
+            stuff = modelManager.ThingsThreadSafe.GetThingsReadOnly();
+            shipNow = stuff.First();
+            LazerBeamPew lazerNow = GetNthAs<ThingBase, LazerBeamPew>(stuff, 2);
+
+            Assert.IsTrue(shipNow.IsDestroyed);
+            Assert.IsTrue(lazerNow.IsDestroyed);
+
+            // Make another update. Check what's up.
+            timeSource.SkipTime(step);
+            modelManager.SingleModelUpdate();
+            stuff = modelManager.ThingsThreadSafe.GetThingsReadOnly();
+            // Lazer should have been removed.
+            Assert.AreEqual(2, stuff.Count);
+            shipNow = stuff.First();
+
+            Assert.IsTrue(shipNow.IsDestroyed);
+        }
+
+        private static G GetNthAs<T, G>(IReadOnlyCollection<T> list, int position)
+        {
+            return (G)Convert.ChangeType(list.Skip(position).First(), typeof(G));
+        }
+
+        [TestMethod]
+        public void GameManager_Server_ShipPlanetCollision()
         {
             // The time is paused now.
             IResolutionRoot ninject =
@@ -78,7 +206,7 @@ namespace HelloGame.Tests
             Assert.IsTrue(newShip.IsTimeToElapse);
             Assert.IsTrue(timeTakenToDespawn.TotalMilliseconds >= expectedTimeToDespawn.TotalMilliseconds);
             Assert.IsTrue(timeTakenToDespawn.TotalMilliseconds <
-                          expectedTimeToDespawn.TotalMilliseconds + step.TotalMilliseconds*2);
+                          expectedTimeToDespawn.TotalMilliseconds + step.TotalMilliseconds * 2);
         }
 
         [TestMethod]
@@ -93,7 +221,7 @@ namespace HelloGame.Tests
             var injections = ninject.Get<ThingBaseInjections>();
 
             TimeSpan timeToLive = ThingSettings.GetLazerBeamSettings(null).TimeToLive;
-            TimeSpan halfTimeToLive = TimeSpan.FromMilliseconds(timeToLive.TotalMilliseconds/2);
+            TimeSpan halfTimeToLive = TimeSpan.FromMilliseconds(timeToLive.TotalMilliseconds / 2);
 
             // Spawn a lazzzer close to the ship.
             var lazer = new LazerBeamPew(injections, null, -1);

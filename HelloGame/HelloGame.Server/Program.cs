@@ -15,7 +15,7 @@ namespace HelloGame.Server
         {
             IResolutionRoot ninject =
                 new StandardKernel(
-                    new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true),
+                    new HelloGameCommonNinjectBindings(GeneralSettings.Custom, true),
                     new HelloGameServerNinjectBindings());
 
             var cts = new CancellationTokenSource();

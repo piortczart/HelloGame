@@ -10,9 +10,9 @@ namespace HelloGame.Common.Model.GameObjects
     {
         public bool IsArmed { get; private set; }
 
-        public Bomb(ThingBaseInjections injections, ThingBase creator,
+        public Bomb(ThingBaseInjections injections, ThingAdditionalInfo additionalInfo,
             ElapsingThingSettings elapsingThingSettings = null)
-            : base(injections, ThingSettings.GetBombSettings(elapsingThingSettings), creator)
+            : base(injections, ThingSettings.GetBombSettings(elapsingThingSettings), additionalInfo)
         {
             Physics.Interia = new Real2DVector();
         }

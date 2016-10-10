@@ -74,12 +74,21 @@ namespace HelloGame.Server
         {
             // This list is created so clients can be informed about all deaths/despawns.
             // Getting this list clears the dead things list in model manager.
-            List<ThingBase> deadThings = _gameManager.ModelManager.ConsumeDeadThings().ToList();
+            List<ThingBase> elapsedThings = _gameManager.ModelManager.ConsumeElapsedThings().ToList();
 
             foreach (KeyValuePair<NetworkStream, PlayerShipOther> client in _serversClients.GetAllReadOnly())
             {
                 NetworkStream networkStream = client.Key;
                 PlayerShipOther ship = client.Value;
+
+                if (ship != null)
+                {
+                    var newClientShip = things.FirstOrDefault(t => t.Id == ship.Id);
+                    if (newClientShip != null && newClientShip.TimeToLive > TimeSpan.Zero && !newClientShip.IsDestroyed)
+                    {
+                        ;
+                    }
+                }
 
                 var message1 = new NetworkMessage
                 {
@@ -93,9 +102,9 @@ namespace HelloGame.Server
                     continue;
                 }
 
-                if (deadThings.Any())
+                if (elapsedThings.Any())
                 {
-                    List<int> deadThingIds = deadThings.Select(t => t.Id).ToList();
+                    List<int> deadThingIds = elapsedThings.Select(t => t.Id).ToList();
                     var message2 = new NetworkMessage
                     {
                         Type = NetworkMessageType.DeadStuff,

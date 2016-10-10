@@ -6,6 +6,8 @@ using HelloGame.Common.Physicsish;
 
 namespace HelloGame.Common.Model
 {
+
+
     [Serializable]
     public class ThingDescription
     {
@@ -33,7 +35,7 @@ namespace HelloGame.Common.Model
             {
                 Type = isHisShip ? "PlayerShipMovable" : "PlayerShipAny";
                 ConstructParams = new object[]
-                {player.Name, player.Creator?.Id, player.Clan, thingBase.ElapsingSettings.SerializeJson()};
+                {player.Name, player.ThingSerializationExtras.SerializeJson(), player.Clan, thingBase.ElapsingSettings.SerializeJson()};
                 return;
             }
 
@@ -45,7 +47,7 @@ namespace HelloGame.Common.Model
                 {
                     big.Physics.Size,
                     big.Color.SerializeJson(),
-                    big.Creator?.Id,
+                    big.ThingSerializationExtras.SerializeJson(),
                     thingBase.ElapsingSettings.SerializeJson()
                 };
                 return;
@@ -56,7 +58,13 @@ namespace HelloGame.Common.Model
             {
                 Type = ai.GetType().Name;
                 ConstructParams = new object[]
-                {ai.Name, ai.Creator?.Id, ai.AiType, ai.ShipSettingType, thingBase.ElapsingSettings.SerializeJson()};
+                {
+                    ai.Name,
+                    ai.ThingSerializationExtras.SerializeJson(),
+                    ai.AiType,
+                    ai.ShipSettingType,
+                    thingBase.ElapsingSettings.SerializeJson()
+                };
                 return;
             }
 
@@ -64,7 +72,10 @@ namespace HelloGame.Common.Model
             if (lazer != null)
             {
                 Type = lazer.GetType().Name;
-                ConstructParams = new object[] {lazer.Creator?.Id, thingBase.ElapsingSettings.SerializeJson()};
+                ConstructParams = new object[] {
+                    lazer.ThingSerializationExtras.SerializeJson(),
+                    thingBase.ElapsingSettings.SerializeJson()
+                };
                 return;
             }
 

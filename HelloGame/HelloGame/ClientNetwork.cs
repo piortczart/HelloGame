@@ -23,7 +23,7 @@ namespace HelloGame.Client
     {
         private readonly GameManager _gameManager;
         private Stream _stream;
-        private readonly MessageTransciever _sender = new MessageTransciever();
+        private readonly IMessageTransciever _sender;
         private readonly ILogger _logger;
         private readonly Timer _sendMeTimer;
 
@@ -35,8 +35,9 @@ namespace HelloGame.Client
         // This is exclusive for the propagate timer thread.
         private readonly HashSet<ThingBase> _thingsSent = new HashSet<ThingBase>();
 
-        public ClientNetwork(ILoggerFactory loggerFactory, GameManager gameManager)
+        public ClientNetwork(ILoggerFactory loggerFactory, GameManager gameManager, IMessageTransciever sender)
         {
+            _sender = sender;
             _gameManager = gameManager;
             _logger = loggerFactory.CreateLogger(GetType());
             _sendMeTimer = new Timer(state =>
@@ -108,6 +109,14 @@ namespace HelloGame.Client
             }, _stream);
         }
 
+        /// <summary>
+        /// This is a bad, bad hack to start testing quickly.
+        /// </summary>
+        public async Task WaitAndParseMessageTest()
+        {
+            await WaitAndParseMessage();
+        }
+
         private async Task Receive(CancellationToken token)
         {
             try
@@ -116,35 +125,40 @@ namespace HelloGame.Client
 
                 while (!token.IsCancellationRequested)
                 {
-                    NetworkMessage message = await _sender.GetAsync(_stream);
-                    //_logger.LogInfo($"Got messsage: {message.ToStringFull()}");
-
-                    switch (message.Type)
-                    {
-                        case NetworkMessageType.UpdateStuff:
-                        {
-                            List<ThingDescription> stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
-                            _logger.LogInfo($"Server sent update, count: {stuff.Count}");
-                            foreach (ThingDescription description in stuff)
-                            {
-                                _gameManager.ParseThingDescription(description, ParseThingSource.ToClient);
-                            }
-                        }
-                            break;
-                        case NetworkMessageType.DeadStuff:
-                        {
-                            List<int> deadStuff = message.Payload.DeSerializeJson<List<int>>();
-                            _gameManager.StuffDied(deadStuff);
-                            break;
-                        }
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                    await WaitAndParseMessage();
                 }
             }
             catch (Exception exception)
             {
                 _logger.LogError("Server communication error.", exception);
+            }
+        }
+
+        private async Task WaitAndParseMessage()
+        {
+            NetworkMessage message = await _sender.GetAsync(_stream);
+            //_logger.LogInfo($"Got messsage: {message.ToStringFull()}");
+
+            switch (message.Type)
+            {
+                case NetworkMessageType.UpdateStuff:
+                    {
+                        List<ThingDescription> stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
+                        _logger.LogInfo($"Server sent update, count: {stuff.Count}");
+                        foreach (ThingDescription description in stuff)
+                        {
+                            _gameManager.ParseThingDescription(description, ParseThingSource.ToClient);
+                        }
+                    }
+                    break;
+                case NetworkMessageType.DeadStuff:
+                    {
+                        List<int> deadStuff = message.Payload.DeSerializeJson<List<int>>();
+                        _gameManager.StuffDied(deadStuff);
+                        break;
+                    }
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }

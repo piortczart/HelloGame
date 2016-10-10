@@ -9,11 +9,10 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         public readonly ClanEnum Clan;
 
         protected PlayerShip(ThingBaseInjections injections, GameThingCoordinator coordinator, string name,
-            ClanEnum clan, int? id = null, ThingBase creator = null, ElapsingThingSettings elapsingThingSettings = null,
-            int score = 0)
+            ClanEnum clan, int? id = null, ThingAdditionalInfo additionalInfo = null, ElapsingThingSettings elapsingThingSettings = null)
             : base(
                 injections, coordinator, ShipBaseSettings.GetClanShipSetting(clan, elapsingThingSettings), name, id,
-                creator, score)
+                additionalInfo)
         {
             Clan = clan;
         }

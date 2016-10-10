@@ -124,7 +124,7 @@ namespace HelloGame.Common.Model
 
                 // Player is shooting. On the client.
                 LazerBeamPew lazer = _thingFactory.GetLazerBeam(-1,
-                    source.Physics.GetPointInDirection(source.Settingz.Size/2), source);
+                    source.Physics.GetPointInDirection(source.Settingz.Size/2), ThingAdditionalInfo.GetNew(source));
                 AskServerToSpawn(lazer);
             }
             else
@@ -133,7 +133,7 @@ namespace HelloGame.Common.Model
                 if (_isServer)
                 {
                     LazerBeamPew lazer = _thingFactory.GetLazerBeam(null,
-                        source.Physics.GetPointInDirection(source.Settingz.Size/2), source);
+                        source.Physics.GetPointInDirection(source.Settingz.Size/2), ThingAdditionalInfo.GetNew(source));
                     ModelManager.AddThing(lazer);
                 }
             }

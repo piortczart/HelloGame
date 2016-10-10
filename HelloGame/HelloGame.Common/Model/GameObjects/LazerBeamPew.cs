@@ -7,9 +7,9 @@ namespace HelloGame.Common.Model.GameObjects
 {
     public class LazerBeamPew : ThingBase
     {
-        public LazerBeamPew(ThingBaseInjections injections, ThingBase creator, int? id,
+        public LazerBeamPew(ThingBaseInjections injections, ThingAdditionalInfo additionalInfo, int? id,
             ElapsingThingSettings elapsingThingSettings = null)
-            : base(injections, ThingSettings.GetLazerBeamSettings(elapsingThingSettings), creator, id)
+            : base(injections, ThingSettings.GetLazerBeamSettings(elapsingThingSettings), additionalInfo, id)
         {
         }
 
