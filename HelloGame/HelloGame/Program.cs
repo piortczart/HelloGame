@@ -16,7 +16,7 @@ namespace HelloGame.Client
         [STAThread]
         static void Main()
         {
-            GeneralSettings settings = GeneralSettings.Gameplay;
+            GeneralSettings settings = GeneralSettings.Custom;
 
             // A separate server binding (in sense server is a separate application ran inside this process)
             // This is only required when running a local server in the InitialSetupForm.

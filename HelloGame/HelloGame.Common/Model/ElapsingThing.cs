@@ -20,7 +20,6 @@ namespace HelloGame.Common.Model
             }
         }
 
-
         public ElapsingThingSettings ElapsingSettings
             => new ElapsingThingSettings {SpawnedAt = SpawnedAt, TimeToLive = TimeToLive};
 

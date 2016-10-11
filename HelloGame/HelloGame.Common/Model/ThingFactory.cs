@@ -112,7 +112,7 @@ namespace HelloGame.Common.Model
                             ? ((string) description.ConstructParams[1]).DeSerializeJson<ElapsingThingSettings>()
                             : null;
 
-                    result = GetLazerBeam(id, description.AlmostPhysics.PositionPoint, extras, elapsing);
+                    result = GetLazerBeam(id, extras, elapsing);
                     break;
                 }
                 case "Bomb":
@@ -140,7 +140,7 @@ namespace HelloGame.Common.Model
             return result;
         }
 
-        public LazerBeamPew GetLazerBeam(int? id, Point location, ThingAdditionalInfo extras,
+        public LazerBeamPew GetLazerBeam(int? id, ThingAdditionalInfo extras,
             ElapsingThingSettings elapsingThingSettings = null)
         {
             if (!_isServer && !id.HasValue)
@@ -152,14 +152,17 @@ namespace HelloGame.Common.Model
             // TODO: this can lead to problems if someone is on the server, not on the client, a lazer is shot by him => client wont's spawn it
             //Debug.Assert(extras.Creator != null,
             //    "A lazer will not be spawned because the creator cannot be found. Weird.");
-            if (extras.Creator == null)
+            ThingBase shooter = extras.Creator;
+            if (shooter == null)
             {
                 return null;
             }
 
-            var lazer = new LazerBeamPew(_thingInjections, extras, id, elapsingThingSettings);
             Real2DVector lazerInteria = extras.Creator.Physics.GetDirection(extras.Creator.Settingz.LazerSpeed);
-            lazer.Spawn(location, lazerInteria);
+            Point spawnPoint = shooter.Physics.GetPointInDirection(shooter.Settingz.Size/2);
+
+            var lazer = new LazerBeamPew(_thingInjections, extras, id, elapsingThingSettings);
+            lazer.Spawn(spawnPoint, lazerInteria);
             lazer.Physics.Angle = extras.Creator.Physics.Angle;
             return lazer;
         }
@@ -171,8 +174,12 @@ namespace HelloGame.Common.Model
             {
                 return null;
             }
-            Point spawnPoint = shooter.Physics.GetPointInDirection(shooter.Physics.Size);
-            Real2DVector initialInteria = shooter.Physics.TotalForce.GetScaled(4m, false);
+
+            // Go a bit slower than the ship.
+            Real2DVector initialInteria = shooter.Physics.TotalForce.GetScaled(0.9m, false);
+
+            // Spawn behind the ship.
+            Point spawnPoint = shooter.Physics.GetPointInDirection(shooter.Physics.Size, true);
 
             var bomb = new Bomb(_thingInjections, id, extras, elapsingThingSettings);
             bomb.Spawn(spawnPoint, initialInteria);

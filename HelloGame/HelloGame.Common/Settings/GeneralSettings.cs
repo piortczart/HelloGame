@@ -14,6 +14,7 @@ namespace HelloGame.Common.Settings
         public Size GameSize { get; set; } = new Size(600, 600);
         public int PlanetsCount { get; set; } = 2;
         public int AiShipCount { get; set; } = 1;
+        public bool ShowThingsList { get; set; }
 
         public static GeneralSettings Gameplay => new GeneralSettings
         {
@@ -32,6 +33,7 @@ namespace HelloGame.Common.Settings
             IsAiHostile = false,
             SpawnAi = false,
             ShowPlayerPhysicsDetails = true,
+            ShowThingsList = true
         };
 
         public static GeneralSettings Custom => new GeneralSettings
@@ -41,7 +43,8 @@ namespace HelloGame.Common.Settings
             IsAiHostile = true,
             SpawnAi = false,
             ShowPlayerPhysicsDetails = false,
-            GameSize = new Size(600, 600)
+            GameSize = new Size(600, 600),
+            ShowThingsList = true
         };
     }
 }

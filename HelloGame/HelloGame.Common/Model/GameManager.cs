@@ -11,6 +11,7 @@ using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Physicsish;
 using HelloGame.Common.Settings;
+using HelloGame.Common.TimeStuffs;
 
 namespace HelloGame.Common.Model
 {
@@ -23,6 +24,7 @@ namespace HelloGame.Common.Model
         private readonly ConcurrentQueue<ThingBase> _thingsToSpawn = new ConcurrentQueue<ThingBase>();
         private readonly GeneralSettings _settings;
         private readonly GameEventBusSameThread _eventBus;
+        private readonly TimeSource _timeSource;
 
         /// <summary>
         /// Others mightbe interested in knowing when the client wants to spawn somehting (like the network classes which will immediatelly send info to the server).
@@ -30,14 +32,16 @@ namespace HelloGame.Common.Model
         public event Action<ThingBase> OnAskedServerToSpawn;
 
         public GameManager(GeneralSettings settings, ModelManager modelManager, GameThingCoordinator gameCoordinator,
-            ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory, GameEventBusSameThread eventBus)
+            ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory, GameEventBusSameThread eventBus,
+            TimeSource timeSource)
         {
             ModelManager = modelManager;
             modelManager.AddUpdateModelAction(ModelUpdated);
-            gameCoordinator.OnClientShootRequest += ClientShootRequest;
+            gameCoordinator.OnClientShootRequest += ShootAttempt;
             _thingFactory = thingFactory;
             _isServer = isServer;
             _eventBus = eventBus;
+            _timeSource = timeSource;
             _logger = loggerFactory.CreateLogger(GetType());
             _settings = settings;
         }
@@ -121,7 +125,7 @@ namespace HelloGame.Common.Model
             return newShip;
         }
 
-        private void ClientShootRequest(ThingBase source, Weapon weapon)
+        private void ShootAttempt(ThingBase source, Weapon weapon)
         {
             if (source is PlayerShipMovable)
             {
@@ -135,9 +139,7 @@ namespace HelloGame.Common.Model
                 switch (weapon.WeaponType)
                 {
                     case WeaponType.Lazer:
-                        projectile = _thingFactory.GetLazerBeam(-1,
-                            source.Physics.GetPointInDirection(source.Settingz.Size/2),
-                            ThingAdditionalInfo.GetNew(source));
+                        projectile = _thingFactory.GetLazerBeam(-1, ThingAdditionalInfo.GetNew(source));
                         break;
                     case WeaponType.Bomb:
                         projectile = _thingFactory.GetBomb(-1, ThingAdditionalInfo.GetNew(source));
@@ -159,9 +161,7 @@ namespace HelloGame.Common.Model
                     switch (weapon.WeaponType)
                     {
                         case WeaponType.Lazer:
-                            LazerBeamPew lazer = _thingFactory.GetLazerBeam(null,
-                                source.Physics.GetPointInDirection(source.Settingz.Size/2),
-                                ThingAdditionalInfo.GetNew(source));
+                            LazerBeamPew lazer = _thingFactory.GetLazerBeam(null, ThingAdditionalInfo.GetNew(source));
                             ModelManager.AddThing(lazer);
                             break;
                         default:
@@ -169,6 +169,7 @@ namespace HelloGame.Common.Model
                     }
                 }
             }
+            weapon.LastShotTime = _timeSource.ElapsedSinceStart;
         }
 
         public AiShip AddAiShipRandom(string name = null)

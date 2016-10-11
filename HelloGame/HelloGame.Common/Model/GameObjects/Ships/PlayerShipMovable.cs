@@ -67,18 +67,12 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
             if (KeysInfo.IsJ)
             {
-                if (BombLimiter.CanHappen())
-                {
-                    var thingSe = new ThingAdditionalInfo {CreatorId = Id};
-                    thingSe.SetCreator(this);
-
-                    GameCoordinator.Shoot(this, Weapons.Secondary);
-                }
+                PewPew(1);
             }
 
             if (KeysInfo.IsSpace)
             {
-                PewPew();
+                PewPew(0);
             }
         }
 

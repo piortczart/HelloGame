@@ -53,14 +53,7 @@ namespace HelloGame.Common.Model
         {
             // First time spawned? Weapons needs to be initially created.
             // If it already exists, the weapons should come from the ThingAdditionalInfo
-            if (id == null)
-            {
-                Weapons = settings.InitialWeapons;
-            }
-            else
-            {
-                Weapons = additionalInfo.GetWeapons();
-            }
+            Weapons = id == null ? settings.InitialWeapons : additionalInfo.GetWeapons();
 
             Coordinator = injections.Coordinator;
             Settings = injections.GeneralSettings;
@@ -126,6 +119,10 @@ namespace HelloGame.Common.Model
             }
         }
 
+        /// <summary>
+        /// Destroys this thing.
+        /// </summary>
+        /// <param name="elapseIn">The amount of time to elapse in.</param>
         protected void Destroy(TimeSpan elapseIn)
         {
             lock (_modelSynchronizer)

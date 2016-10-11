@@ -5,23 +5,26 @@ using System.Linq;
 using HelloGame.Common.MathStuff;
 using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Physicsish;
+using HelloGame.Common.Settings;
 using HelloGame.Common.TimeStuffs;
 
 namespace HelloGame.Common
 {
     public class Overlay
     {
+        private readonly GeneralSettings _settings;
         readonly Font _font = new Font(FontFamily.GenericMonospace, 12);
         private readonly EventPerSecond _paintCounter;
         private int _collisionCalculations;
         private int _thingsCount;
         private Position _screenCenterGeneral = new Position(0, 0);
         private Size _windowSize = Size.Empty;
-        private List<Position> _shipPositionsGeneral = new List<Position>();
+        private IReadOnlyCollection<ThingBase> _things = new List<ThingBase>();
         private Point _overlayPositionGeneral = Point.Empty;
 
-        public Overlay(TimeSource timeSource)
+        public Overlay(TimeSource timeSource, GeneralSettings settings)
         {
+            _settings = settings;
             _paintCounter = new EventPerSecond(timeSource);
         }
 
@@ -29,11 +32,7 @@ namespace HelloGame.Common
         {
             _thingsCount = modelManager.ThingsThreadSafe.Count;
             _collisionCalculations = (int) modelManager.CollisionCalculations.GetPerSecond();
-            _shipPositionsGeneral =
-                modelManager.ThingsThreadSafe.GetThingsReadOnly()
-                    .Where(t => t is ShipBase)
-                    .Select(t => t.Physics.Position)
-                    .ToList();
+            _things = modelManager.ThingsThreadSafe.GetThingsReadOnly();
         }
 
         public void Render(Graphics graphics)
@@ -46,12 +45,26 @@ namespace HelloGame.Common
             graphics.DrawString($"Centered at: {_screenCenterGeneral}", _font, Brushes.Black, new PointF(10, 60));
 
             DrawShipPointers(graphics);
+
+            if (_settings.ShowThingsList)
+            {
+                int i = 0;
+                foreach (ThingBase thing in _things)
+                {
+                    string description =
+                        $"{thing.GetType().Name} D:{thing.IsDestroyed} X:{thing.ThingAdditionalInfo.Score}";
+                    graphics.DrawString(description, _font, Brushes.Black,
+                        new PointF(_windowSize.Width - 200, 20 + 15*i));
+                    i++;
+                }
+            }
         }
 
         private void DrawShipPointers(Graphics graphics)
         {
             Point centerRelative = new Point(_windowSize.Width/2, _windowSize.Height/2);
-            foreach (Position shipPosition in _shipPositionsGeneral)
+            var shipPositions = _things.Where(t => t is ShipBase).Select(t => t.Physics.Position);
+            foreach (Position shipPosition in shipPositions)
             {
                 if (shipPosition.DistanceTo(_screenCenterGeneral) < 400)
                 {

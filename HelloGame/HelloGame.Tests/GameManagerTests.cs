@@ -26,7 +26,38 @@ namespace HelloGame.Tests
     public class GameManagerTests
     {
         [TestMethod]
-        public async Task GameManager_Client_ShipPlanetCollision()
+        public void GameManager_BombGoesBoom()
+        {
+            // The time is paused now.
+            IResolutionRoot ninject =
+                new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true, true));
+
+            var gameManager = ninject.Get<GameManager>();
+            var timeSource = ninject.Get<TimeSource>();
+            var thingFactory = ninject.Get<ThingFactory>();
+
+            // Spawn a player.
+            PlayerShipOther playerShip = thingFactory.GetPlayerShip(
+                new Point(10, 15), "PLAYUR", ClanEnum.Integrations);
+            gameManager.ModelManager.AddThing(playerShip);
+
+            TimeSpan timeToLive = ThingSettings.GetBombSettings(null).TimeToLive;
+
+            Bomb bomb = thingFactory.GetBomb(null, ThingAdditionalInfo.GetNew(playerShip));
+            gameManager.ModelManager.AddThing(bomb);
+
+
+            timeSource.SkipTime(timeToLive.Add(TimeSpan.FromMilliseconds(10)));
+            gameManager.ModelManager.SingleModelUpdate();
+            Assert.IsTrue(bomb.IsDestroyed);
+            Assert.IsFalse(bomb.IsTimeToElapse);
+
+            Assert.IsNotNull(gameManager.ModelManager.ThingsThreadSafe.GetById(bomb.Id));
+        }
+
+
+        [TestMethod]
+        public async Task GameManager_Client_AiShootsPlayer()
         {
             ConfigurationManager.AppSettings["PropagateFrequencyServer"] = "00:00:00.050";
             ConfigurationManager.AppSettings["PropagateFrequencyClient"] = "00:00:00.050";
@@ -65,10 +96,10 @@ namespace HelloGame.Tests
                 Payload = things.Select(t => new ThingDescription(t, true)).SerializeJson()
             });
 
-
-            // Second message - the player and a lazer on him.
+            // Second message - the AI and a lazer going to the player.
             AiShip ai = serverThingFactory.GetRandomAiShip(new Point(100, 40), "hyhy");
-            LazerBeamPew lazer = serverThingFactory.GetLazerBeam(null, originalPosition, ThingAdditionalInfo.GetNew(ai));
+            ai.PewPew(0);
+            LazerBeamPew lazer = serverThingFactory.GetLazerBeam(null, ThingAdditionalInfo.GetNew(ai));
             things.Add(ai);
             things.Add(lazer);
             Task<NetworkMessage> second = Task.FromResult(new NetworkMessage
@@ -81,7 +112,6 @@ namespace HelloGame.Tests
             tran.GetAsync(null).ReturnsForAnyArgs(first, second);
 
             var gameManager = ninject.Get<GameManager>();
-            var thingFactory = ninject.Get<ThingFactory>();
             var modelManager = gameManager.ModelManager;
             var timeSource = ninject.Get<TimeSource>();
             var clientNetwork = ninject.Get<ClientNetwork>();
@@ -218,14 +248,14 @@ namespace HelloGame.Tests
 
             var gameManager = ninject.Get<GameManager>();
             var timeSource = ninject.Get<TimeSource>();
-            var injections = ninject.Get<ThingBaseInjections>();
+            var thingFactory = ninject.Get<ThingFactory>();
 
             TimeSpan timeToLive = ThingSettings.GetLazerBeamSettings(null).TimeToLive;
             TimeSpan halfTimeToLive = TimeSpan.FromMilliseconds(timeToLive.TotalMilliseconds/2);
 
-            // Spawn a lazzzer close to the ship.
-            var lazer = new LazerBeamPew(injections, null, -1);
-            lazer.Spawn(new Point(15, 15));
+            PlayerShipOther player = thingFactory.GetPlayerShip(Point.Empty, "hula", ClanEnum.Integrations);
+            gameManager.ModelManager.AddThing(player);
+            LazerBeamPew lazer = thingFactory.GetLazerBeam(null, ThingAdditionalInfo.GetNew(player));
             gameManager.ModelManager.AddThing(lazer);
 
             timeSource.SkipTime(halfTimeToLive);
@@ -256,12 +286,11 @@ namespace HelloGame.Tests
             var timeSource = ninject.Get<TimeSource>();
 
             // Create an AI Ship.
-            var aiShip = thingFactory.GetRandomAiShip(new Point(40, 15), "AI", null, null, -1);
+            var aiShip = thingFactory.GetRandomAiShip(new Point(40, 15), "AI");
             gameManager.ModelManager.AddThing(aiShip);
 
             // Create a player.
-            PlayerShipOther playerShip = thingFactory.GetPlayerShip(
-                new Point(10, 15), "PLAYUR", ClanEnum.Integrations, -2);
+            PlayerShipOther playerShip = thingFactory.GetPlayerShip(new Point(10, 15), "PLAYUR", ClanEnum.Integrations);
             gameManager.ModelManager.AddThing(playerShip);
 
             //
@@ -282,13 +311,15 @@ namespace HelloGame.Tests
 
             // Make the player shoot a lazer.
             // There is a limiter, make sure enough time has passed.
-            timeSource.SkipTime(playerShip.ShipSettings.LazerLimit.Add(TimeSpan.FromMilliseconds(10)));
+            TimeSpan toSkip = playerShip.Settingz.GetWeaponFrequency(WeaponType.Lazer)
+                .Add(TimeSpan.FromMilliseconds(10));
+            timeSource.SkipTime(toSkip);
             gameManager.ModelManager.SingleModelUpdate();
 
             // TODO: what if a thing is spawned between two long model updates? (player shoots)
             // Physics will be calculated as if it was there since the last update!
 
-            bool isShot = playerShip.PewPew();
+            bool isShot = playerShip.PewPew(0);
             Assert.IsTrue(isShot);
             gameManager.ModelManager.SingleModelUpdate();
 
@@ -296,7 +327,6 @@ namespace HelloGame.Tests
             ThingBase lazer =
                 gameManager.ModelManager.ThingsThreadSafe.GetThingsReadOnly().Single(t => t is LazerBeamPew);
 
-            decimal distanceStart = lazer.DistanceTo(aiShip);
             decimal distance;
             int i = 0;
             do

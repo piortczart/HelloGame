@@ -66,9 +66,13 @@ namespace HelloGame.Common.Physicsish
             return new Real2DVector(Angle, bigness);
         }
 
-        public Point GetPointInDirection(decimal bigness)
+        public Point GetPointInDirection(decimal bigness, bool inverted = false)
         {
             Real2DVector direction = GetDirection(bigness);
+            if (inverted)
+            {
+                direction = direction.GetOpposite();
+            }
             return new Point((int) (direction.X + Position.X), (int) (direction.Y + Position.Y));
         }
 

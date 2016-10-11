@@ -20,7 +20,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             ShipSettingType shipSettingType, string name, ThingAdditionalInfo additionalInfo, int? id = null,
             ElapsingThingSettings elapsingThingSettings = null)
             : base(
-                injections, coordinator, ShipBaseSettings.GetShipTypeSettings(shipSettingType, elapsingThingSettings),
+                injections, ShipBaseSettings.GetShipTypeSettings(shipSettingType, elapsingThingSettings),
                 name, id, additionalInfo)
         {
             _aiShipBaseSettings = AiShipSettings.AiSettings[aiType];
@@ -56,7 +56,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
                     if (Settings.IsAiHostile)
                     {
-                        PewPew();
+                        PewPew(0);
                     }
                 }
 

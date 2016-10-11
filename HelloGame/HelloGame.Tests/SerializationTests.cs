@@ -27,7 +27,7 @@ namespace HelloGame.Tests
 
             // Create a new lazer.
             AiShip ai = manager.AddAiShipRandom("hi");
-            LazerBeamPew lazer = factory.GetLazerBeam(null, Point.Empty, ThingAdditionalInfo.GetNew(ai),
+            LazerBeamPew lazer = factory.GetLazerBeam(null, ThingAdditionalInfo.GetNew(ai),
                 new ElapsingThingSettings
                 {
                     TimeToLive = TimeSpan.FromMilliseconds(10),

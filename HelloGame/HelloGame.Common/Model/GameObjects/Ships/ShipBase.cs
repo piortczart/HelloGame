@@ -1,18 +1,13 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using HelloGame.Common.MathStuff;
 using HelloGame.Common.Settings;
-using HelloGame.Common.TimeStuffs;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
 {
     public abstract class ShipBase : ThingBase
     {
-        protected readonly GameThingCoordinator GameCoordinator;
         public string Name { get; }
-        protected readonly Limiter BombLimiter;
-        protected readonly Limiter LaserLimiter;
         public readonly ShipBaseSettings ShipSettings;
         public int Score { get; set; }
 
@@ -26,28 +21,25 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             }
         }
 
-        protected ShipBase(ThingBaseInjections injections, GameThingCoordinator gameCoordinator,
-            ShipBaseSettings settings, string name, int? id, ThingAdditionalInfo additionalInfo)
+        protected ShipBase(ThingBaseInjections injections, ShipBaseSettings settings, string name, int? id,
+            ThingAdditionalInfo additionalInfo)
             : base(injections, settings, additionalInfo, id)
         {
-            GameCoordinator = gameCoordinator;
             Name = name;
             ShipSettings = settings;
             Score = additionalInfo.Score ?? 0;
-
-            LaserLimiter = new Limiter(settings.LazerLimit, TimeSource);
-            BombLimiter = new Limiter(settings.BombLimit, TimeSource);
 
             Physics.Size = settings.Size;
             Physics.SelfPropelling = new Real2DVector(settings.MaxEnginePower);
             Physics.Interia = new Real2DVector(settings.MaxInteria);
         }
 
-        public bool PewPew()
+        public bool PewPew(int slot)
         {
-            if (LaserLimiter.CanHappen())
+            Weapon weapon = slot == 0 ? Weapons.Main : Weapons.Secondary;
+            if (weapon.CanShoot(TimeSource, Settingz))
             {
-                Coordinator.Shoot(this, Weapons.Main);
+                Coordinator.Shoot(this, weapon);
                 return true;
             }
             return false;
