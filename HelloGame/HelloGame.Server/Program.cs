@@ -13,11 +13,11 @@ namespace HelloGame.Server
     {
         private static void Main()
         {
-            bool showForm = false;
+            bool showForm = true;
 
             IResolutionRoot ninject =
                 new StandardKernel(
-                    new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true),
+                    new HelloGameCommonNinjectBindings(GeneralSettings.Custom, true),
                     new HelloGameServerNinjectBindings());
 
             var cts = new CancellationTokenSource();

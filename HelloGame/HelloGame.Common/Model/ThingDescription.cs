@@ -6,8 +6,6 @@ using HelloGame.Common.Physicsish;
 
 namespace HelloGame.Common.Model
 {
-
-
     [Serializable]
     public class ThingDescription
     {
@@ -35,7 +33,12 @@ namespace HelloGame.Common.Model
             {
                 Type = isHisShip ? "PlayerShipMovable" : "PlayerShipAny";
                 ConstructParams = new object[]
-                {player.Name, player.ThingSerializationExtras.SerializeJson(), player.Clan, thingBase.ElapsingSettings.SerializeJson()};
+                {
+                    player.Name,
+                    player.ThingAdditionalInfo.SerializeJson(),
+                    (int) player.Clan,
+                    thingBase.ElapsingSettings.SerializeJson()
+                };
                 return;
             }
 
@@ -47,7 +50,7 @@ namespace HelloGame.Common.Model
                 {
                     big.Physics.Size,
                     big.Color.SerializeJson(),
-                    big.ThingSerializationExtras.SerializeJson(),
+                    big.ThingAdditionalInfo.SerializeJson(),
                     thingBase.ElapsingSettings.SerializeJson()
                 };
                 return;
@@ -60,7 +63,7 @@ namespace HelloGame.Common.Model
                 ConstructParams = new object[]
                 {
                     ai.Name,
-                    ai.ThingSerializationExtras.SerializeJson(),
+                    ai.ThingAdditionalInfo.SerializeJson(),
                     ai.AiType,
                     ai.ShipSettingType,
                     thingBase.ElapsingSettings.SerializeJson()
@@ -72,8 +75,21 @@ namespace HelloGame.Common.Model
             if (lazer != null)
             {
                 Type = lazer.GetType().Name;
-                ConstructParams = new object[] {
-                    lazer.ThingSerializationExtras.SerializeJson(),
+                ConstructParams = new object[]
+                {
+                    lazer.ThingAdditionalInfo.SerializeJson(),
+                    thingBase.ElapsingSettings.SerializeJson()
+                };
+                return;
+            }
+
+            var bomb = thingBase as Bomb;
+            if (bomb != null)
+            {
+                Type = bomb.GetType().Name;
+                ConstructParams = new object[]
+                {
+                    bomb.ThingAdditionalInfo.SerializeJson(),
                     thingBase.ElapsingSettings.SerializeJson()
                 };
                 return;

@@ -6,6 +6,7 @@ using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
 using HelloGame.Common.Physicsish;
 using System.Windows.Forms;
+using HelloGame.Common.Extensions;
 using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Settings;
 
@@ -37,13 +38,30 @@ namespace HelloGame.Common.Model
         protected readonly GameThingCoordinator Coordinator;
 
 
-        public virtual ThingAdditionalInfo ThingSerializationExtras
-            => new ThingAdditionalInfo {IsDestroyed = IsDestroyed, CreatorId = Creator?.Id};
+        public virtual ThingAdditionalInfo ThingAdditionalInfo
+            =>
+                new ThingAdditionalInfo
+                {
+                    IsDestroyed = IsDestroyed,
+                    CreatorId = Creator?.Id,
+                    WeaponsSerialized = Weapons.SerializeJson()
+                };
 
         protected ThingBase(ThingBaseInjections injections, ThingSettings settings, ThingAdditionalInfo additionalInfo,
             int? id = null)
             : base(settings.TimeToLive, injections.TimeSource, settings.SpawnedAt)
         {
+            // First time spawned? Weapons needs to be initially created.
+            // If it already exists, the weapons should come from the ThingAdditionalInfo
+            if (id == null)
+            {
+                Weapons = settings.InitialWeapons;
+            }
+            else
+            {
+                Weapons = additionalInfo.GetWeapons();
+            }
+
             Coordinator = injections.Coordinator;
             Settings = injections.GeneralSettings;
             Injections = injections;

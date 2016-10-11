@@ -16,11 +16,11 @@ namespace HelloGame.Common.Model.GameObjects.Ships
         public readonly ShipBaseSettings ShipSettings;
         public int Score { get; set; }
 
-        public override ThingAdditionalInfo ThingSerializationExtras
+        public override ThingAdditionalInfo ThingAdditionalInfo
         {
             get
             {
-                var result = base.ThingSerializationExtras;
+                var result = base.ThingAdditionalInfo;
                 result.Score = Score;
                 return result;
             }

@@ -145,7 +145,11 @@ namespace HelloGame.Common.Model
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                AskServerToSpawn(projectile);
+                // THe proejctile is null when server did not find the shooter as an object
+                if (projectile != null)
+                {
+                    AskServerToSpawn(projectile);
+                }
             }
             else
             {
@@ -167,7 +171,7 @@ namespace HelloGame.Common.Model
             }
         }
 
-        private AiShip AddAiShipRandom(string name = null)
+        public AiShip AddAiShipRandom(string name = null)
         {
             if (!_isServer)
             {

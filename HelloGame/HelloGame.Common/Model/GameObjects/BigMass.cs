@@ -11,11 +11,11 @@ namespace HelloGame.Common.Model.GameObjects
         public Color Color { get; private set; }
         public int DeathsCaused { get; set; }
 
-        public override ThingAdditionalInfo ThingSerializationExtras
+        public override ThingAdditionalInfo ThingAdditionalInfo
         {
             get
             {
-                var result = base.ThingSerializationExtras;
+                var result = base.ThingAdditionalInfo;
                 result.DeathsCaused = DeathsCaused;
                 return result;
             }

@@ -29,11 +29,10 @@ namespace HelloGame.Common.Model
 
         public ThingBase Creator { get; private set; }
 
-        public static ThingAdditionalInfo GetNew(ThingBase creator)
+        public static ThingAdditionalInfo GetNew(ThingBase creator, Weapons weapons = null)
         {
-            var result = new ThingAdditionalInfo();
+            var result = new ThingAdditionalInfo {Creator = creator, WeaponsSerialized = weapons?.SerializeJson()};
             // 0 score, not destoryed, possibly a creator.
-            result.Creator = creator;
             if (creator != null)
             {
                 result.CreatorId = creator.Id;

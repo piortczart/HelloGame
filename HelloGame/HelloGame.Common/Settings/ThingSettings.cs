@@ -20,6 +20,7 @@ namespace HelloGame.Common.Settings
         public bool CollidesWithPlanets { get; set; } = true;
         public decimal LazerSpeed { get; set; } = 30;
         public int PointsForKilling { get; set; } = 1;
+        public Weapons InitialWeapons { get; set; } = Weapons.BasicWeapons;
 
         public static ThingSettings GetLazerBeamSettings(ElapsingThingSettings elapsingThingSettings)
         {

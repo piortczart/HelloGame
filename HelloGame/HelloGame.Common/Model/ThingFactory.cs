@@ -6,7 +6,6 @@ using HelloGame.Common.MathStuff;
 using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Settings;
-using System.Diagnostics;
 
 namespace HelloGame.Common.Model
 {
@@ -40,7 +39,7 @@ namespace HelloGame.Common.Model
                     ThingAdditionalInfo extras =
                         ((string) description.ConstructParams[1]).DeSerializeJson<ThingAdditionalInfo>();
                     extras.SetCreator(_coordinator);
-                    ClanEnum clan = (ClanEnum) (int) (long) description.ConstructParams[2];
+                    ClanEnum clan = (ClanEnum) Convert.ToInt32(description.ConstructParams[2]);
                     ElapsingThingSettings elapsing =
                         description.ConstructParams.Length > 3
                             ? ((string) description.ConstructParams[3]).DeSerializeJson<ElapsingThingSettings>()
@@ -116,6 +115,20 @@ namespace HelloGame.Common.Model
                     result = GetLazerBeam(id, description.AlmostPhysics.PositionPoint, extras, elapsing);
                     break;
                 }
+                case "Bomb":
+                {
+                    int? id = _isServer ? (int?) null : description.Id;
+                    ThingAdditionalInfo extras =
+                        ((string) description.ConstructParams[0]).DeSerializeJson<ThingAdditionalInfo>();
+                    extras.SetCreator(_coordinator);
+                    ElapsingThingSettings elapsing =
+                        description.ConstructParams.Length > 1
+                            ? ((string) description.ConstructParams[1]).DeSerializeJson<ElapsingThingSettings>()
+                            : null;
+
+                    result = GetBomb(id, extras, elapsing);
+                    break;
+                }
                 default:
                 {
                     throw new NotImplementedException($"Cannot spawn {description.Type}");
@@ -154,10 +167,14 @@ namespace HelloGame.Common.Model
         public Bomb GetBomb(int? id, ThingAdditionalInfo extras, ElapsingThingSettings elapsingThingSettings = null)
         {
             ThingBase shooter = extras.Creator;
+            if (shooter == null)
+            {
+                return null;
+            }
             Point spawnPoint = shooter.Physics.GetPointInDirection(shooter.Physics.Size);
             Real2DVector initialInteria = shooter.Physics.TotalForce.GetScaled(4m, false);
 
-            var bomb = new Bomb(_thingInjections, extras);
+            var bomb = new Bomb(_thingInjections, id, extras, elapsingThingSettings);
             bomb.Spawn(spawnPoint, initialInteria);
             return bomb;
         }
@@ -182,6 +199,13 @@ namespace HelloGame.Common.Model
             if (!_isServer && !id.HasValue)
             {
                 throw new ArgumentException("The identifier is expected in a non-server environment.", nameof(id));
+            }
+
+            bool isFirstSpawn = _isServer && !id.HasValue;
+            if (!isFirstSpawn && additionalInfo == null)
+            {
+                throw new ArgumentException("The additionalInfo is expected during non-first (consequent) creations.",
+                    nameof(id));
             }
 
             var ship = new PlayerShipOther(_thingInjections, _coordinator, name, clan,

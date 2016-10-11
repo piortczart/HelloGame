@@ -9,8 +9,17 @@ namespace HelloGame.Common.Model
         public TimeSpan Age => TimeSource.ElapsedSinceStart - SpawnedAt;
         public bool IsTimeToElapse { get; set; }
         public TimeSpan TimeToLive { get; set; }
-        public double AgePercentage => 100*Age.TotalMilliseconds/TimeToLive.TotalMilliseconds;
         protected readonly TimeSource TimeSource;
+
+        public double AgePercentage
+        {
+            get
+            {
+                double result = 100*Age.TotalMilliseconds/TimeToLive.TotalMilliseconds;
+                return result < 0 ? 0 : result;
+            }
+        }
+
 
         public ElapsingThingSettings ElapsingSettings
             => new ElapsingThingSettings {SpawnedAt = SpawnedAt, TimeToLive = TimeToLive};
