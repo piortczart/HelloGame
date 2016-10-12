@@ -53,11 +53,11 @@
   <ItemGroup>
     <Compile Include="Extensions\ExtensionsArray.cs" />
     <Compile Include="Extensions\ExtensionsControl.cs" />
+    <Compile Include="Extensions\ExtensionsGraphics.cs" />
     <Compile Include="Extensions\ExtensionsType.cs" />
     <Compile Include="Model\ElapsingThingSettings.cs" />
-    <Compile Include="Model\GameEvents\GameEventBusSameThread.cs" />
-    <Compile Include="Model\GameEvents\GameEventObserver.cs" />
     <Compile Include="Model\GameObjects\Ships\ClanEnum.cs" />
+    <Compile Include="Model\ParseThingResult.cs" />
     <Compile Include="Model\ParseThingSource.cs" />
     <Compile Include="Model\SpawnOption.cs" />
     <Compile Include="Model\ThingAdditionalInfo.cs" />

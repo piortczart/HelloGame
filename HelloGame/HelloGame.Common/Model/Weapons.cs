@@ -2,7 +2,7 @@ namespace HelloGame.Common.Model
 {
     public class Weapons
     {
-        public static Weapons BasicWeapons = new Weapons
+        public static readonly Weapons BasicWeapons = new Weapons
         {
             Main = new Weapon
             {

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using HelloGame.Common.Extensions;
 using HelloGame.Common.MathStuff;
+using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Model.GameObjects
@@ -9,7 +11,7 @@ namespace HelloGame.Common.Model.GameObjects
     public class BigMass : ThingBase
     {
         public Color Color { get; private set; }
-        public int DeathsCaused { get; set; }
+        private int DeathsCaused { get; set; }
 
         public override ThingAdditionalInfo ThingAdditionalInfo
         {
@@ -38,7 +40,7 @@ namespace HelloGame.Common.Model.GameObjects
 
         protected override void CollidesWithInternal(ThingBase other)
         {
-            if (!other.IsDestroyed)
+            if (other is ShipBase && !other.IsDestroyed)
             {
                 DeathsCaused++;
                 Color = Color.FromArgb(Math.Min(Color.R + 10, 255), Color.G, Color.B);
@@ -51,8 +53,10 @@ namespace HelloGame.Common.Model.GameObjects
                 new Rectangle((int) (Physics.Position.X - Physics.Size/2), (int) (Physics.Position.Y - Physics.Size/2),
                     (int) Physics.Size, (int) Physics.Size));
 
-            g.DrawString(DeathsCaused.ToString(), Font, new SolidBrush(Color.FromArgb(Color.ToArgb() ^ 0xffffff)),
-                new PointF((int) Physics.Position.X, (int) Physics.Position.Y));
+            // Show how many deaths were caused by this planet.
+            string text = "☠ " + DeathsCaused;
+            g.DrawStringCentered(text, Font, new SolidBrush(Color.FromArgb(Color.ToArgb() ^ 0xffffff)),
+                new Point((int) Physics.Position.X, (int) Physics.Position.Y));
         }
 
         protected override void UpdateModelInternal(TimeSpan timeSinceLastUpdate, IEnumerable<ThingBase> otherThings)

@@ -48,6 +48,11 @@ namespace HelloGame.Common.Settings
                     {WeaponType.Lazer, TimeSpan.FromMilliseconds(150)},
                     {WeaponType.Bomb, TimeSpan.FromMilliseconds(2000)}
                 },
+                InitialWeapons = new Weapons
+                {
+                    Main = new Weapon {WeaponType = WeaponType.Lazer, WeaponLevel = 1},
+                    Secondary = new Weapon {WeaponType = WeaponType.Bomb, WeaponLevel = 2}
+                },
                 MaxEnginePower = 4,
                 MaxInteria = 5,
                 PointsForKill = 4,

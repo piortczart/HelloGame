@@ -14,7 +14,10 @@ namespace HelloGame.Common.Settings
         public Size GameSize { get; set; } = new Size(600, 600);
         public int PlanetsCount { get; set; } = 2;
         public int AiShipCount { get; set; } = 1;
-        public bool ShowThingsList { get; set; }
+        public bool ShowShipList { get; set; } = true;
+        public bool Invulnerability { get; set; }
+
+        public static readonly GeneralSettings CurrentSettings = Custom;
 
         public static GeneralSettings Gameplay => new GeneralSettings
         {
@@ -24,7 +27,8 @@ namespace HelloGame.Common.Settings
             ShowPlayerPhysicsDetails = false,
             GameSize = new Size(2000, 2000),
             PlanetsCount = 15,
-            AiShipCount = 2
+            AiShipCount = 2,
+            Invulnerability = false
         };
 
         public static GeneralSettings TestingAll => new GeneralSettings
@@ -33,7 +37,7 @@ namespace HelloGame.Common.Settings
             IsAiHostile = false,
             SpawnAi = false,
             ShowPlayerPhysicsDetails = true,
-            ShowThingsList = true
+            ShowShipList = true
         };
 
         public static GeneralSettings Custom => new GeneralSettings
@@ -44,7 +48,8 @@ namespace HelloGame.Common.Settings
             SpawnAi = false,
             ShowPlayerPhysicsDetails = false,
             GameSize = new Size(600, 600),
-            ShowThingsList = true
+            ShowShipList = true,
+            Invulnerability = false
         };
     }
 }

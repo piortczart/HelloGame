@@ -141,7 +141,7 @@ namespace HelloGame.Common.Model
         }
 
         public LazerBeamPew GetLazerBeam(int? id, ThingAdditionalInfo extras,
-            ElapsingThingSettings elapsingThingSettings = null)
+            ElapsingThingSettings elapsingThingSettings = null, Weapon weapon = null)
         {
             if (!_isServer && !id.HasValue)
             {
@@ -167,7 +167,8 @@ namespace HelloGame.Common.Model
             return lazer;
         }
 
-        public Bomb GetBomb(int? id, ThingAdditionalInfo extras, ElapsingThingSettings elapsingThingSettings = null)
+        public Bomb GetBomb(int? id, ThingAdditionalInfo extras, ElapsingThingSettings elapsingThingSettings = null,
+            Weapon weapon = null)
         {
             ThingBase shooter = extras.Creator;
             if (shooter == null)

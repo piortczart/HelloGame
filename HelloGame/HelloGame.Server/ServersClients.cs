@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
-using HelloGame.Common.Model.GameEvents;
+using HelloGame.Common.Model;
 using HelloGame.Common.Model.GameObjects.Ships;
 
 namespace HelloGame.Server
@@ -14,10 +14,10 @@ namespace HelloGame.Server
 
         private readonly object _synchro = new object();
 
-        public ServersClients(GameEventBusSameThread gameEvents)
+        public ServersClients(GameManager gameManager)
         {
             // This class wants to know when player's ship gets replaced. It will happen in the GameManager.
-            gameEvents.OnPlayerSpawned += ReplacePlayersShip;
+            gameManager.OnPlayerSpawned += ReplacePlayersShip;
         }
 
         public Dictionary<NetworkStream, PlayerShipOther> GetAllReadOnly()

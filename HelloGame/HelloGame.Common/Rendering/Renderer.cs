@@ -55,14 +55,13 @@ namespace HelloGame.Common.Rendering
                         item.RenderBase(frameGraphics);
                     }
 
-                    _overlay.Render(graphics);
-
                     // Draw the rendered frame.
                     int xA = (int) screenCenter.X - (windowSize.Width/2);
                     int yA = (int) screenCenter.Y - (windowSize.Height/2);
                     graphics.DrawImage(frame, 0, 0, new RectangleF(xA, yA, windowSize.Width, windowSize.Height),
                         GraphicsUnit.Pixel);
 
+                    _overlay.Render(graphics);
                     _overlay.UpdatePositions(screenCenter, windowSize, new Point(xA, yA));
                 }
             }

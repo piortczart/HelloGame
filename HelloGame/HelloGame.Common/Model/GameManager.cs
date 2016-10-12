@@ -6,7 +6,6 @@ using System.Linq;
 using HelloGame.Common.Extensions;
 using HelloGame.Common.Logging;
 using HelloGame.Common.MathStuff;
-using HelloGame.Common.Model.GameEvents;
 using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Physicsish;
@@ -23,25 +22,32 @@ namespace HelloGame.Common.Model
         public ModelManager ModelManager { get; }
         private readonly ConcurrentQueue<ThingBase> _thingsToSpawn = new ConcurrentQueue<ThingBase>();
         private readonly GeneralSettings _settings;
-        private readonly GameEventBusSameThread _eventBus;
         private readonly TimeSource _timeSource;
+        private readonly Overlay _overlay;
 
         /// <summary>
         /// Others mightbe interested in knowing when the client wants to spawn somehting (like the network classes which will immediatelly send info to the server).
         /// </summary>
         public event Action<ThingBase> OnAskedServerToSpawn;
 
+        public event Action<PlayerShipOther, PlayerShipOther> OnPlayerSpawned;
+
+        public void ThePlayerSpawned(PlayerShipOther oldShip, PlayerShipOther newShip)
+        {
+            OnPlayerSpawned?.Invoke(oldShip, newShip);
+        }
+
         public GameManager(GeneralSettings settings, ModelManager modelManager, GameThingCoordinator gameCoordinator,
-            ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory, GameEventBusSameThread eventBus,
-            TimeSource timeSource)
+            ThingFactory thingFactory, bool isServer, ILoggerFactory loggerFactory, TimeSource timeSource,
+            Overlay overlay)
         {
             ModelManager = modelManager;
             modelManager.AddUpdateModelAction(ModelUpdated);
             gameCoordinator.OnClientShootRequest += ShootAttempt;
             _thingFactory = thingFactory;
             _isServer = isServer;
-            _eventBus = eventBus;
             _timeSource = timeSource;
+            _overlay = overlay;
             _logger = loggerFactory.CreateLogger(GetType());
             _settings = settings;
         }
@@ -69,11 +75,29 @@ namespace HelloGame.Common.Model
             return result;
         }
 
+        private ShipBase _lastMe;
+
         /// <summary>
         /// Will be called by the model each time it's updated.
         /// </summary>
         private void ModelUpdated()
         {
+            var newMe = GetMe() as ShipBase;
+            if (_lastMe != null)
+            {
+                if (newMe == null)
+                {
+                    var respawnTime = Math.Round(_lastMe.ShipSettings.RespawnTime.TotalSeconds, 1);
+                    _overlay.AddDisplayText($"Trololo you died. Nub. ({respawnTime}s)", _lastMe.ShipSettings.RespawnTime,
+                        true);
+                }
+            }
+            _lastMe = newMe;
+        }
+
+        public void DisplayText(string text, TimeSpan time)
+        {
+            _overlay.AddDisplayText(text, time);
         }
 
         private Point FindEmptyArea(Rectangle retangle, int minDistance)
@@ -107,9 +131,8 @@ namespace HelloGame.Common.Model
 
             PlayerShipOther newShip = AddPlayerRandom(name, clan, deadShip.Score);
             newShip.Score = deadShip.Score;
-            _eventBus.ThePlayerSpawned(deadShip, newShip);
+            ThePlayerSpawned(deadShip, newShip);
         }
-
 
         public PlayerShipOther AddPlayerRandom(string name, ClanEnum clan, int score = 0)
         {
@@ -134,21 +157,22 @@ namespace HelloGame.Common.Model
                     throw new Exception("PlayerShipMovable can't exist on the server.");
                 }
 
-                ThingBase projectile;
+                var projectiles = new List<ThingBase>();
                 // Player is shooting. On the client side. This only asks server to spawn a lazer.
                 switch (weapon.WeaponType)
                 {
                     case WeaponType.Lazer:
-                        projectile = _thingFactory.GetLazerBeam(-1, ThingAdditionalInfo.GetNew(source));
+                        projectiles.Add(_thingFactory.GetLazerBeam(-1, ThingAdditionalInfo.GetNew(source),
+                            weapon: weapon));
                         break;
                     case WeaponType.Bomb:
-                        projectile = _thingFactory.GetBomb(-1, ThingAdditionalInfo.GetNew(source));
+                        projectiles.Add(_thingFactory.GetBomb(-1, ThingAdditionalInfo.GetNew(source), weapon: weapon));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
                 // THe proejctile is null when server did not find the shooter as an object
-                if (projectile != null)
+                foreach (ThingBase projectile in projectiles)
                 {
                     AskServerToSpawn(projectile);
                 }
@@ -202,6 +226,8 @@ namespace HelloGame.Common.Model
         {
             SpawnStart();
             ModelManager.StartModelUpdates();
+            DisplayText("W,A,S,D - move", TimeSpan.FromSeconds(90));
+            DisplayText("Space, J - shoot", TimeSpan.FromSeconds(90));
         }
 
         private void SpawnStart()
@@ -298,12 +324,5 @@ namespace HelloGame.Common.Model
 
             AddAiShipRandom(ai.Name);
         }
-    }
-
-    public enum ParseThingResult
-    {
-        Unknown,
-        UpdateSuccess,
-        UpdateFailedThingMissing
     }
 }

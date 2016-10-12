@@ -1,6 +1,5 @@
 ﻿using HelloGame.Common.Logging;
 using HelloGame.Common.Model;
-using HelloGame.Common.Model.GameEvents;
 using HelloGame.Common.Settings;
 using HelloGame.Common.TimeStuffs;
 using Ninject.Modules;
@@ -26,7 +25,6 @@ namespace HelloGame.Common
             Bind<ThingFactory>().To<ThingFactory>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
             Bind<GameManager>().To<GameManager>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
             Bind<ModelManager>().To<ModelManager>().InSingletonScope().WithConstructorArgument(typeof(bool), _isServer);
-            Bind<GameEventBusSameThread>().To<GameEventBusSameThread>().InSingletonScope();
 
             Bind<ILoggerFactory>()
                 .To<LoggerFactory>()

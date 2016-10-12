@@ -85,6 +85,11 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
         protected override void CollidesWithInternal(ThingBase other)
         {
+            if (Settings.Invulnerability && !(this is AiShip))
+            {
+                return;
+            }
+
             // AIs can't hurt each other.
             if (this is AiShip && other.Creator is AiShip)
             {
