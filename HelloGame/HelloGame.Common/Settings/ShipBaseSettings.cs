@@ -33,7 +33,8 @@ namespace HelloGame.Common.Settings
                 MaxInteria = 5,
                 PointsForKill = 4,
                 Size = 10,
-                RespawnTime = TimeSpan.FromSeconds(3)
+                RespawnTime = TimeSpan.FromSeconds(3),
+                InitialShield = new Shield(0)
             };
 
         private static ShipBaseSettings BigSlow(ElapsingThingSettings elapsingThingSettings)
@@ -57,7 +58,8 @@ namespace HelloGame.Common.Settings
                 MaxInteria = 5,
                 PointsForKill = 4,
                 Size = 30,
-                RespawnTime = TimeSpan.FromSeconds(7)
+                RespawnTime = TimeSpan.FromSeconds(7),
+                InitialShield = new Shield(2)
             };
 
         private static ShipBaseSettings Balanced(ElapsingThingSettings elapsingThingSettings)
@@ -77,39 +79,49 @@ namespace HelloGame.Common.Settings
                 PointsForKill = 4,
                 Size = 15,
                 LazerSpeed = 50,
-                RespawnTime = TimeSpan.FromSeconds(5)
+                RespawnTime = TimeSpan.FromSeconds(5),
+                InitialShield = new Shield(1)
             };
 
 
-        public static ShipBaseSettings GetShipTypeSettings(ShipSettingType shipSettingType, ElapsingThingSettings ets)
+        public static ShipBaseSettings GetShipTypeSettings(ShipSettingType shipSettingType, ElapsingThingSettings ets, Type source)
         {
             if (ets == null)
             {
                 ets = new ElapsingThingSettings();
             }
+            ShipBaseSettings result;
             switch (shipSettingType)
             {
                 case ShipSettingType.BigSlow:
-                    return BigSlow(ets);
+                    result = BigSlow(ets);
+                    break;
                 case ShipSettingType.Balanced:
-                    return Balanced(ets);
+                    result = Balanced(ets);
+                    break;
                 case ShipSettingType.SmallFast:
-                    return SmallFast(ets);
+                    result = SmallFast(ets);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(shipSettingType), shipSettingType, null);
             }
+            if (source == typeof(AiShip))
+            {
+                result.Antigravity = true;
+            }
+            return result;
         }
 
-        public static ShipBaseSettings GetClanShipSetting(ClanEnum clan, ElapsingThingSettings elapsingThingSettings)
+        public static ShipBaseSettings GetClanShipSetting(ClanEnum clan, ElapsingThingSettings elapsingThingSettings, Type source)
         {
             switch (clan)
             {
                 case ClanEnum.RMS:
-                    return GetShipTypeSettings(ShipSettingType.BigSlow, elapsingThingSettings);
+                    return GetShipTypeSettings(ShipSettingType.BigSlow, elapsingThingSettings, source);
                 case ClanEnum.Integrations:
-                    return GetShipTypeSettings(ShipSettingType.SmallFast, elapsingThingSettings);
+                    return GetShipTypeSettings(ShipSettingType.SmallFast, elapsingThingSettings, source);
                 case ClanEnum.Support:
-                    return GetShipTypeSettings(ShipSettingType.Balanced, elapsingThingSettings);
+                    return GetShipTypeSettings(ShipSettingType.Balanced, elapsingThingSettings, source);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(clan), clan, null);
             }

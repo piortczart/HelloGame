@@ -17,7 +17,7 @@ namespace HelloGame.Common.Settings
         public bool ShowShipList { get; set; } = true;
         public bool Invulnerability { get; set; }
 
-        public static readonly GeneralSettings CurrentSettings = Custom;
+        public static readonly GeneralSettings CurrentSettings = Gameplay;
 
         public static GeneralSettings Gameplay => new GeneralSettings
         {
@@ -44,8 +44,8 @@ namespace HelloGame.Common.Settings
         {
             ShowTimeToLive = true,
             ShowThingIds = true,
-            IsAiHostile = true,
-            SpawnAi = false,
+            IsAiHostile = false,
+            SpawnAi = true,
             ShowPlayerPhysicsDetails = false,
             GameSize = new Size(600, 600),
             ShowShipList = true,

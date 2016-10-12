@@ -75,6 +75,7 @@
     <Compile Include="ThingDescriptionTests.cs" />
     <Compile Include="TimeCounterTests.cs" />
     <Compile Include="SerializationTests.cs" />
+    <Compile Include="ShieldTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HelloGame.Common\HelloGame.Common.csproj">

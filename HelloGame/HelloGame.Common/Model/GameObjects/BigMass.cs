@@ -40,7 +40,8 @@ namespace HelloGame.Common.Model.GameObjects
 
         protected override void CollidesWithInternal(ThingBase other)
         {
-            if (other is ShipBase && !other.IsDestroyed)
+            // Antigravity immune to big mass.
+            if (other is ShipBase && !other.IsDestroyed && !other.Settingz.Antigravity)
             {
                 DeathsCaused++;
                 Color = Color.FromArgb(Math.Min(Color.R + 10, 255), Color.G, Color.B);

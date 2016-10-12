@@ -22,7 +22,10 @@ namespace HelloGame.Common.Settings
         public decimal LazerSpeed { get; set; } = 30;
         public int PointsForKilling { get; set; } = 1;
         public Weapons InitialWeapons { get; set; } = Weapons.BasicWeapons;
+        public Shield InitialShield { get; set; }
         public TimeSpan DefaultWeaponFrequency { get; set; } = TimeSpan.FromSeconds(1);
+        public decimal DamageOutput { get; set; }
+        public bool Antigravity { get; set; }
 
         public Dictionary<WeaponType, TimeSpan> WeaponFrequencies { get; set; }
             = new Dictionary<WeaponType, TimeSpan>();
@@ -41,7 +44,8 @@ namespace HelloGame.Common.Settings
             return new ThingSettings(elapsingThingSettings?.SpawnedAt)
             {
                 Aerodynamism = 0,
-                TimeToLive = elapsingThingSettings?.TimeToLive ?? TimeSpan.FromSeconds(3)
+                TimeToLive = elapsingThingSettings?.TimeToLive ?? TimeSpan.FromSeconds(3),
+                DamageOutput = 1
             };
         }
 
@@ -51,7 +55,8 @@ namespace HelloGame.Common.Settings
             {
                 Aerodynamism = int.MaxValue,
                 TimeToLive = elapsingThingSettings?.TimeToLive ?? LiveForever,
-                CanBeMoved = false
+                CanBeMoved = false,
+                DamageOutput = -1
             };
         }
 
@@ -62,7 +67,8 @@ namespace HelloGame.Common.Settings
                 Aerodynamism = 0.1m,
                 TimeToLive = elapsingThingSettings?.TimeToLive ?? TimeSpan.FromSeconds(3),
                 Mass = 5,
-                Size = 10
+                Size = 10,
+                DamageOutput = -1
             };
         }
 

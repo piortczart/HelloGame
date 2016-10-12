@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
-using System.Windows.Forms;
 using HelloGame.Common.MathStuff;
+using HelloGame.Common.Extensions;
 using HelloGame.Common.Settings;
 
 namespace HelloGame.Common.Model.GameObjects.Ships
@@ -69,15 +69,12 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 g.DrawLine(shipPen, Physics.PositionPoint, p2);
 
                 // This is the circle around the ship.
-                g.DrawArc(shipPen,
-                    new Rectangle((int) (Physics.Position.X - Physics.Size/2),
-                        (int) (Physics.Position.Y - Physics.Size/2), (int) Physics.Size, (int) Physics.Size), 0, 360);
-
+                g.DrawCircle(Physics.PositionPoint, (int)Physics.Size/2, shipPen.Color);
+        
+                // Show the name & the score.
                 string text = $"{Name} ({Score})";
-                Size nameSize = TextRenderer.MeasureText(text, Font);
-                var nameLocation = new PointF((int) Physics.Position.X - nameSize.Width/2,
-                    (int) Physics.Position.Y - nameSize.Height*2);
-                g.DrawString(text, Font, Brushes.Black, nameLocation);
+                var textCenter = new Point(Physics.PositionPoint.X, Physics.PositionPoint.Y - (int)(Physics.Size * 1.3m));
+                g.DrawStringCentered(text, Font, Brushes.Black, textCenter);
             }
 
             PaintStuffInternal(g);
@@ -102,6 +99,8 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 return;
             }
 
+            decimal damageDealt = -1;
+
             // Collision with a bomb?
             Bomb bomb = other as Bomb;
             if (bomb != null)
@@ -110,20 +109,38 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 {
                     return;
                 }
+                damageDealt = bomb.Settingz.DamageOutput;
             }
-
-            // Collision with a Lazer?
-            LazerBeamPew pew = other as LazerBeamPew;
-            if (pew != null)
+            else
             {
-                if (pew.Creator == this)
+                // Collision with a Lazer?
+                LazerBeamPew pew = other as LazerBeamPew;
+                if (pew != null)
                 {
-                    return;
+                    if (pew.Creator == this)
+                    {
+                        return;
+                    }
+                    damageDealt = pew.Settingz.DamageOutput;
+                }
+                else
+                {
+                    var mass = other as BigMass;
+                    if (mass != null)
+                    {
+                        if (Settingz.Antigravity)
+                        {
+                            return;
+                        }
+                    }
                 }
             }
 
-            // Collides with anything else - gets destroyed.
-            Destroy(ShipSettings.DespawnTime);
+            if (DealDamage(damageDealt, ShipSettings.DespawnTime, other))
+            {
+                // We died.
+                other.Shield?.Add();
+            }
         }
     }
 }

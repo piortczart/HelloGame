@@ -12,7 +12,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             ClanEnum clan, int? id = null, ThingAdditionalInfo additionalInfo = null,
             ElapsingThingSettings elapsingThingSettings = null)
             : base(
-                injections, ShipBaseSettings.GetClanShipSetting(clan, elapsingThingSettings), name, id,
+                injections, ShipBaseSettings.GetClanShipSetting(clan, elapsingThingSettings, typeof(PlayerShip)), name, id,
                 additionalInfo)
         {
             Clan = clan;

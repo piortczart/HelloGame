@@ -15,9 +15,10 @@ namespace HelloGame.Common.Model.GameObjects
 
         protected override void CollidesWithInternal(ThingBase other)
         {
+            // Lazer gets destroyed on contact with anything (but not the shooter).
             if (other != Creator)
             {
-                Destroy(TimeSpan.Zero);
+                Destroy(TimeSpan.Zero, other);
             }
         }
 

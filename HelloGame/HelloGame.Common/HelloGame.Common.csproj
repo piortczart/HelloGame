@@ -62,6 +62,7 @@
     <Compile Include="Model\SpawnOption.cs" />
     <Compile Include="Model\ThingAdditionalInfo.cs" />
     <Compile Include="Model\ThingBaseInjections.cs" />
+    <Compile Include="Model\ThingModule.cs" />
     <Compile Include="Model\ThingsToRespawnThreadSafe.cs" />
     <Compile Include="Model\ThingToRespawn.cs" />
     <Compile Include="Model\Weapon.cs" />

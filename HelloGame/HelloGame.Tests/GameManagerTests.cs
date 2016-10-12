@@ -46,7 +46,6 @@ namespace HelloGame.Tests
             Bomb bomb = thingFactory.GetBomb(null, ThingAdditionalInfo.GetNew(playerShip));
             gameManager.ModelManager.AddThing(bomb);
 
-
             timeSource.SkipTime(timeToLive.Add(TimeSpan.FromMilliseconds(10)));
             gameManager.ModelManager.SingleModelUpdate();
             Assert.IsTrue(bomb.IsDestroyed);

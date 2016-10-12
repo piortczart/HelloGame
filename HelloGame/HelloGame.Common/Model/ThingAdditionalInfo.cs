@@ -1,6 +1,5 @@
 using System;
 using HelloGame.Common.Extensions;
-using Newtonsoft.Json;
 
 namespace HelloGame.Common.Model
 {
@@ -9,14 +8,16 @@ namespace HelloGame.Common.Model
         public bool IsDestroyed { get; set; }
         public int? CreatorId { get; set; }
         public int? Score { get; set; }
+        public decimal? DamageOutput { get; set; }
 
         /// <summary>
         /// Created to track BigMass collisions.
         /// TODO: track this for a player too, independently from the score?
         /// </summary>
         public int? DeathsCaused { get; set; }
-
         public string WeaponsSerialized { get; set; }
+        public string ShieldSerialized { get; set; }
+        public ThingBase Creator { get; private set; }
 
         public Weapons GetWeapons()
         {
@@ -27,11 +28,23 @@ namespace HelloGame.Common.Model
             return WeaponsSerialized.DeSerializeJson<Weapons>();
         }
 
-        public ThingBase Creator { get; private set; }
-
-        public static ThingAdditionalInfo GetNew(ThingBase creator, Weapons weapons = null)
+        public Shield GetShield()
         {
-            var result = new ThingAdditionalInfo {Creator = creator, WeaponsSerialized = weapons?.SerializeJson()};
+            if (String.IsNullOrEmpty(ShieldSerialized))
+            {
+                return null;
+            }
+            return ShieldSerialized.DeSerializeJson<Shield>();
+        }
+
+        public static ThingAdditionalInfo GetNew(ThingBase creator, Weapons weapons = null, Shield shield = null, decimal? damageOutput = null)
+        {
+            var result = new ThingAdditionalInfo {
+                Creator = creator,
+                WeaponsSerialized = weapons?.SerializeJson(),
+                ShieldSerialized = shield?.SerializeJson(),
+                DamageOutput = damageOutput
+            };
             // 0 score, not destoryed, possibly a creator.
             if (creator != null)
             {

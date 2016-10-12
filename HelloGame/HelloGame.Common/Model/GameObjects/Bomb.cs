@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using HelloGame.Common.MathStuff;
 using HelloGame.Common.Settings;
+using HelloGame.Common.Extensions;
 
 namespace HelloGame.Common.Model.GameObjects
 {
@@ -21,7 +22,7 @@ namespace HelloGame.Common.Model.GameObjects
         {
             if (!IsDestroyed)
             {
-                g.DrawString("Alive!", Font, Brushes.Purple, Physics.PositionPoint.X, Physics.PositionPoint.Y + 10);
+                g.DrawString("Boom boom.", Font, Brushes.Purple, Physics.PositionPoint.X, Physics.PositionPoint.Y + 10);
 
                 int r = (int) (AgePercentage*2.5);
 
@@ -30,9 +31,7 @@ namespace HelloGame.Common.Model.GameObjects
 
                 if (!IsArmed)
                 {
-                    g.DrawArc(pen,
-                        new Rectangle((int) Physics.Position.X - width/2, (int) Physics.Position.Y - width/2, width,
-                            width), 0, 360);
+                    g.DrawCircle(Physics.PositionPoint, width/2, pen.Color);
                 }
                 else
                 {
@@ -43,8 +42,6 @@ namespace HelloGame.Common.Model.GameObjects
             }
             else
             {
-                g.DrawString("Destroyed", Font, Brushes.Purple, Physics.PositionPoint.X, Physics.PositionPoint.Y + 10);
-
                 int width = 50;
                 g.FillEllipse(Brushes.Yellow,
                     new Rectangle((int) Physics.Position.X - width/2, (int) Physics.Position.Y - width/2, width, width));
@@ -75,7 +72,7 @@ namespace HelloGame.Common.Model.GameObjects
 
         private void GoBoom()
         {
-            Destroy(TimeSpan.FromSeconds(2));
+            Destroy(TimeSpan.FromSeconds(2), null);
         }
     }
 }
