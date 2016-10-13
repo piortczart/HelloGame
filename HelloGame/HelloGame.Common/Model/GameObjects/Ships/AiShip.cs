@@ -55,7 +55,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
                     Physics.Angle = _playerPointer.Angle;
 
-                    if (Settings.IsAiHostile)
+                   if (Settings.IsAiHostile)
                     {
                         PewPew(0);
                     }

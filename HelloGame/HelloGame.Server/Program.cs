@@ -13,7 +13,7 @@ namespace HelloGame.Server
     {
         private static void Main()
         {
-            bool showForm = true;
+            bool showForm = false;
 
             IResolutionRoot ninject =
                 new StandardKernel(

@@ -194,7 +194,7 @@ namespace HelloGame.Common.Model
 
                 // No mass? No gravity. Think lazer.
                 // AiShips have antigravity.
-                if (Physics.Mass == 0 || Settingz.Antigravity)
+                if (Physics.Mass == 0)
                 {
                     // No mass? 
                     Physics.PositionDelta(totalForce.X * timeBoundary, totalForce.Y * timeBoundary);
@@ -202,8 +202,11 @@ namespace HelloGame.Common.Model
                 else
                 {
                     // Calculate gravity.
-                    Physics.Gravity = CalculateGravity(otherThings);
-                    totalForce.Add(Physics.Gravity);
+                    if (!Settingz.Antigravity)
+                    {
+                        Physics.Gravity = CalculateGravity(otherThings);
+                        totalForce.Add(Physics.Gravity);
+                    }
 
                     // Move the object.
                     decimal deltaX = totalForce.X / Physics.Mass * timeBoundary;
