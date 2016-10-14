@@ -30,28 +30,40 @@ namespace HelloGame.Tests
         {
             // The time is paused now.
             IResolutionRoot ninject =
-                new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true, true));
+                new StandardKernel(
+                    new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, HelloGameCommonBindingsType.Server, true));
 
             var gameManager = ninject.Get<GameManager>();
             var timeSource = ninject.Get<TimeSource>();
             var thingFactory = ninject.Get<ThingFactory>();
 
-            // Spawn a player.
+            // Create a player and add it to the scene.
             PlayerShipOther playerShip = thingFactory.GetPlayerShip(
                 new Point(10, 15), "PLAYUR", ClanEnum.Integrations);
             gameManager.ModelManager.AddThing(playerShip);
 
-            TimeSpan timeToLive = ThingSettings.GetBombSettings(null).TimeToLive;
-
+            // Create a bomb and add it to the scene.
             Bomb bomb = thingFactory.GetBomb(null, ThingAdditionalInfo.GetNew(playerShip));
             gameManager.ModelManager.AddThing(bomb);
 
-            timeSource.SkipTime(timeToLive.Add(TimeSpan.FromMilliseconds(10)));
+            // This is needed for the model to start counting time properly.
+            gameManager.ModelManager.SingleModelUpdate();
+
+            // Get the default bomb time to live.
+            TimeSpan timeToLive = ThingSettings.GetBombSettings(null).TimeToLive;
+
+            // Wait for enought ime for bomb to explode, but just before it would be expired.
+            timeSource.SkipTime(timeToLive.Add(TimeSpan.FromMilliseconds(-10)));
             gameManager.ModelManager.SingleModelUpdate();
             Assert.IsTrue(bomb.IsDestroyed);
             Assert.IsFalse(bomb.IsTimeToElapse);
+            Assert.IsNotNull(gameManager.ModelManager.ThingsThreadSafe.GetById(bomb.Id), "The bomb should still be in the things list.");
 
-            Assert.IsNotNull(gameManager.ModelManager.ThingsThreadSafe.GetById(bomb.Id));
+            // Now wait enough so the bomb expires.
+            timeSource.SkipTime(TimeSpan.FromMilliseconds(20));
+            gameManager.ModelManager.SingleModelUpdate();
+            Assert.IsTrue(bomb.IsDestroyed);
+            Assert.IsTrue(bomb.IsTimeToElapse);
         }
 
 
@@ -69,10 +81,10 @@ namespace HelloGame.Tests
                 GravityFactor = 0.01f,
             };
             IResolutionRoot serverNinject =
-                new StandardKernel(new HelloGameCommonNinjectBindings(settings, true, true));
+                new StandardKernel(new HelloGameCommonNinjectBindings(settings, HelloGameCommonBindingsType.Server, true));
 
             IKernel ninject = new StandardKernel(
-                new HelloGameCommonNinjectBindings(settings, false, true),
+                new HelloGameCommonNinjectBindings(settings, HelloGameCommonBindingsType.Client, true),
                 new HelloGameClientNinjectBindings(serverNinject));
 
             var tran = Substitute.For<IMessageTransciever>();
@@ -185,7 +197,7 @@ namespace HelloGame.Tests
                     SpawnAi = false,
                     CollisionTolerance = 0,
                     GravityFactor = 0.01f,
-                }, true, true));
+                }, HelloGameCommonBindingsType.Server, true));
 
             var gameManager = ninject.Get<GameManager>();
             var thingFactory = ninject.Get<ThingFactory>();
@@ -243,7 +255,7 @@ namespace HelloGame.Tests
         {
             // The time is paused now.
             IResolutionRoot ninject =
-                new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true, true));
+                new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, HelloGameCommonBindingsType.Server, true));
 
             var gameManager = ninject.Get<GameManager>();
             var timeSource = ninject.Get<TimeSource>();
@@ -279,7 +291,7 @@ namespace HelloGame.Tests
                     SpawnAi = false,
                     IsAiHostile = false,
                     CollisionTolerance = 0
-                }, true, true));
+                }, HelloGameCommonBindingsType.Server, true));
             var gameManager = ninject.Get<GameManager>();
             var thingFactory = ninject.Get<ThingFactory>();
             var timeSource = ninject.Get<TimeSource>();
