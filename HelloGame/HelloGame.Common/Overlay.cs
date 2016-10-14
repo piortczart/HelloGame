@@ -162,10 +162,10 @@ namespace HelloGame.Common
 
                 decimal x = shipPosition.X - _screenCenterGeneral.X;
                 decimal y = shipPosition.Y - _screenCenterGeneral.Y;
-                var vectorA = new Real2DVector {X = x, Y = y};
+                var vectorA = new Vector2D {X = x, Y = y};
                 vectorA.Set(vectorA.Angle, 40);
 
-                var vectorB = new Real2DVector {X = x, Y = y};
+                var vectorB = new Vector2D {X = x, Y = y};
                 vectorB.Set(vectorB.Angle, 50);
 
                 graphics.DrawLine(new Pen(Color.Black),

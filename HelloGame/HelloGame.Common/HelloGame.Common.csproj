@@ -90,7 +90,7 @@
     <Compile Include="Model\CollisionDetector.cs" />
     <Compile Include="Model\ElapsingThing.cs" />
     <Compile Include="MathStuff\MathX.cs" />
-    <Compile Include="MathStuff\Real2DVector.cs" />
+    <Compile Include="MathStuff\Vector2D.cs" />
     <Compile Include="MathStuff\Shape.cs" />
     <Compile Include="Model\GameManager.cs" />
     <Compile Include="Model\GameObjects\BigMass.cs" />

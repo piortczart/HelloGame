@@ -10,20 +10,20 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Real2DVector_GetScaled_X_Positive_Y_Zero()
         {
-            var vector = new Real2DVector
+            var vector = new Vector2D
             {
                 X = -3,
                 Y = 0
             };
 
-            Real2DVector scaled = vector.GetScaled(2);
+            Vector2D scaled = vector.GetScaled(2);
 
         }
 
         [TestMethod]
         public void Real2DVector_GetOpposite_Negative()
         {
-            var vector = new Real2DVector
+            var vector = new Vector2D
             {
                 X = -3,
                 Y = -6
@@ -38,7 +38,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Real2DVector_GetOpposite_Positive()
         {
-            var vector = new Real2DVector
+            var vector = new Vector2D
             {
                 X = 3,
                 Y = 6
@@ -53,7 +53,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Real2DVector_Change_Simple()
         {
-            Real2DVector vector = new Real2DVector();
+            Vector2D vector = new Vector2D();
             vector.Change(0, 3); // Go "right"
 
             Assert.AreEqual(3, vector.X);
@@ -63,7 +63,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Real2DVector_Change_Simple2()
         {
-            Real2DVector vector = new Real2DVector();
+            Vector2D vector = new Vector2D();
             vector.Change((decimal)Math.PI, 3); // Go "left"
 
             Assert.AreEqual(-3, vector.X);
@@ -74,7 +74,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Real2DVector_Change_Simple3()
         {
-            Real2DVector vector = new Real2DVector();
+            Vector2D vector = new Vector2D();
             vector.Change((decimal)Math.PI/2m, 3); // Go "up"
 
             TestX.AssertIsAlmostZero(vector.X);
@@ -85,13 +85,13 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Real2DVector_Add_Simple()
         {
-            Real2DVector sample = new Real2DVector
+            Vector2D sample = new Vector2D
             {
                 X = -5m,
                 Y = 10m
             };
 
-            Real2DVector vector = new Real2DVector();
+            Vector2D vector = new Vector2D();
             vector.Add(sample);
             vector.Add(sample);
 
@@ -102,7 +102,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Real2DVector_GetScaled_Negative()
         {
-            Real2DVector sample = new Real2DVector
+            Vector2D sample = new Vector2D
             {
                 X = -0.7m,
                 Y = -0.8m

@@ -9,6 +9,10 @@ using Ninject.Syntax;
 
 namespace HelloGame.Server
 {
+    /// <summary>
+    /// Pitfalls:
+    /// - Serialization (especially when having intricate constructors, set-only fields, etc.)
+    /// </summary>
     internal class Program
     {
         private static void Main()

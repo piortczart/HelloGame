@@ -17,23 +17,23 @@ namespace HelloGame.Common.Physicsish
         /// <summary>
         /// Anything propeling the object.
         /// </summary>
-        public Real2DVector SelfPropelling { get; set; }
+        public Vector2D SelfPropelling { get; set; }
 
         /// <summary>
         /// Current interia of the object.
         /// </summary>
-        public Real2DVector Interia { get; set; }
+        public Vector2D Interia { get; set; }
 
         /// <summary>
         /// Current drag.
         /// </summary>
-        public Real2DVector Drag { get; set; }
+        public Vector2D Drag { get; set; }
 
-        public Real2DVector Gravity { get; set; }
+        public Vector2D Gravity { get; set; }
 
         public decimal RadPerSecond { get; set; }
 
-        public Real2DVector TotalForce => Real2DVector.Combine(SelfPropelling, Interia, Drag);
+        public Vector2D TotalForce => Vector2D.Combine(SelfPropelling, Interia, Drag);
 
         public decimal Angle { get; set; }
         public Position Position { get; set; }
@@ -44,8 +44,8 @@ namespace HelloGame.Common.Physicsish
 
         public AlmostPhysics(decimal aerodynamism, decimal size = 1)
         {
-            Interia = new Real2DVector();
-            SelfPropelling = new Real2DVector();
+            Interia = new Vector2D();
+            SelfPropelling = new Vector2D();
             Aerodynamism = aerodynamism;
             Size = size;
         }
@@ -61,14 +61,14 @@ namespace HelloGame.Common.Physicsish
             Position.Y += deltaY;
         }
 
-        public Real2DVector GetDirection(decimal bigness)
+        public Vector2D GetDirection(decimal bigness)
         {
-            return new Real2DVector(Angle, bigness);
+            return new Vector2D(Angle, bigness);
         }
 
         public Point GetPointInDirection(decimal bigness, bool inverted = false)
         {
-            Real2DVector direction = GetDirection(bigness);
+            Vector2D direction = GetDirection(bigness);
             if (inverted)
             {
                 direction = direction.GetOpposite();
@@ -124,11 +124,11 @@ namespace HelloGame.Common.Physicsish
         public void Reset(Position position)
         {
             Angle = 0;
-            Drag = Real2DVector.GetZero();
-            Gravity = Real2DVector.GetZero();
-            Interia = Real2DVector.GetZero();
+            Drag = Vector2D.GetZero();
+            Gravity = Vector2D.GetZero();
+            Interia = Vector2D.GetZero();
             Position = position;
-            SelfPropelling = Real2DVector.GetZero();
+            SelfPropelling = Vector2D.GetZero();
         }
     }
 }

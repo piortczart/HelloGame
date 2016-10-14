@@ -76,7 +76,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             }
         }
 
-        private static void UpdateEngineAcc(Real2DVector engineForce, decimal shipAngle, KeysInfo keys)
+        private static void UpdateEngineAcc(Vector2D engineForce, decimal shipAngle, KeysInfo keys)
         {
             // Nothing is pressed.
             if ((keys.IsW && keys.IsS) || (!keys.IsW && !keys.IsS))

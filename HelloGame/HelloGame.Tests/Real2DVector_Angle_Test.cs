@@ -9,7 +9,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Real2DVector_Angle_NegZero()
         {
-            Real2DVector sample = new Real2DVector
+            Vector2D sample = new Vector2D
             {
                 X = -0.8m,
                 Y = 0
@@ -24,7 +24,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Real2DVector_Angle_PosPos()
         {
-            Real2DVector sample = new Real2DVector
+            Vector2D sample = new Vector2D
             {
                 X = 0.8m,
                 Y = 0.3m
@@ -38,7 +38,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Real2DVector_Angle_NegNeg()
         {
-            Real2DVector sample = new Real2DVector
+            Vector2D sample = new Vector2D
             {
                 X = -0.8m,
                 Y = -0.3m
@@ -53,7 +53,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Real2DVector_Angle_PosNeg()
         {
-            Real2DVector sample = new Real2DVector
+            Vector2D sample = new Vector2D
             {
                 X = 0.8m,
                 Y = -0.3m
@@ -67,7 +67,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Real2DVector_Angle_NegPos()
         {
-            Real2DVector sample = new Real2DVector
+            Vector2D sample = new Vector2D
             {
                 X = -0.8m,
                 Y = 0.3m

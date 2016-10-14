@@ -4,13 +4,22 @@ using System.Drawing;
 namespace HelloGame.Common.MathStuff
 {
     /// <summary>
+    /// An ugly and buggy implementation of 2D vector methematics.
+    /// 
+    /// I imagined this vector to be in XY coordinates, the angle is the angle between the vector and the X axis (starging from 0 up) measured in radians.
+    /// This means that:
+    ///     - a vector pointing plus infinity (right) on the X axis has an angle of 0
+    ///     - a vector pointing minus infinity (left) on the X axis has an algne of PI
+    ///     - a vector pointing plus infinity (up) on the Y axis has an algne of PI/2
+    ///     - a vector pointing minus infinity (down) on the Y axis has an algne of PI * 3/2
+    /// 
     /// TODO: This class can be accessed via multiple threads! Needs some synchro!
     /// </summary>
-    public class Real2DVector
+    public class Vector2D
     {
-        public static Real2DVector GetZero()
+        public static Vector2D GetZero()
         {
-            return new Real2DVector(0, 0);
+            return new Vector2D(0, 0);
         }
 
         public Point Point => new Point((int) X, (int) Y);
@@ -63,18 +72,18 @@ namespace HelloGame.Common.MathStuff
         }
 
 
-        public Real2DVector()
+        public Vector2D()
         {
         }
 
-        public Real2DVector(decimal? maxSize = null)
+        public Vector2D(decimal? maxSize = null)
         {
             MaxSize = maxSize;
         }
 
-        public static Real2DVector GetFromCoords(decimal x, decimal y, decimal? maxSize = null)
+        public static Vector2D GetFromCoords(decimal x, decimal y, decimal? maxSize = null)
         {
-            return new Real2DVector
+            return new Vector2D
             {
                 X = x,
                 Y = y,
@@ -83,20 +92,20 @@ namespace HelloGame.Common.MathStuff
         }
 
 
-        public Real2DVector(decimal angle, decimal bigness, decimal? maxSize = null)
+        public Vector2D(decimal angle, decimal bigness, decimal? maxSize = null)
         {
             MaxSize = maxSize;
             Set(angle, bigness);
         }
 
-        public Real2DVector GetScaled(decimal by, bool withRestriction = true)
+        public Vector2D GetScaled(decimal by, bool withRestriction = true)
         {
             var result = Copy(withRestriction);
             result.Set(Angle, Size*by);
             return result;
         }
 
-        public Real2DVector GetOpposite()
+        public Vector2D GetOpposite()
         {
             var result = Copy();
             result.X = -result.X;
@@ -161,10 +170,10 @@ namespace HelloGame.Common.MathStuff
             Set(newAngle, newBigness);
         }
 
-        public static Real2DVector Combine(params Real2DVector[] vectors)
+        public static Vector2D Combine(params Vector2D[] vectors)
         {
-            Real2DVector result = new Real2DVector();
-            foreach (Real2DVector vector in vectors)
+            Vector2D result = new Vector2D();
+            foreach (Vector2D vector in vectors)
             {
                 if (vector != null)
                 {
@@ -174,7 +183,7 @@ namespace HelloGame.Common.MathStuff
             return result;
         }
 
-        public void Add(Real2DVector vector)
+        public void Add(Vector2D vector)
         {
             if (MaxSize.HasValue && Size > MaxSize)
             {
@@ -188,9 +197,9 @@ namespace HelloGame.Common.MathStuff
             }
         }
 
-        public Real2DVector Copy(bool withRestriction = true)
+        public Vector2D Copy(bool withRestriction = true)
         {
-            return new Real2DVector(withRestriction ? MaxSize : null)
+            return new Vector2D(withRestriction ? MaxSize : null)
             {
                 X = X,
                 Y = Y

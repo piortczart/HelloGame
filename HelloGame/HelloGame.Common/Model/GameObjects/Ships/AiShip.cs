@@ -11,7 +11,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
     public class AiShip : ShipBase
     {
         private readonly Limiter _locatePlayerLimiter;
-        private Real2DVector _playerPointer = new Real2DVector();
+        private Vector2D _playerPointer = new Vector2D();
         private readonly AiShipSettings _aiShipBaseSettings;
         public AiType AiType { get; set; }
         public ShipSettingType ShipSettingType { get; set; }
@@ -51,7 +51,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                     // Face him. (change the angle)
                     decimal x = player.Physics.Position.X - Physics.Position.X;
                     decimal y = player.Physics.Position.Y - Physics.Position.Y;
-                    _playerPointer = Real2DVector.GetFromCoords(x, y);
+                    _playerPointer = Vector2D.GetFromCoords(x, y);
 
                     Physics.Angle = _playerPointer.Angle;
 

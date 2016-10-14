@@ -190,7 +190,7 @@ namespace HelloGame.Common.Model
                 Physics.Drag = Physics.Interia.GetOpposite().GetScaled(Physics.Aerodynamism * 0.5m * timeBoundary);
                 Physics.Interia.Add(Physics.Drag);
 
-                Real2DVector totalForce = Physics.TotalForce;
+                Vector2D totalForce = Physics.TotalForce;
 
                 // No mass? No gravity. Think lazer.
                 // AiShips have antigravity.
@@ -216,9 +216,9 @@ namespace HelloGame.Common.Model
             }
         }
 
-        private Real2DVector CalculateGravity(IEnumerable<ThingBase> otherThings)
+        private Vector2D CalculateGravity(IEnumerable<ThingBase> otherThings)
         {
-            Real2DVector result = new Real2DVector();
+            Vector2D result = new Vector2D();
 
             foreach (ThingBase thing in otherThings)
             {
@@ -234,7 +234,7 @@ namespace HelloGame.Common.Model
 
                 decimal length = Settings.GravityFactor * Physics.Mass * thing.Physics.Mass /
                                  (decimal)Math.Pow((double)distance, 2);
-                var grav = new Real2DVector();
+                var grav = new Vector2D();
 
                 var x = thing.Physics.Position.X - Physics.Position.X;
                 var y = thing.Physics.Position.Y - Physics.Position.Y;
@@ -261,12 +261,12 @@ namespace HelloGame.Common.Model
             }
         }
 
-        public void Spawn(Point where, Real2DVector initialInertia = null)
+        public void Spawn(Point where, Vector2D initialInertia = null)
         {
             lock (_modelSynchronizer)
             {
                 Physics.SetInitialPosition(where);
-                Physics.Interia = initialInertia ?? new Real2DVector();
+                Physics.Interia = initialInertia ?? new Vector2D();
             }
         }
 

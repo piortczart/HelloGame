@@ -158,7 +158,7 @@ namespace HelloGame.Common.Model
                 return null;
             }
 
-            Real2DVector lazerInteria = extras.Creator.Physics.GetDirection(extras.Creator.Settingz.LazerSpeed);
+            Vector2D lazerInteria = extras.Creator.Physics.GetDirection(extras.Creator.Settingz.LazerSpeed);
             Point spawnPoint = shooter.Physics.GetPointInDirection(shooter.Settingz.Size/2);
 
             var lazer = new LazerBeamPew(_thingInjections, extras, id, elapsingThingSettings);
@@ -177,7 +177,7 @@ namespace HelloGame.Common.Model
             }
 
             // Go a bit slower than the ship.
-            Real2DVector initialInteria = shooter.Physics.TotalForce.GetScaled(0.9m, false);
+            Vector2D initialInteria = shooter.Physics.TotalForce.GetScaled(0.9m, false);
 
             // Spawn behind the ship.
             Point spawnPoint = shooter.Physics.GetPointInDirection(shooter.Physics.Size, true);
