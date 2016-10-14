@@ -177,7 +177,7 @@ namespace HelloGame.Common.Model
             }
 
             // Go a bit slower than the ship.
-            Vector2D initialInteria = shooter.Physics.TotalForce.GetScaled(0.9m, false);
+            Vector2D initialInteria = shooter.Physics.TotalForce.GetScaled(0.9f, false);
 
             // Spawn behind the ship.
             Point spawnPoint = shooter.Physics.GetPointInDirection(shooter.Physics.Size, true);

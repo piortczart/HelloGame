@@ -5,25 +5,25 @@ namespace HelloGame.Common.Physicsish
 {
     public class Position
     {
-        public decimal X { get; set; }
-        public decimal Y { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
 
         public Point Point => new Point((int) X, (int) Y);
 
-        public Position(decimal x, decimal y)
+        public Position(float x, float y)
         {
             X = x;
             Y = y;
         }
 
-        public decimal DistanceTo(Position position)
+        public float DistanceTo(Position position)
         {
-            decimal a = (X - position.X)*(X - position.X) + (Y - position.Y)*(Y - position.Y);
-            if (Math.Abs(a) < 0.00005m)
+            float a = (X - position.X)*(X - position.X) + (Y - position.Y)*(Y - position.Y);
+            if (Math.Abs(a) < 0.00005f)
             {
                 return 0;
             }
-            return (decimal) Math.Sqrt((double) a);
+            return (float) Math.Sqrt(a);
         }
 
 

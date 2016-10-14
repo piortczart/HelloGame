@@ -7,8 +7,8 @@ namespace HelloGame.Common.Settings
 {
     public class ShipBaseSettings : ThingSettings
     {
-        public decimal MaxEnginePower { get; set; }
-        public decimal MaxInteria { get; set; }
+        public float MaxEnginePower { get; set; }
+        public float MaxInteria { get; set; }
         public TimeSpan DespawnTime { get; set; } = TimeSpan.FromSeconds(2);
         public int PointsForKill { get; set; }
         public TimeSpan RespawnTime { get; set; } = TimeSpan.FromSeconds(2);
@@ -20,10 +20,10 @@ namespace HelloGame.Common.Settings
         private static ShipBaseSettings SmallFast(ElapsingThingSettings elapsingThingSettings)
             => new ShipBaseSettings(elapsingThingSettings.SpawnedAt)
             {
-                Aerodynamism = 0.1m,
+                Aerodynamism = 0.1f,
                 TimeToLive = elapsingThingSettings.TimeToLive ?? LiveForever,
                 Mass = 2,
-                RadPerSecond = (decimal) Math.PI,
+                RadPerSecond = (float) Math.PI,
                 WeaponFrequencies = new Dictionary<WeaponType, TimeSpan>
                 {
                     {WeaponType.Lazer, TimeSpan.FromMilliseconds(1000)},
@@ -40,10 +40,10 @@ namespace HelloGame.Common.Settings
         private static ShipBaseSettings BigSlow(ElapsingThingSettings elapsingThingSettings)
             => new ShipBaseSettings(elapsingThingSettings.SpawnedAt)
             {
-                Aerodynamism = 0.1m,
+                Aerodynamism = 0.1f,
                 TimeToLive = elapsingThingSettings.TimeToLive ?? LiveForever,
                 Mass = 5,
-                RadPerSecond = (decimal) Math.PI*3/4,
+                RadPerSecond = (float) Math.PI*3/4,
                 WeaponFrequencies = new Dictionary<WeaponType, TimeSpan>
                 {
                     {WeaponType.Lazer, TimeSpan.FromMilliseconds(150)},
@@ -65,10 +65,10 @@ namespace HelloGame.Common.Settings
         private static ShipBaseSettings Balanced(ElapsingThingSettings elapsingThingSettings)
             => new ShipBaseSettings(elapsingThingSettings.SpawnedAt)
             {
-                Aerodynamism = 0.1m,
+                Aerodynamism = 0.1f,
                 TimeToLive = elapsingThingSettings.TimeToLive ?? LiveForever,
                 Mass = 3,
-                RadPerSecond = (decimal) Math.PI,
+                RadPerSecond = (float) Math.PI,
                 WeaponFrequencies = new Dictionary<WeaponType, TimeSpan>
                 {
                     {WeaponType.Lazer, TimeSpan.FromMilliseconds(300)},
@@ -84,7 +84,8 @@ namespace HelloGame.Common.Settings
             };
 
 
-        public static ShipBaseSettings GetShipTypeSettings(ShipSettingType shipSettingType, ElapsingThingSettings ets, Type source)
+        public static ShipBaseSettings GetShipTypeSettings(ShipSettingType shipSettingType, ElapsingThingSettings ets,
+            Type source)
         {
             if (ets == null)
             {
@@ -112,7 +113,8 @@ namespace HelloGame.Common.Settings
             return result;
         }
 
-        public static ShipBaseSettings GetClanShipSetting(ClanEnum clan, ElapsingThingSettings elapsingThingSettings, Type source)
+        public static ShipBaseSettings GetClanShipSetting(ClanEnum clan, ElapsingThingSettings elapsingThingSettings,
+            Type source)
         {
             switch (clan)
             {

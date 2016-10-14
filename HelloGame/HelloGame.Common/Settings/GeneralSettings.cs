@@ -9,8 +9,8 @@ namespace HelloGame.Common.Settings
         public bool IsAiHostile { get; set; }
         public bool SpawnAi { get; set; }
         public bool ShowPlayerPhysicsDetails { get; set; }
-        public decimal GravityFactor { get; set; } = 0.01m;
-        public decimal CollisionTolerance { get; set; } = 0;
+        public float GravityFactor { get; set; } = 0.01f;
+        public float CollisionTolerance { get; set; } = 0;
         public Size GameSize { get; set; } = new Size(600, 600);
         public int PlanetsCount { get; set; } = 2;
         public int AiShipCount { get; set; } = 1;

@@ -1,30 +1,25 @@
 ﻿using System;
+using HelloGame.Common.MathStuff;
 
 namespace HelloGame.Common.Model
 {
-    public class Modules
-    {
-        public Shield Shield { get; set; }
-    }
-
     public class Shield
     {
-        public decimal Percentage { get { return Max == 0 ? 0 : 100 * Current / Max; } }
+        public float Percentage => MathX.IsAlmostZero(Max) ? 0 : 100*Current/Max;
 
-        public decimal Max { get; set; }
-        public decimal Current { get; set; }
+        public float Max { get; set; }
+        public float Current { get; set; }
         public TimeSpan Tick { get; set; }
-        public static Shield BasicShield => new Shield(2);
 
-        public Shield(decimal max)
+        public Shield(float max)
         {
             Max = max;
             Current = max;
         }
 
-        public bool DamageDealt(decimal damage)
+        public bool DamageDealt(float damage)
         {
-            if (damage == -1)
+            if (MathX.IsAlmostSame(damage, -1))
             {
                 Current = 0;
             }
@@ -39,7 +34,7 @@ namespace HelloGame.Common.Model
                     Current = 0;
                 }
             }
-            return Current == 0;
+            return MathX.IsAlmostZero(Current);
         }
 
         internal void Add()
@@ -49,5 +44,4 @@ namespace HelloGame.Common.Model
             Current = Math.Max(Current, Max);
         }
     }
-
 }

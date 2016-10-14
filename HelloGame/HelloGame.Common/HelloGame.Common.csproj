@@ -51,18 +51,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DisplayText.cs" />
     <Compile Include="Extensions\ExtensionsArray.cs" />
     <Compile Include="Extensions\ExtensionsControl.cs" />
     <Compile Include="Extensions\ExtensionsGraphics.cs" />
     <Compile Include="Extensions\ExtensionsType.cs" />
     <Compile Include="Model\ElapsingThingSettings.cs" />
     <Compile Include="Model\GameObjects\Ships\ClanEnum.cs" />
+    <Compile Include="Model\Modules.cs" />
     <Compile Include="Model\ParseThingResult.cs" />
     <Compile Include="Model\ParseThingSource.cs" />
     <Compile Include="Model\SpawnOption.cs" />
     <Compile Include="Model\ThingAdditionalInfo.cs" />
     <Compile Include="Model\ThingBaseInjections.cs" />
-    <Compile Include="Model\ThingModule.cs" />
+    <Compile Include="Model\Shield.cs" />
     <Compile Include="Model\ThingsToRespawnThreadSafe.cs" />
     <Compile Include="Model\ThingToRespawn.cs" />
     <Compile Include="Model\Weapon.cs" />

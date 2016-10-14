@@ -49,13 +49,13 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                     // Locate a player's ship.
 
                     // Face him. (change the angle)
-                    decimal x = player.Physics.Position.X - Physics.Position.X;
-                    decimal y = player.Physics.Position.Y - Physics.Position.Y;
+                    float x = player.Physics.Position.X - Physics.Position.X;
+                    float y = player.Physics.Position.Y - Physics.Position.Y;
                     _playerPointer = Vector2D.GetFromCoords(x, y);
 
                     Physics.Angle = _playerPointer.Angle;
 
-                   if (Settings.IsAiHostile)
+                    if (Settings.IsAiHostile)
                     {
                         PewPew(0);
                     }

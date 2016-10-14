@@ -12,27 +12,6 @@ using HelloGame.Common.TimeStuffs;
 
 namespace HelloGame.Common
 {
-    public class DisplayText
-    {
-        public string Text { get; set; }
-
-        public TimeSpan ExpireTime { get; }
-
-        public bool Big { get; }
-
-        public DisplayText(TimeSpan currentTime, string text, TimeSpan timeToLive, bool big)
-        {
-            ExpireTime = currentTime.Add(timeToLive);
-            Text = text;
-            Big = big;
-        }
-
-        public bool IsCurrent(TimeSpan currentTime)
-        {
-            return currentTime < ExpireTime;
-        }
-    }
-
     public class DisplayTexts
     {
         private readonly List<DisplayText> _displayTexts = new List<DisplayText>();
@@ -160,8 +139,8 @@ namespace HelloGame.Common
                     continue;
                 }
 
-                decimal x = shipPosition.X - _screenCenterGeneral.X;
-                decimal y = shipPosition.Y - _screenCenterGeneral.Y;
+                float x = shipPosition.X - _screenCenterGeneral.X;
+                float y = shipPosition.Y - _screenCenterGeneral.Y;
                 var vectorA = new Vector2D {X = x, Y = y};
                 vectorA.Set(vectorA.Angle, 40);
 

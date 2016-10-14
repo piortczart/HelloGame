@@ -94,10 +94,11 @@ namespace HelloGame.Common.Model
             }
         }
 
-        protected bool DealDamage(decimal damage, TimeSpan? despawnTime = null, ThingBase source = null)
+        protected bool DealDamage(float damage, TimeSpan? despawnTime = null, ThingBase source = null)
         {
             bool shieldsDown = Shield == null || Shield.DamageDealt(damage);
-            if (shieldsDown) {
+            if (shieldsDown)
+            {
                 Destroy(despawnTime ?? TimeSpan.Zero, source);
             }
             return shieldsDown;
@@ -110,9 +111,9 @@ namespace HelloGame.Common.Model
             // Draw the shield if it's there.
             if (Shield != null)
             {
-                var colorRgb = (int)((255-(int)Math.Min(255 * Shield.Percentage / 100, 255)) * 0.5) + 127;
+                var colorRgb = (int) ((255 - (int) Math.Min(255*Shield.Percentage/100, 255))*0.5) + 127;
                 var color = Color.FromArgb(colorRgb, colorRgb, colorRgb);
-                var radius = (int)(Physics.Size/2 + 10);
+                var radius = (int) (Physics.Size/2 + 10);
                 g.DrawCircle(Physics.PositionPoint, radius, color);
             }
 
@@ -121,8 +122,8 @@ namespace HelloGame.Common.Model
             {
                 string owner = $"{Id} ({Creator?.Id.ToString() ?? "?"}) SH: {Shield?.Percentage}";
                 Size ownerSize = TextRenderer.MeasureText(owner, Font);
-                var nameLocation = new PointF((int)Physics.Position.X - ownerSize.Width / 2,
-                    (int)Physics.Position.Y + (int)Settingz.Size + ownerSize.Height * 4);
+                var nameLocation = new PointF((int) Physics.Position.X - ownerSize.Width/2,
+                    (int) Physics.Position.Y + (int) Settingz.Size + ownerSize.Height*4);
                 g.DrawString(owner, Font, Brushes.Black, nameLocation);
             }
 
@@ -131,8 +132,8 @@ namespace HelloGame.Common.Model
                 string text = TimeToLive.ToString();
                 Size textSize = TextRenderer.MeasureText(text, Font);
 
-                var nameLocation = new PointF((int)Physics.Position.X - textSize.Width / 2,
-                    (int)Physics.Position.Y + (int)Settingz.Size + textSize.Height * 2);
+                var nameLocation = new PointF((int) Physics.Position.X - textSize.Width/2,
+                    (int) Physics.Position.Y + (int) Settingz.Size + textSize.Height*2);
                 g.DrawString(text, Font, Brushes.Black, nameLocation);
             }
         }
@@ -181,13 +182,13 @@ namespace HelloGame.Common.Model
         {
             if (Settingz.CanBeMoved)
             {
-                decimal timeBoundary = (decimal)(timeSinceLastUpdate.TotalMilliseconds / 100);
+                float timeBoundary = (float) (timeSinceLastUpdate.TotalMilliseconds/100);
 
                 // Add the propeller force to the interia.
                 Physics.Interia.Add(Physics.SelfPropelling.GetScaled(timeBoundary));
 
                 // Drag changes the inertia?
-                Physics.Drag = Physics.Interia.GetOpposite().GetScaled(Physics.Aerodynamism * 0.5m * timeBoundary);
+                Physics.Drag = Physics.Interia.GetOpposite().GetScaled(Physics.Aerodynamism*0.5f*timeBoundary);
                 Physics.Interia.Add(Physics.Drag);
 
                 Vector2D totalForce = Physics.TotalForce;
@@ -197,7 +198,7 @@ namespace HelloGame.Common.Model
                 if (Physics.Mass == 0)
                 {
                     // No mass? 
-                    Physics.PositionDelta(totalForce.X * timeBoundary, totalForce.Y * timeBoundary);
+                    Physics.PositionDelta(totalForce.X*timeBoundary, totalForce.Y*timeBoundary);
                 }
                 else
                 {
@@ -209,8 +210,8 @@ namespace HelloGame.Common.Model
                     }
 
                     // Move the object.
-                    decimal deltaX = totalForce.X / Physics.Mass * timeBoundary;
-                    decimal deltaY = totalForce.Y / Physics.Mass * timeBoundary;
+                    float deltaX = totalForce.X/Physics.Mass*timeBoundary;
+                    float deltaY = totalForce.Y/Physics.Mass*timeBoundary;
                     Physics.PositionDelta(deltaX, deltaY);
                 }
             }
@@ -227,13 +228,13 @@ namespace HelloGame.Common.Model
                     continue;
                 }
                 var distance = thing.DistanceTo(this);
-                if (distance == 0)
+                if (MathX.IsAlmostZero(distance))
                 {
                     continue;
                 }
 
-                decimal length = Settings.GravityFactor * Physics.Mass * thing.Physics.Mass /
-                                 (decimal)Math.Pow((double)distance, 2);
+                float length = Settings.GravityFactor*Physics.Mass*thing.Physics.Mass/
+                               (float) Math.Pow(distance, 2);
                 var grav = new Vector2D();
 
                 var x = thing.Physics.Position.X - Physics.Position.X;
@@ -248,16 +249,16 @@ namespace HelloGame.Common.Model
             return result;
         }
 
-        public decimal DistanceTo(Position position)
+        public float DistanceTo(Position position)
         {
             return position.DistanceTo(Physics.Position) - Physics.Size;
         }
 
-        public decimal DistanceTo(ThingBase another)
+        public float DistanceTo(ThingBase another)
         {
             lock (_modelSynchronizer)
             {
-                return Physics.Position.DistanceTo(another.Physics.Position) - ((Physics.Size + another.Physics.Size) / 2);
+                return Physics.Position.DistanceTo(another.Physics.Position) - ((Physics.Size + another.Physics.Size)/2);
             }
         }
 

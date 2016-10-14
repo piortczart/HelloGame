@@ -66,7 +66,7 @@ namespace HelloGame.Tests
             {
                 SpawnAi = false,
                 CollisionTolerance = 5, // So we will get a hit initially even though the ship is moving a bit...
-                GravityFactor = 0.01m,
+                GravityFactor = 0.01f,
             };
             IResolutionRoot serverNinject =
                 new StandardKernel(new HelloGameCommonNinjectBindings(settings, true, true));
@@ -82,7 +82,7 @@ namespace HelloGame.Tests
             var originalPosition = new Point(10, 10);
             PlayerShip playerShip = serverThingFactory.GetPlayerShip(originalPosition, "hula", ClanEnum.Support);
             // Pretend it's already moving. Going up...
-            playerShip.Physics.Interia = new Vector2D((decimal) Math.PI/2, 20);
+            playerShip.Physics.Interia = new Vector2D((float) Math.PI/2, 20);
             var things = new List<ThingBase>
             {
                 playerShip
@@ -184,7 +184,7 @@ namespace HelloGame.Tests
                 {
                     SpawnAi = false,
                     CollisionTolerance = 0,
-                    GravityFactor = 0.01m,
+                    GravityFactor = 0.01f,
                 }, true, true));
 
             var gameManager = ninject.Get<GameManager>();
@@ -326,7 +326,7 @@ namespace HelloGame.Tests
             ThingBase lazer =
                 gameManager.ModelManager.ThingsThreadSafe.GetThingsReadOnly().Single(t => t is LazerBeamPew);
 
-            decimal distance;
+            float distance;
             int i = 0;
             do
             {

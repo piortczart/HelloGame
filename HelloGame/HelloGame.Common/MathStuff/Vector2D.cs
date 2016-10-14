@@ -24,13 +24,13 @@ namespace HelloGame.Common.MathStuff
 
         public Point Point => new Point((int) X, (int) Y);
 
-        public decimal X { get; set; }
-        public decimal Y { get; set; }
-        public decimal? MaxSize { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float? MaxSize { get; set; }
 
-        public decimal Size => (decimal) Math.Pow((double) (X*X + Y*Y), 0.5);
+        public float Size => (float) Math.Pow((double) (X*X + Y*Y), 0.5);
 
-        public decimal Angle
+        public float Angle
         {
             get
             {
@@ -41,47 +41,46 @@ namespace HelloGame.Common.MathStuff
 
 
                 bool sameSign = (X > 0 && Y > 0) || (X < 0 && Y < 0);
-                decimal baseAngle =
+                float baseAngle =
                     sameSign
-                        ? (X == 0 ? 0 : (decimal) Math.Abs(Math.Atan((double) (Y/X))))
-                        : (Y == 0 ? 0 : (decimal) Math.Abs(Math.Atan((double) (X/Y))));
+                        ? (X == 0 ? 0 : (float) Math.Abs(Math.Atan((double) (Y/X))))
+                        : (Y == 0 ? 0 : (float) Math.Abs(Math.Atan((double) (X/Y))));
 
                 if (X < 0 && Y <= 0)
                 {
                     // Bottom left.
-                    return baseAngle + (decimal) Math.PI;
+                    return baseAngle + (float) Math.PI;
                 }
                 if (X < 0 && Y >= 0)
                 {
                     // Top left.
-                    return baseAngle + (decimal) Math.PI/2;
+                    return baseAngle + (float) Math.PI/2;
                 }
                 if (X >= 0 && Y < 0)
                 {
                     // Bottom Right.
-                    return baseAngle + (decimal) Math.PI*3/2;
+                    return baseAngle + (float) Math.PI*3/2;
                 }
 
                 return baseAngle;
             }
         }
 
-        public decimal AngleDegree
+        /// <summary>
+        /// Gets the angle in degrees.
+        /// </summary>
+        public float AngleDegree => Angle*57.296f;
+
+        private Vector2D()
         {
-            get { return Angle*57.296m; }
         }
 
-
-        public Vector2D()
-        {
-        }
-
-        public Vector2D(decimal? maxSize = null)
+        public Vector2D(float? maxSize = null)
         {
             MaxSize = maxSize;
         }
 
-        public static Vector2D GetFromCoords(decimal x, decimal y, decimal? maxSize = null)
+        public static Vector2D GetFromCoords(float x, float y, float? maxSize = null)
         {
             return new Vector2D
             {
@@ -92,13 +91,13 @@ namespace HelloGame.Common.MathStuff
         }
 
 
-        public Vector2D(decimal angle, decimal bigness, decimal? maxSize = null)
+        public Vector2D(float angle, float bigness, float? maxSize = null)
         {
             MaxSize = maxSize;
             Set(angle, bigness);
         }
 
-        public Vector2D GetScaled(decimal by, bool withRestriction = true)
+        public Vector2D GetScaled(float by, bool withRestriction = true)
         {
             var result = Copy(withRestriction);
             result.Set(Angle, Size*by);
@@ -113,15 +112,15 @@ namespace HelloGame.Common.MathStuff
             return result;
         }
 
-        public void Set(decimal newAngle, decimal size)
+        public void Set(float newAngle, float size)
         {
-            if (newAngle > 2*(decimal) Math.PI)
+            if (newAngle > 2*(float) Math.PI)
             {
-                newAngle -= 2*(decimal) Math.PI;
+                newAngle -= 2*(float) Math.PI;
             }
             else if (newAngle < 0)
             {
-                newAngle += 2*(decimal) Math.PI;
+                newAngle += 2*(float) Math.PI;
             }
 
             if (MaxSize.HasValue && size > MaxSize.Value)
@@ -131,7 +130,7 @@ namespace HelloGame.Common.MathStuff
 
             var newX = GetX(newAngle, size);
             X = newX;
-            var newY = (decimal) Math.Sin((double) newAngle)*size;
+            var newY = (float) Math.Sin((double) newAngle)*size;
             Y = newY;
 
             var newAngleDeg = MathX.RadianToDegree(newAngle);
@@ -153,20 +152,20 @@ namespace HelloGame.Common.MathStuff
             }
         }
 
-        public decimal GetX(decimal angle, decimal bigness)
+        public float GetX(float angle, float bigness)
         {
-            return (decimal) Math.Cos((double) angle)*bigness;
+            return (float) Math.Cos((double) angle)*bigness;
         }
 
-        public void ChangeSize(decimal sizeIncrease)
+        public void ChangeSize(float sizeIncrease)
         {
             Change(Angle, sizeIncrease);
         }
 
 
-        public void Change(decimal newAngle, decimal bignessDelta)
+        public void Change(float newAngle, float bignessDelta)
         {
-            decimal newBigness = Size + bignessDelta;
+            float newBigness = Size + bignessDelta;
             Set(newAngle, newBigness);
         }
 

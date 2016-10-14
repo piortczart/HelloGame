@@ -10,9 +10,9 @@ namespace HelloGame.Common.Physicsish
         /// <summary>
         /// The more the bigger drag.
         /// </summary>
-        public decimal Aerodynamism { get; set; }
+        public float Aerodynamism { get; set; }
 
-        public decimal Mass { get; set; }
+        public float Mass { get; set; }
 
         /// <summary>
         /// Anything propeling the object.
@@ -31,18 +31,18 @@ namespace HelloGame.Common.Physicsish
 
         public Vector2D Gravity { get; set; }
 
-        public decimal RadPerSecond { get; set; }
+        public float RadPerSecond { get; set; }
 
         public Vector2D TotalForce => Vector2D.Combine(SelfPropelling, Interia, Drag);
 
-        public decimal Angle { get; set; }
+        public float Angle { get; set; }
         public Position Position { get; set; }
 
         public Point PositionPoint => new Point((int) Position.X, (int) Position.Y);
 
-        public decimal Size { get; set; }
+        public float Size { get; set; }
 
-        public AlmostPhysics(decimal aerodynamism, decimal size = 1)
+        public AlmostPhysics(float aerodynamism, float size = 1)
         {
             Interia = new Vector2D();
             SelfPropelling = new Vector2D();
@@ -55,18 +55,18 @@ namespace HelloGame.Common.Physicsish
             Position = new Position(point.X, point.Y);
         }
 
-        public void PositionDelta(decimal deltaX, decimal deltaY)
+        public void PositionDelta(float deltaX, float deltaY)
         {
             Position.X += deltaX;
             Position.Y += deltaY;
         }
 
-        public Vector2D GetDirection(decimal bigness)
+        public Vector2D GetDirection(float bigness)
         {
             return new Vector2D(Angle, bigness);
         }
 
-        public Point GetPointInDirection(decimal bigness, bool inverted = false)
+        public Point GetPointInDirection(float bigness, bool inverted = false)
         {
             Vector2D direction = GetDirection(bigness);
             if (inverted)

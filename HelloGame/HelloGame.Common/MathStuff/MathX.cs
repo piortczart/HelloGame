@@ -15,22 +15,22 @@ namespace HelloGame.Common.MathStuff
             Positive
         }
 
-        public static decimal DegreeToRadian(decimal angle)
+        public static float DegreeToRadian(float angle)
         {
-            return (decimal)Math.PI * angle / 180.0m;
+            return (float) Math.PI*angle/180.0f;
         }
 
-        public static decimal RadianToDegree(decimal angle)
+        public static float RadianToDegree(float angle)
         {
-            return angle * (180.0m / (decimal)Math.PI);
+            return angle*(180.0f/(float) Math.PI);
         }
 
-        public static bool IsAlmostSame(decimal number1, decimal number2)
+        public static bool IsAlmostSame(float number1, float number2)
         {
-            return Math.Abs(number1 - number2) < (decimal)Math.Pow(2, -14);
+            return Math.Abs(number1 - number2) < (float) Math.Pow(2, -14);
         }
 
-        public static bool IsAlmostZero(decimal number)
+        public static bool IsAlmostZero(float number)
         {
             return IsAlmostSame(number, 0);
         }
@@ -38,7 +38,7 @@ namespace HelloGame.Common.MathStuff
         /// <summary>
         /// Make sure the number has the correct sign.
         /// </summary>
-        public static decimal SetSign(decimal number, Sign sign)
+        public static float SetSign(float number, Sign sign)
         {
             if ((sign == Sign.Positive && number < 0) || (sign == Sign.Negative && number > 0))
             {
@@ -46,6 +46,5 @@ namespace HelloGame.Common.MathStuff
             }
             return number;
         }
-
     }
 }

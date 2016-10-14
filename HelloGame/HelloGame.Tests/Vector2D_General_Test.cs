@@ -5,10 +5,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace HelloGame.Tests
 {
     [TestClass]
-    public class Real2DVector_General_Test
+    public class Vector2D_General_Test
     {
         [TestMethod]
-        public void Real2DVector_GetScaled_X_Positive_Y_Zero()
+        public void Vector2D_GetScaled_X_Positive_Y_Zero()
         {
             var vector = new Vector2D
             {
@@ -17,11 +17,10 @@ namespace HelloGame.Tests
             };
 
             Vector2D scaled = vector.GetScaled(2);
-
         }
 
         [TestMethod]
-        public void Real2DVector_GetOpposite_Negative()
+        public void Vector2D_GetOpposite_Negative()
         {
             var vector = new Vector2D
             {
@@ -36,7 +35,7 @@ namespace HelloGame.Tests
         }
 
         [TestMethod]
-        public void Real2DVector_GetOpposite_Positive()
+        public void Vector2D_GetOpposite_Positive()
         {
             var vector = new Vector2D
             {
@@ -51,7 +50,7 @@ namespace HelloGame.Tests
         }
 
         [TestMethod]
-        public void Real2DVector_Change_Simple()
+        public void Vector2D_Change_Simple()
         {
             Vector2D vector = new Vector2D();
             vector.Change(0, 3); // Go "right"
@@ -61,10 +60,10 @@ namespace HelloGame.Tests
         }
 
         [TestMethod]
-        public void Real2DVector_Change_Simple2()
+        public void Vector2D_Change_Simple2()
         {
             Vector2D vector = new Vector2D();
-            vector.Change((decimal)Math.PI, 3); // Go "left"
+            vector.Change((float) Math.PI, 3); // Go "left"
 
             Assert.AreEqual(-3, vector.X);
             // The Math.PI is not perfect?
@@ -72,10 +71,10 @@ namespace HelloGame.Tests
         }
 
         [TestMethod]
-        public void Real2DVector_Change_Simple3()
+        public void Vector2D_Change_Simple3()
         {
             Vector2D vector = new Vector2D();
-            vector.Change((decimal)Math.PI/2m, 3); // Go "up"
+            vector.Change((float) Math.PI/2, 3); // Go "up"
 
             TestX.AssertIsAlmostZero(vector.X);
             // The Math.PI is not perfect?
@@ -83,12 +82,12 @@ namespace HelloGame.Tests
         }
 
         [TestMethod]
-        public void Real2DVector_Add_Simple()
+        public void Vector2D_Add_Simple()
         {
             Vector2D sample = new Vector2D
             {
-                X = -5m,
-                Y = 10m
+                X = -5f,
+                Y = 10f
             };
 
             Vector2D vector = new Vector2D();
@@ -100,19 +99,18 @@ namespace HelloGame.Tests
         }
 
         [TestMethod]
-        public void Real2DVector_GetScaled_Negative()
+        public void Vector2D_GetScaled_Negative()
         {
             Vector2D sample = new Vector2D
             {
-                X = -0.7m,
-                Y = -0.8m
+                X = -0.7f,
+                Y = -0.8f
             };
 
-            var result = sample.GetScaled(0.5m);
+            var result = sample.GetScaled(0.5f);
 
-            Assert.IsTrue(MathX.IsAlmostSame(-0.35m, result.X));
-            Assert.IsTrue(MathX.IsAlmostSame(-0.4m, result.Y));
+            Assert.IsTrue(MathX.IsAlmostSame(-0.35f, result.X));
+            Assert.IsTrue(MathX.IsAlmostSame(-0.4f, result.Y));
         }
-
     }
 }

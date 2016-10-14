@@ -69,11 +69,11 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 g.DrawLine(shipPen, Physics.PositionPoint, p2);
 
                 // This is the circle around the ship.
-                g.DrawCircle(Physics.PositionPoint, (int)Physics.Size/2, shipPen.Color);
-        
+                g.DrawCircle(Physics.PositionPoint, (int) Physics.Size/2, shipPen.Color);
+
                 // Show the name & the score.
                 string text = $"{Name} ({Score})";
-                var textCenter = new Point(Physics.PositionPoint.X, Physics.PositionPoint.Y - (int)(Physics.Size * 1.3m));
+                var textCenter = new Point(Physics.PositionPoint.X, Physics.PositionPoint.Y - (int) (Physics.Size*1.3f));
                 g.DrawStringCentered(text, Font, Brushes.Black, textCenter);
             }
 
@@ -99,7 +99,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 return;
             }
 
-            decimal damageDealt = -1;
+            float damageDealt = -1;
 
             // Collision with a bomb?
             Bomb bomb = other as Bomb;

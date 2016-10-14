@@ -24,16 +24,16 @@ namespace HelloGame.Common.Model.GameObjects.Ships
 
             if (Settings.ShowPlayerPhysicsDetails)
             {
-                g.DrawString($"Ship angle: {Physics.Angle*57.296m:0}", Font, Brushes.Black, new PointF(155, 155));
+                g.DrawString($"Ship angle: {Physics.Angle*57.296f:0}", Font, Brushes.Black, new PointF(155, 155));
                 g.DrawString($"Engine: {Physics.SelfPropelling.Size:0.00}", Font, Brushes.Black, new PointF(155, 185));
                 g.DrawString($"Inertia: {Physics.Interia}", Font, Brushes.Black, new PointF(155, 215));
                 g.DrawString($"Engine: {Physics.SelfPropelling}", Font, Brushes.Black, new PointF(155, 245));
             }
         }
 
-        private decimal GetUpdatedShipAngle(decimal shipAngle, TimeSpan timeSinceLastUpdate)
+        private float GetUpdatedShipAngle(float shipAngle, TimeSpan timeSinceLastUpdate)
         {
-            decimal maxAngleChange = Physics.RadPerSecond*(decimal) timeSinceLastUpdate.TotalSeconds;
+            float maxAngleChange = Physics.RadPerSecond*(float) timeSinceLastUpdate.TotalSeconds;
 
             if (KeysInfo.IsA && KeysInfo.IsD)
             {
@@ -45,15 +45,15 @@ namespace HelloGame.Common.Model.GameObjects.Ships
                 shipAngle -= maxAngleChange;
                 if (shipAngle < 0)
                 {
-                    shipAngle = 2*(decimal) Math.PI - shipAngle;
+                    shipAngle = 2*(float) Math.PI - shipAngle;
                 }
             }
             else if (KeysInfo.IsD)
             {
                 shipAngle += maxAngleChange;
-                if (shipAngle > 2*(decimal) Math.PI)
+                if (shipAngle > 2*(float) Math.PI)
                 {
-                    shipAngle -= 2*(decimal) Math.PI;
+                    shipAngle -= 2*(float) Math.PI;
                 }
             }
             return shipAngle;
@@ -76,7 +76,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             }
         }
 
-        private static void UpdateEngineAcc(Vector2D engineForce, decimal shipAngle, KeysInfo keys)
+        private static void UpdateEngineAcc(Vector2D engineForce, float shipAngle, KeysInfo keys)
         {
             // Nothing is pressed.
             if ((keys.IsW && keys.IsS) || (!keys.IsW && !keys.IsS))
@@ -89,7 +89,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             }
             else if (keys.IsS) // S is pressed
             {
-                engineForce.Change(shipAngle, -5m);
+                engineForce.Change(shipAngle, -5f);
             }
         }
     }

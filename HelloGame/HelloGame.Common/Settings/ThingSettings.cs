@@ -13,18 +13,18 @@ namespace HelloGame.Common.Settings
 
         public TimeSpan? SpawnedAt { get; set; }
         public TimeSpan TimeToLive { get; set; }
-        public decimal Aerodynamism { get; set; }
-        public decimal Mass { get; set; }
-        public decimal RadPerSecond { get; set; }
+        public float Aerodynamism { get; set; }
+        public float Mass { get; set; }
+        public float RadPerSecond { get; set; }
         public bool CanBeMoved { get; set; } = true;
-        public decimal Size { get; set; } = 1;
+        public float Size { get; set; } = 1;
         public bool CollidesWithPlanets { get; set; } = true;
-        public decimal LazerSpeed { get; set; } = 30;
+        public float LazerSpeed { get; set; } = 30;
         public int PointsForKilling { get; set; } = 1;
         public Weapons InitialWeapons { get; set; } = Weapons.BasicWeapons;
         public Shield InitialShield { get; set; }
         public TimeSpan DefaultWeaponFrequency { get; set; } = TimeSpan.FromSeconds(1);
-        public decimal DamageOutput { get; set; }
+        public float DamageOutput { get; set; }
         public bool Antigravity { get; set; }
 
         public Dictionary<WeaponType, TimeSpan> WeaponFrequencies { get; set; }
@@ -64,7 +64,7 @@ namespace HelloGame.Common.Settings
         {
             return new ThingSettings(elapsingThingSettings?.SpawnedAt)
             {
-                Aerodynamism = 0.1m,
+                Aerodynamism = 0.1f,
                 TimeToLive = elapsingThingSettings?.TimeToLive ?? TimeSpan.FromSeconds(3),
                 Mass = 5,
                 Size = 10,
