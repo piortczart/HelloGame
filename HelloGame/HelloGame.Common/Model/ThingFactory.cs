@@ -158,7 +158,7 @@ namespace HelloGame.Common.Model
                 return null;
             }
 
-            Vector2D lazerInteria = extras.Creator.Physics.GetDirection(extras.Creator.Settingz.LazerSpeed);
+            Vector2D lazerInteria = extras.Creator.Physics.GetVelocity(extras.Creator.Settingz.LazerSpeed);
             Point spawnPoint = shooter.Physics.GetPointInDirection(shooter.Settingz.Size/2);
 
             var lazer = new LazerBeamPew(_thingInjections, extras, id, elapsingThingSettings);

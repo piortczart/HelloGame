@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace HelloGame.Common.MathStuff
 {
@@ -17,18 +19,13 @@ namespace HelloGame.Common.MathStuff
     /// </summary>
     public class Vector2D
     {
-        public static Vector2D GetZero()
-        {
-            return new Vector2D(0, 0);
-        }
-
         public Point Point => new Point((int) X, (int) Y);
 
-        public float X { get; set; }
-        public float Y { get; set; }
+        public float X { get; private set; }
+        public float Y { get; private set; }
         public float? MaxSize { get; set; }
 
-        public float Size => (float) Math.Pow((double) (X*X + Y*Y), 0.5);
+        public float Size => (float) Math.Pow(X*X + Y*Y, 0.5);
 
         public float Angle
         {
@@ -43,8 +40,8 @@ namespace HelloGame.Common.MathStuff
                 bool sameSign = (X > 0 && Y > 0) || (X < 0 && Y < 0);
                 float baseAngle =
                     sameSign
-                        ? (X == 0 ? 0 : (float) Math.Abs(Math.Atan((double) (Y/X))))
-                        : (Y == 0 ? 0 : (float) Math.Abs(Math.Atan((double) (X/Y))));
+                        ? (X == 0 ? 0 : (float) Math.Abs(Math.Atan(Y/X)))
+                        : (Y == 0 ? 0 : (float) Math.Abs(Math.Atan(X/Y)));
 
                 if (X < 0 && Y <= 0)
                 {
@@ -75,9 +72,21 @@ namespace HelloGame.Common.MathStuff
         {
         }
 
-        public Vector2D(float? maxSize = null)
+        private Vector2D(float? maxSize = null)
         {
             MaxSize = maxSize;
+        }
+
+        public static Vector2D Zero(float? maxLength = null)
+        {
+            return GetFromCoords(0, 0, maxLength);
+        }
+
+        public static Vector2D GetFromAngleLength(float angle, float length, float? maxLength = null)
+        {
+            var result = Zero(maxLength);
+            result.Set(angle, length);
+            return result;
         }
 
         public static Vector2D GetFromCoords(float x, float y, float? maxSize = null)
@@ -88,13 +97,6 @@ namespace HelloGame.Common.MathStuff
                 Y = y,
                 MaxSize = maxSize
             };
-        }
-
-
-        public Vector2D(float angle, float bigness, float? maxSize = null)
-        {
-            MaxSize = maxSize;
-            Set(angle, bigness);
         }
 
         public Vector2D GetScaled(float by, bool withRestriction = true)
@@ -130,7 +132,7 @@ namespace HelloGame.Common.MathStuff
 
             var newX = GetX(newAngle, size);
             X = newX;
-            var newY = (float) Math.Sin((double) newAngle)*size;
+            var newY = (float) Math.Sin(newAngle)*size;
             Y = newY;
 
             var newAngleDeg = MathX.RadianToDegree(newAngle);
@@ -154,7 +156,7 @@ namespace HelloGame.Common.MathStuff
 
         public float GetX(float angle, float bigness)
         {
-            return (float) Math.Cos((double) angle)*bigness;
+            return (float) Math.Cos(angle)*bigness;
         }
 
         public void ChangeSize(float sizeIncrease)
@@ -162,14 +164,18 @@ namespace HelloGame.Common.MathStuff
             Change(Angle, sizeIncrease);
         }
 
-
-        public void Change(float newAngle, float bignessDelta)
+        public void Change(float newAngle, float lengthDelta)
         {
-            float newBigness = Size + bignessDelta;
+            float newBigness = Size + lengthDelta;
             Set(newAngle, newBigness);
         }
 
         public static Vector2D Combine(params Vector2D[] vectors)
+        {
+            return Combine(vectors.AsEnumerable());
+        }
+
+        public static Vector2D Combine(IEnumerable<Vector2D> vectors)
         {
             Vector2D result = new Vector2D();
             foreach (Vector2D vector in vectors)

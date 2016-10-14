@@ -44,8 +44,8 @@ namespace HelloGame.Common.Physicsish
 
         public AlmostPhysics(float aerodynamism, float size = 1)
         {
-            Interia = new Vector2D();
-            SelfPropelling = new Vector2D();
+            Interia = Vector2D.Zero();
+            SelfPropelling = Vector2D.Zero();
             Aerodynamism = aerodynamism;
             Size = size;
         }
@@ -61,14 +61,14 @@ namespace HelloGame.Common.Physicsish
             Position.Y += deltaY;
         }
 
-        public Vector2D GetDirection(float bigness)
+        public Vector2D GetVelocity(float length)
         {
-            return new Vector2D(Angle, bigness);
+            return Vector2D.GetFromAngleLength(Angle, length);
         }
 
         public Point GetPointInDirection(float bigness, bool inverted = false)
         {
-            Vector2D direction = GetDirection(bigness);
+            Vector2D direction = GetVelocity(bigness);
             if (inverted)
             {
                 direction = direction.GetOpposite();
@@ -119,16 +119,6 @@ namespace HelloGame.Common.Physicsish
                 default:
                     throw new ArgumentOutOfRangeException(nameof(settings), settings, null);
             }
-        }
-
-        public void Reset(Position position)
-        {
-            Angle = 0;
-            Drag = Vector2D.GetZero();
-            Gravity = Vector2D.GetZero();
-            Interia = Vector2D.GetZero();
-            Position = position;
-            SelfPropelling = Vector2D.GetZero();
         }
     }
 }

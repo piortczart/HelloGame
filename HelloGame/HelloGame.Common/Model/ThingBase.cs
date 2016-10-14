@@ -219,7 +219,7 @@ namespace HelloGame.Common.Model
 
         private Vector2D CalculateGravity(IEnumerable<ThingBase> otherThings)
         {
-            Vector2D result = new Vector2D();
+            var result = new List<Vector2D>();
 
             foreach (ThingBase thing in otherThings)
             {
@@ -235,18 +235,16 @@ namespace HelloGame.Common.Model
 
                 float length = Settings.GravityFactor*Physics.Mass*thing.Physics.Mass/
                                (float) Math.Pow(distance, 2);
-                var grav = new Vector2D();
 
                 var x = thing.Physics.Position.X - Physics.Position.X;
                 var y = thing.Physics.Position.Y - Physics.Position.Y;
-                grav.X = x;
-                grav.Y = y;
+                var grav = Vector2D.GetFromCoords(x, y);
 
                 grav.Set(grav.Angle, length);
 
                 result.Add(grav);
             }
-            return result;
+            return Vector2D.Combine(result);
         }
 
         public float DistanceTo(Position position)
@@ -267,7 +265,7 @@ namespace HelloGame.Common.Model
             lock (_modelSynchronizer)
             {
                 Physics.SetInitialPosition(where);
-                Physics.Interia = initialInertia ?? new Vector2D();
+                Physics.Interia = initialInertia ?? Vector2D.Zero();
             }
         }
 

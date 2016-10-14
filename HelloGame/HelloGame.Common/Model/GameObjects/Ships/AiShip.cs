@@ -11,7 +11,7 @@ namespace HelloGame.Common.Model.GameObjects.Ships
     public class AiShip : ShipBase
     {
         private readonly Limiter _locatePlayerLimiter;
-        private Vector2D _playerPointer = new Vector2D();
+        private Vector2D _playerPointer = Vector2D.Zero();
         private readonly AiShipSettings _aiShipBaseSettings;
         public AiType AiType { get; set; }
         public ShipSettingType ShipSettingType { get; set; }

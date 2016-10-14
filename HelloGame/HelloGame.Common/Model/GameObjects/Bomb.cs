@@ -15,7 +15,7 @@ namespace HelloGame.Common.Model.GameObjects
             ElapsingThingSettings elapsingThingSettings = null)
             : base(injections, ThingSettings.GetBombSettings(elapsingThingSettings), additionalInfo, id)
         {
-            Physics.Interia = new Vector2D();
+            Physics.Interia = Vector2D.Zero();
         }
 
         protected override void Render(Graphics g)

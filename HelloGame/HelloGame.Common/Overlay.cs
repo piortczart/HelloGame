@@ -141,10 +141,10 @@ namespace HelloGame.Common
 
                 float x = shipPosition.X - _screenCenterGeneral.X;
                 float y = shipPosition.Y - _screenCenterGeneral.Y;
-                var vectorA = new Vector2D {X = x, Y = y};
+                var vectorA = Vector2D.GetFromCoords(x, y);
                 vectorA.Set(vectorA.Angle, 40);
 
-                var vectorB = new Vector2D {X = x, Y = y};
+                var vectorB = Vector2D.GetFromCoords(x, y);
                 vectorB.Set(vectorB.Angle, 50);
 
                 graphics.DrawLine(new Pen(Color.Black),

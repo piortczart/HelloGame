@@ -9,11 +9,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Vector2D_Angle_NegZero()
         {
-            Vector2D sample = new Vector2D
-            {
-                X = -0.8f,
-                Y = 0
-            };
+            var sample = Vector2D.GetFromCoords(-0.8f, 0);
 
             float actual = sample.Angle;
             float expected = MathX.DegreeToRadian(180);
@@ -24,11 +20,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Vector2D_Angle_PosPos()
         {
-            Vector2D sample = new Vector2D
-            {
-                X = 0.8f,
-                Y = 0.3f
-            };
+            Vector2D sample = Vector2D.GetFromCoords(0.8f, 0.3f);
 
             var actual = sample.Angle;
             var expected = MathX.DegreeToRadian(20.556f);
@@ -38,11 +30,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Vector2D_Angle_NegNeg()
         {
-            Vector2D sample = new Vector2D
-            {
-                X = -0.8f,
-                Y = -0.3f
-            };
+            Vector2D sample = Vector2D.GetFromCoords(-0.8f, -0.3f);
 
             var actual = sample.Angle;
             var expected = MathX.DegreeToRadian(180f + 20.556f);
@@ -53,11 +41,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Vector2D_Angle_PosNeg()
         {
-            Vector2D sample = new Vector2D
-            {
-                X = 0.8f,
-                Y = -0.3f
-            };
+            Vector2D sample = Vector2D.GetFromCoords(0.8f, -0.3f);
 
             var actual = sample.Angle;
             var expected = MathX.DegreeToRadian(270f + 69.444f);
@@ -67,11 +51,7 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Vector2D_Angle_NegPos()
         {
-            Vector2D sample = new Vector2D
-            {
-                X = -0.8f,
-                Y = 0.3f
-            };
+            Vector2D sample = Vector2D.GetFromCoords(-0.8f, 0.3f);
 
             var actual = sample.Angle;
             var expected = MathX.DegreeToRadian(90f + 69.444f);

@@ -9,13 +9,9 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Vector2D_Reversibility_NegNeg()
         {
-            Vector2D sample = new Vector2D
-            {
-                X = -0.7f,
-                Y = -0.8f
-            };
+            Vector2D sample = Vector2D.GetFromCoords(-0.7f, -0.8f);
 
-            var newVector = new Vector2D();
+            var newVector = Vector2D.Zero();
             newVector.Set(sample.Angle, sample.Size);
 
             Assert.IsTrue(MathX.IsAlmostSame(sample.X, newVector.X));
@@ -25,13 +21,9 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Vector2D_AngleReversibility_NegPos()
         {
-            Vector2D sample = new Vector2D
-            {
-                X = -0.7f,
-                Y = 0.8f
-            };
+            Vector2D sample = Vector2D.GetFromCoords(-0.7f, 0.8f);
 
-            var newVector = new Vector2D();
+            var newVector = Vector2D.Zero();
             newVector.Set(sample.Angle, sample.Size);
 
             Assert.IsTrue(MathX.IsAlmostSame(sample.X, newVector.X));
@@ -41,13 +33,9 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Vector2D_AngleReversibility_PosNes()
         {
-            Vector2D sample = new Vector2D
-            {
-                X = 0.7f,
-                Y = -0.8f
-            };
+            Vector2D sample = Vector2D.GetFromCoords(0.7f, -0.8f);
 
-            var newVector = new Vector2D();
+            var newVector = Vector2D.Zero();
             newVector.Set(sample.Angle, sample.Size);
 
             Assert.IsTrue(MathX.IsAlmostSame(sample.X, newVector.X));
@@ -57,13 +45,9 @@ namespace HelloGame.Tests
         [TestMethod]
         public void Vector2D_AngleReversibility_PosPos()
         {
-            Vector2D sample = new Vector2D
-            {
-                X = 0.7f,
-                Y = 0.8f
-            };
+            Vector2D sample = Vector2D.GetFromCoords(0.7f, 0.8f);
 
-            var newVector = new Vector2D();
+            var newVector = Vector2D.Zero();
             newVector.Set(sample.Angle, sample.Size);
 
             Assert.IsTrue(MathX.IsAlmostSame(sample.X, newVector.X));

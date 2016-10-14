@@ -82,7 +82,7 @@ namespace HelloGame.Tests
             var originalPosition = new Point(10, 10);
             PlayerShip playerShip = serverThingFactory.GetPlayerShip(originalPosition, "hula", ClanEnum.Support);
             // Pretend it's already moving. Going up...
-            playerShip.Physics.Interia = new Vector2D((float) Math.PI/2, 20);
+            playerShip.Physics.Interia = Vector2D.GetFromAngleLength((float) Math.PI/2, 20);
             var things = new List<ThingBase>
             {
                 playerShip

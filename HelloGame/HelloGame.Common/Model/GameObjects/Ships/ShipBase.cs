@@ -30,8 +30,8 @@ namespace HelloGame.Common.Model.GameObjects.Ships
             Score = additionalInfo.Score ?? 0;
 
             Physics.Size = settings.Size;
-            Physics.SelfPropelling = new Vector2D(settings.MaxEnginePower);
-            Physics.Interia = new Vector2D(settings.MaxInteria);
+            Physics.SelfPropelling = Vector2D.Zero(settings.MaxEnginePower);
+            Physics.Interia = Vector2D.Zero(settings.MaxInteria);
         }
 
         public bool PewPew(int slot)
