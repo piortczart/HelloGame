@@ -34,7 +34,8 @@ namespace HelloGame.Tests
             // The time is paused now. We will do a step by step in the test.
             // This is a client-side test.
             IResolutionRoot ninject =
-                new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true, true));
+                new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay,
+                    HelloGameCommonBindingsType.Client, true));
 
             var gameManager = ninject.Get<GameManager>();
             var timeSource = ninject.Get<TimeSource>();
@@ -78,10 +79,10 @@ namespace HelloGame.Tests
                 GravityFactor = 0.01f,
             };
             IResolutionRoot serverNinject =
-                new StandardKernel(new HelloGameCommonNinjectBindings(settings, true, true));
+                new StandardKernel(new HelloGameCommonNinjectBindings(settings, HelloGameCommonBindingsType.Server, true));
 
             IKernel ninject = new StandardKernel(
-                new HelloGameCommonNinjectBindings(settings, false, true),
+                new HelloGameCommonNinjectBindings(settings, HelloGameCommonBindingsType.Client, true),
                 new HelloGameClientNinjectBindings(serverNinject));
 
             var tran = Substitute.For<IMessageTransciever>();
@@ -194,7 +195,7 @@ namespace HelloGame.Tests
                     SpawnAi = false,
                     CollisionTolerance = 0,
                     GravityFactor = 0.01f,
-                }, true, true));
+                }, HelloGameCommonBindingsType.Server, true));
 
             var gameManager = ninject.Get<GameManager>();
             var thingFactory = ninject.Get<ThingFactory>();
@@ -252,7 +253,8 @@ namespace HelloGame.Tests
         {
             // The time is paused now.
             IResolutionRoot ninject =
-                new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true, true));
+                new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay,
+                    HelloGameCommonBindingsType.Server, true));
 
             var gameManager = ninject.Get<GameManager>();
             var timeSource = ninject.Get<TimeSource>();
@@ -288,7 +290,7 @@ namespace HelloGame.Tests
                     SpawnAi = false,
                     IsAiHostile = false,
                     CollisionTolerance = 0
-                }, true, true));
+                }, HelloGameCommonBindingsType.Server, true));
             var gameManager = ninject.Get<GameManager>();
             var thingFactory = ninject.Get<ThingFactory>();
             var timeSource = ninject.Get<TimeSource>();
