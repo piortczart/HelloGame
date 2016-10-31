@@ -70,8 +70,8 @@ namespace HelloGame.Tests
             vector.Add(sample);
             vector.Add(sample);
 
-            Assert.AreEqual(-10m, vector.X);
-            Assert.AreEqual(20m, vector.Y);
+            Assert.AreEqual(-10f, vector.X);
+            Assert.AreEqual(20f, vector.Y);
         }
 
         [TestMethod]

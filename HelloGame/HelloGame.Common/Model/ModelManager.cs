@@ -159,24 +159,6 @@ namespace HelloGame.Common.Model
 
                     if (thing is PlayerShipMovable)
                     {
-                        if (thing.Age > thing.TimeToLive && thing.TimeToLive != ThingSettings.LiveForever)
-                        {
-                            ;
-                        }
-
-                        ThingBase shipBefore = _thingsThreadSafe.GetById(thing.Id);
-                        if (shipBefore != null)
-                        {
-                            bool wasDestoryed = shipBefore.IsDestroyed;
-                            bool isDestroyed = thing.IsDestroyed;
-
-                            if (wasDestoryed && !isDestroyed)
-                            {
-                                var newAge = thing.Age;
-                                ;
-                            }
-                        }
-
                         // Do not update the player's angle. That is what he always controls.
                         // The player's position should not be updated because server does not have the latest engine info (has it with a big delay)
                         // This migh tbe the first time we are asked to spawn our ship?...

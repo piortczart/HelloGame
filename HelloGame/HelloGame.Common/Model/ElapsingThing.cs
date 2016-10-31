@@ -45,7 +45,7 @@ namespace HelloGame.Common.Model
             // TimeToLive less than 0 means infinite.
             if (TimeToLive.TotalMilliseconds >= 0 && Age > TimeToLive)
             {
-                IsTimeToElapse = true;
+                Despawn();
             }
         }
     }

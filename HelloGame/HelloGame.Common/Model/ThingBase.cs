@@ -141,7 +141,6 @@ namespace HelloGame.Common.Model
         /// <summary>
         /// Destroys this thing.
         /// </summary>
-        /// <param name="elapseIn">The amount of time to elapse in.</param>
         protected void Destroy(TimeSpan elapseIn, ThingBase destroyer)
         {
             lock (_modelSynchronizer)

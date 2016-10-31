@@ -47,10 +47,17 @@ namespace HelloGame.Common.Model
 
                     result = GetPlayerShip(description.AlmostPhysics.PositionPoint, name, clan, description.Id, extras,
                         elapsing);
+                    result.Physics.Update(description.AlmostPhysics, ThingBase.UpdateLocationSettings.All);
                     break;
                 }
                 case "PlayerShipMovable":
                 {
+                    // This can only be created by the client.
+                    if (_isServer)
+                    {
+                        throw new Exception($"{description.Type} can only be created on the client side.");
+                    }
+
                     string name = (string) description.ConstructParams[0];
                     ThingAdditionalInfo extras =
                         ((string) description.ConstructParams[1]).DeSerializeJson<ThingAdditionalInfo>();
@@ -63,6 +70,7 @@ namespace HelloGame.Common.Model
 
                     result = GetPlayerShipMovable(description.AlmostPhysics.PositionPoint, name, clan, description.Id,
                         extras, elapsing);
+                    //result.Physics.Update(description.AlmostPhysics, ThingBase.UpdateLocationSettings.All);
                     break;
                 }
                 case "AiShip":
@@ -80,6 +88,7 @@ namespace HelloGame.Common.Model
 
                     result = GetRandomAiShip(description.AlmostPhysics.PositionPoint, name, aiType, shipSettingType,
                         description.Id, extras, elapsing);
+                    result.Physics.Update(description.AlmostPhysics, ThingBase.UpdateLocationSettings.All);
                     break;
                 }
                 case "BigMass":
@@ -96,6 +105,7 @@ namespace HelloGame.Common.Model
 
                     result = GetBigMass(size, description.AlmostPhysics.PositionPoint, color, description.Id,
                         extras, elapsing);
+                    result.Physics.Update(description.AlmostPhysics, ThingBase.UpdateLocationSettings.All);
                     break;
                 }
                 case "LazerBeamPew":
@@ -134,8 +144,6 @@ namespace HelloGame.Common.Model
                     throw new NotImplementedException($"Cannot spawn {description.Type}");
                 }
             }
-
-            result?.Physics.Update(description.AlmostPhysics, ThingBase.UpdateLocationSettings.All);
 
             return result;
         }

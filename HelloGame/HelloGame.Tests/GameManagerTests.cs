@@ -25,10 +25,14 @@ namespace HelloGame.Tests
     [TestClass]
     public class GameManagerTests
     {
+        /// <summary>
+        /// Spawn a player and a bomb belonging to him. Pretend enough time passed for the bomb to despawn. Check if it did.
+        /// </summary>
         [TestMethod]
         public void GameManager_BombGoesBoom()
         {
-            // The time is paused now.
+            // The time is paused now. We will do a step by step in the test.
+            // This is a client-side test.
             IResolutionRoot ninject =
                 new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true, true));
 
@@ -41,17 +45,22 @@ namespace HelloGame.Tests
                 new Point(10, 15), "PLAYUR", ClanEnum.Integrations);
             gameManager.ModelManager.AddThing(playerShip);
 
+            // Expected bomb's time to live.
             TimeSpan timeToLive = ThingSettings.GetBombSettings(null).TimeToLive;
 
+            // Spawn a bomb.
             Bomb bomb = thingFactory.GetBomb(null, ThingAdditionalInfo.GetNew(playerShip));
             gameManager.ModelManager.AddThing(bomb);
 
+            gameManager.ModelManager.SingleModelUpdate();
+            Assert.IsFalse(bomb.IsTimeToElapse);
+            Assert.IsNotNull(gameManager.ModelManager.ThingsThreadSafe.GetById(bomb.Id));
+
+            // Pretend enough time has passed for the bomb to despawn.
             timeSource.SkipTime(timeToLive.Add(TimeSpan.FromMilliseconds(10)));
             gameManager.ModelManager.SingleModelUpdate();
-            Assert.IsTrue(bomb.IsDestroyed);
-            Assert.IsFalse(bomb.IsTimeToElapse);
-
-            Assert.IsNotNull(gameManager.ModelManager.ThingsThreadSafe.GetById(bomb.Id));
+            Assert.IsTrue(bomb.IsTimeToElapse);
+            Assert.IsNull(gameManager.ModelManager.ThingsThreadSafe.GetById(bomb.Id));
         }
 
 
