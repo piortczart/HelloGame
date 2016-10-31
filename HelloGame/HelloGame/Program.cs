@@ -20,10 +20,10 @@ namespace HelloGame.Client
 
             // A separate server binding (in sense server is a separate application ran inside this process)
             // This is only required when running a local server in the InitialSetupForm.
-            IResolutionRoot serverNinject = new StandardKernel(new HelloGameCommonNinjectBindings(settings, true),
+            IResolutionRoot serverNinject = new StandardKernel(new HelloGameCommonNinjectBindings(settings, HelloGameCommonBindingsType.Server),
                 new HelloGameServerNinjectBindings());
             // And regular client binding with a server ninject passed to construct a server with separate objects and configuration.
-            IResolutionRoot clientNinject = new StandardKernel(new HelloGameCommonNinjectBindings(settings, false),
+            IResolutionRoot clientNinject = new StandardKernel(new HelloGameCommonNinjectBindings(settings, HelloGameCommonBindingsType.Client),
                 new HelloGameClientNinjectBindings(serverNinject));
 
             Application.EnableVisualStyles();

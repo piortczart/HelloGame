@@ -17,7 +17,7 @@ namespace HelloGame.Tests
         public void ThingDescription_SerializeDeserialize()
         {
             IResolutionRoot ninject =
-                new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, true, true));
+                new StandardKernel(new HelloGameCommonNinjectBindings(GeneralSettings.Gameplay, HelloGameCommonBindingsType.Server, true));
 
             var facto = ninject.Get<ThingFactory>();
             BigMass mass = facto.GetBigMass(1, Point.Empty, Color.AliceBlue);

@@ -11,11 +11,14 @@ namespace HelloGame.Common.Model.GameObjects
     {
         public bool IsArmed { get; private set; }
 
+        public int BoomAfterAgePercentage { get; }
+
         public Bomb(ThingBaseInjections injections, int? id, ThingAdditionalInfo additionalInfo,
             ElapsingThingSettings elapsingThingSettings = null)
             : base(injections, ThingSettings.GetBombSettings(elapsingThingSettings), additionalInfo, id)
         {
             Physics.Interia = Vector2D.Zero();
+            BoomAfterAgePercentage = 50;
         }
 
         protected override void Render(Graphics g)
@@ -55,7 +58,7 @@ namespace HelloGame.Common.Model.GameObjects
                 IsArmed = true;
             }
 
-            if (AgePercentage >= 50)
+            if (AgePercentage >= BoomAfterAgePercentage)
             {
                 GoBoom();
             }
