@@ -51,11 +51,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DisplayText.cs" />
+    <Compile Include="DisplayedFadingOutText.cs" />
+    <Compile Include="DisplayedFadingOutTexts.cs" />
     <Compile Include="Extensions\ExtensionsArray.cs" />
     <Compile Include="Extensions\ExtensionsControl.cs" />
     <Compile Include="Extensions\ExtensionsGraphics.cs" />
     <Compile Include="Extensions\ExtensionsType.cs" />
+    <Compile Include="HelloGameCommonBindingsType.cs" />
     <Compile Include="Model\ElapsingThingSettings.cs" />
     <Compile Include="Model\GameObjects\Ships\ClanEnum.cs" />
     <Compile Include="Model\Modules.cs" />

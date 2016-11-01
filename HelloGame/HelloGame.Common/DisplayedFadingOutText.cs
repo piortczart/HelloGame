@@ -2,7 +2,7 @@
 
 namespace HelloGame.Common
 {
-    public class DisplayText
+    public class DisplayedFadingOutText
     {
         public string Text { get; set; }
 
@@ -10,7 +10,7 @@ namespace HelloGame.Common
 
         public bool Big { get; }
 
-        public DisplayText(TimeSpan currentTime, string text, TimeSpan timeToLive, bool big)
+        public DisplayedFadingOutText(TimeSpan currentTime, string text, TimeSpan timeToLive, bool big)
         {
             ExpireTime = currentTime.Add(timeToLive);
             Text = text;

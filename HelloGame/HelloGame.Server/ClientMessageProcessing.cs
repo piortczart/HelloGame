@@ -37,22 +37,27 @@ namespace HelloGame.Server
         }
 
 
-        public void Process(CancellationToken cancellation)
+        public async Task ProcessAsync(CancellationToken cancellation)
         {
             while (!cancellation.IsCancellationRequested)
             {
-                // Blocks until a client has connected to the server
-                TcpClient client = _tcpListener.AcceptTcpClient();
-                Task.Run(async () => { await HandleClientComm(client, cancellation); }, cancellation);
+                using (cancellation.Register(_tcpListener.Stop))
+                {
+                    // Blocks until a client has connected to the server
+                    TcpClient client = await _tcpListener.AcceptTcpClientAsync();
+                    // This should create a new task.
+                    Task.Run(async () => { await HandleClientComm(client, cancellation); }, cancellation);
+                }
             }
         }
 
         private async Task HandleClientComm(TcpClient client, CancellationToken cancellation)
         {
+            NetworkStream clientStream = null;
             try
             {
                 TcpClient tcpClient = client;
-                var clientStream = tcpClient.GetStream();
+                clientStream = tcpClient.GetStream();
                 _serversClients.NewClient(clientStream);
 
                 // Deserialize the stream into object
@@ -64,6 +69,10 @@ namespace HelloGame.Server
             }
             catch (Exception exception)
             {
+                if (clientStream != null)
+                {
+                    _serversClients.Disconnected(clientStream);
+                }
                 _logger.LogError("Handling client communication failed.", exception);
                 client.Close();
             }
@@ -74,42 +83,42 @@ namespace HelloGame.Server
             switch (message.Type)
             {
                 case NetworkMessageType.Hello:
-                    {
-                        NetworkMessageHello hello = message.Payload.DeSerializeJson<NetworkMessageHello>();
-                        PlayerShipOther ship = _gameManager.AddPlayerRandom(hello.Name.SubstringSafe(0, 15), hello.Clan);
-                        _serversClients.SetShip(clientStream, ship);
-                        break;
-                    }
+                {
+                    NetworkMessageHello hello = message.Payload.DeSerializeJson<NetworkMessageHello>();
+                    PlayerShipOther ship = _gameManager.AddPlayerRandom(hello.Name.SubstringSafe(0, 15), hello.Clan);
+                    _serversClients.SetShip(clientStream, ship);
+                    break;
+                }
                 case NetworkMessageType.MyPosition:
+                {
+                    // He can still think he is alive, we cannot simply update his position if he's not.
+                    PlayerShipOther ship = _serversClients.GetShip(clientStream);
+                    if (!ship.IsDestroyed)
                     {
-                        // He can still think he is alive, we cannot simply update his position if he's not.
-                        PlayerShipOther ship = _serversClients.GetShip(clientStream);
+                        ParseThingResult parseResult =
+                            _gameManager.ParseThingDescription(message.Payload.DeSerializeJson<ThingDescription>(),
+                                ParseThingSource.ToServer_PlayerPosition);
+                        // The client does not know he's dead.
+                        if (parseResult == ParseThingResult.UpdateFailedThingMissing)
+                        {
+                            // TODO: So we ignore it?
+                        }
+                    }
+                    break;
+                }
+                case NetworkMessageType.PleaseSpawn:
+                {
+                    var stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
+                    // Player can't spawn anything if he is dead.
+                    PlayerShipOther ship = _serversClients.GetShip(clientStream);
+                    {
                         if (!ship.IsDestroyed)
                         {
-                            ParseThingResult parseResult =
-                                _gameManager.ParseThingDescription(message.Payload.DeSerializeJson<ThingDescription>(),
-                                    ParseThingSource.ToServer_PlayerPosition);
-                            // The client does not know he's dead.
-                            if (parseResult == ParseThingResult.UpdateFailedThingMissing)
-                            {
-                                // TODO: So we ignore it?
-                            }
+                            _gameManager.ParseThingDescriptions(stuff, ParseThingSource.ToServer_SpawnRequest);
                         }
-                        break;
                     }
-                case NetworkMessageType.PleaseSpawn:
-                    {
-                        var stuff = message.Payload.DeSerializeJson<List<ThingDescription>>();
-                        // Player can't spawn anything if he is dead.
-                        PlayerShipOther ship = _serversClients.GetShip(clientStream);
-                        {
-                            if (!ship.IsDestroyed)
-                            {
-                                _gameManager.ParseThingDescriptions(stuff, ParseThingSource.ToServer_SpawnRequest);
-                            }
-                        }
-                        break;
-                    }
+                    break;
+                }
                 default:
                     throw new ArgumentOutOfRangeException();
             }

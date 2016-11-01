@@ -18,7 +18,11 @@ using NSubstitute;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Dynamic;
+using System.Threading;
+using System.Windows.Forms;
 using HelloGame.Common.MathStuff;
+using HelloGame.Server;
 
 namespace HelloGame.Tests
 {
@@ -64,6 +68,46 @@ namespace HelloGame.Tests
             Assert.IsNull(gameManager.ModelManager.ThingsThreadSafe.GetById(bomb.Id));
         }
 
+        [TestMethod]
+        public async Task Craaaaaazeh()
+        {
+            ConfigurationManager.AppSettings["PropagateFrequencyServer"] = "00:00:00.050";
+            ConfigurationManager.AppSettings["PropagateFrequencyClient"] = "00:00:00.050";
+            ConfigurationManager.AppSettings["ServerPortNumber"] = "4450";
+
+            var settings = new GeneralSettings
+            {
+                SpawnAi = false,
+                CollisionTolerance = 5, // So we will get a hit initially even though the ship is moving a bit...
+                GravityFactor = 0.01f,
+            };
+
+            var cancel = new CancellationTokenSource();
+
+            // Run the server.
+            IResolutionRoot serverNinject =
+                new StandardKernel(new HelloGameCommonNinjectBindings(settings, HelloGameCommonBindingsType.Server, true));
+            Task serverTask = serverNinject.Get<GameServer>().Start(cancel);
+
+            IKernel clientNinject = new StandardKernel(
+                new HelloGameCommonNinjectBindings(settings, HelloGameCommonBindingsType.Client, true),
+                new HelloGameClientNinjectBindings());
+
+            clientNinject.Get<ClientNetwork>().StartConnection("localhost", "bla", ClanEnum.Support, cancel);
+            await Task.Delay(500, cancel.Token);
+
+            clientNinject.Get<KeysInfo>().Pressed(Keys.Space);
+            await Task.Delay(50, cancel.Token);
+
+            var serverGameManager = serverNinject.Get<GameManager>();
+            var stuff = serverGameManager.ModelManager.ThingsThreadSafe.GetThingsReadOnly();
+
+            await Task.Delay(10000, cancel.Token);
+
+            // Stop the server.
+            cancel.Cancel();
+            serverTask.Wait(10);
+        }
 
         [TestMethod]
         public async Task GameManager_Client_AiShootsPlayer()
@@ -83,7 +127,7 @@ namespace HelloGame.Tests
 
             IKernel ninject = new StandardKernel(
                 new HelloGameCommonNinjectBindings(settings, HelloGameCommonBindingsType.Client, true),
-                new HelloGameClientNinjectBindings(serverNinject));
+                new HelloGameClientNinjectBindings());
 
             var tran = Substitute.For<IMessageTransciever>();
             ninject.Rebind<IMessageTransciever>().ToConstant(tran);

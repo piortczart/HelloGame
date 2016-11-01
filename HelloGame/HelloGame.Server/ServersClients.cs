@@ -32,10 +32,11 @@ namespace HelloGame.Server
         {
             lock (_synchro)
             {
-                NetworkStream key = _clientsShips.Single(s => s.Value == oldShip).Key;
+                NetworkStream key = _clientsShips.SingleOrDefault(s => s.Value == oldShip).Key;
                 if (key == null)
                 {
-                    throw new ArgumentException("Could not find the player!");
+                    //throw new ArgumentException("Could not find the player!");
+                    return;
                 }
                 _clientsShips[key] = newShip;
             }

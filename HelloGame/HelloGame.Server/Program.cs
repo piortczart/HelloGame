@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,15 +14,16 @@ namespace HelloGame.Server
     /// Pitfalls:
     /// - Serialization (especially when having intricate constructors, set-only fields, etc.)
     /// </summary>
-    internal class Program
+    public class Program
     {
-        private static void Main()
+        public static void Main()
         {
             bool showForm = true;
 
             IResolutionRoot ninject =
                 new StandardKernel(
-                    new HelloGameCommonNinjectBindings(GeneralSettings.CurrentSettings, HelloGameCommonBindingsType.Server),
+                    new HelloGameCommonNinjectBindings(GeneralSettings.CurrentSettings,
+                        HelloGameCommonBindingsType.Server),
                     new HelloGameServerNinjectBindings());
 
             var cts = new CancellationTokenSource();
@@ -36,6 +38,7 @@ namespace HelloGame.Server
                     }
                     catch (Exception ex)
                     {
+                        Debug.Assert(false, "Server fatal exception: Booo! " + ex);
                         Console.WriteLine(ex);
                         Thread.Sleep(10000);
                     }

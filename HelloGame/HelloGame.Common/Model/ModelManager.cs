@@ -4,7 +4,9 @@ using System.Threading;
 using HelloGame.Common.Logging;
 using System.Collections.Concurrent;
 using HelloGame.Common.Extensions;
+using HelloGame.Common.Model.GameObjects;
 using HelloGame.Common.Model.GameObjects.Ships;
+using HelloGame.Common.Physicsish;
 using HelloGame.Common.Settings;
 using HelloGame.Common.TimeStuffs;
 
@@ -68,7 +70,16 @@ namespace HelloGame.Common.Model
         public void AddOrUpdateThing(ThingBase sourceThing, ThingBase.UpdateLocationSettings settings)
         {
             ThingBase alreadyExisting = _thingsThreadSafe.AddIfMissing(sourceThing);
+
+            Position before = alreadyExisting?.Physics.Position;
+
+            if (sourceThing is LazerBeamPew)
+            {
+                ;
+            }
             alreadyExisting?.UpdateState(sourceThing, settings);
+
+            Position after = alreadyExisting?.Physics.Position;
         }
 
         /// <summary>

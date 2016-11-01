@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using HelloGame.Common.Model;
 using System.Drawing;
 using System.Linq;
-using HelloGame.Common.Extensions;
 using HelloGame.Common.MathStuff;
 using HelloGame.Common.Model.GameObjects.Ships;
 using HelloGame.Common.Physicsish;
@@ -12,39 +11,6 @@ using HelloGame.Common.TimeStuffs;
 
 namespace HelloGame.Common
 {
-    public class DisplayTexts
-    {
-        private readonly List<DisplayText> _displayTexts = new List<DisplayText>();
-        private readonly object _synchro = new object();
-
-        private readonly TimeSource _timeSource;
-
-        public DisplayTexts(TimeSource timeSource)
-        {
-            _timeSource = timeSource;
-        }
-
-        public void Add(string text, TimeSpan timeToLive, bool big = false)
-        {
-            lock (_synchro)
-            {
-                _displayTexts.Add(new DisplayText(_timeSource.ElapsedSinceStart, text, timeToLive, big));
-            }
-        }
-
-        public IReadOnlyCollection<DisplayText> GetCurrent(bool big = false)
-        {
-            lock (_synchro)
-            {
-                return
-                    _displayTexts.Where(t => t.IsCurrent(_timeSource.ElapsedSinceStart) && t.Big == big)
-                        .OrderBy(t => t.ExpireTime)
-                        .ToList()
-                        .AsReadOnly();
-            }
-        }
-    }
-
     public class Overlay
     {
         private readonly GeneralSettings _settings;
@@ -55,14 +21,13 @@ namespace HelloGame.Common
         private Position _screenCenterGeneral = new Position(0, 0);
         private Size _windowSize = Size.Empty;
         private IReadOnlyCollection<ThingBase> _things = new List<ThingBase>();
-        private Point _overlayPositionGeneral = Point.Empty;
-        private readonly DisplayTexts _displayTexts;
+        private readonly DisplayedFadingOutTexts _displayTexts;
 
         public Overlay(TimeSource timeSource, GeneralSettings settings)
         {
             _settings = settings;
             _paintCounter = new EventPerSecond(timeSource);
-            _displayTexts = new DisplayTexts(timeSource);
+            _displayTexts = new DisplayedFadingOutTexts(timeSource);
         }
 
         internal void UpdateDuringModelUpdate(ModelManager modelManager)
@@ -86,7 +51,7 @@ namespace HelloGame.Common
             ShowShipList(graphics);
 
             int i = 0;
-            foreach (DisplayText text in _displayTexts.GetCurrent())
+            foreach (DisplayedFadingOutText text in _displayTexts.GetCurrent())
             {
                 PointF position = new PointF(30, _windowSize.Height - 100 - 15*i);
                 graphics.DrawString($"{text.Text}", _font, Brushes.Black, position);
@@ -94,7 +59,7 @@ namespace HelloGame.Common
             }
 
             i = 0;
-            foreach (DisplayText text in _displayTexts.GetCurrent(true))
+            foreach (DisplayedFadingOutText text in _displayTexts.GetCurrent(true))
             {
                 Font f = new Font(_font, FontStyle.Bold);
                 PointF position = new PointF(_windowSize.Width/2 - 100, 200 - 15*i);
@@ -167,7 +132,6 @@ namespace HelloGame.Common
         {
             _screenCenterGeneral = screenCenter;
             _windowSize = windowSize;
-            _overlayPositionGeneral = overlayPosition;
         }
 
         public void AddDisplayText(string text, TimeSpan timeToLive, bool big = false)

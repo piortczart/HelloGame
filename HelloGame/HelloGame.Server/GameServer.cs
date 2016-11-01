@@ -47,9 +47,7 @@ namespace HelloGame.Server
             _propagateTimer = new Timer(state => { Propagate(); }, null, PropagateFrequency, Timeout.InfiniteTimeSpan);
 
             _logger.LogInfo("Starting the listen thread. This operation will block (if awaited on).");
-            await
-                Task.Run(() => { _clientMessageProcessing.Process(cancellationTokenSource.Token); },
-                    cancellationTokenSource.Token);
+            await _clientMessageProcessing.ProcessAsync(cancellationTokenSource.Token);
         }
 
         private void Propagate()

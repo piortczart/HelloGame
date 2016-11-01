@@ -70,7 +70,6 @@ namespace HelloGame.Common.Model
 
                     result = GetPlayerShipMovable(description.AlmostPhysics.PositionPoint, name, clan, description.Id,
                         extras, elapsing);
-                    //result.Physics.Update(description.AlmostPhysics, ThingBase.UpdateLocationSettings.All);
                     break;
                 }
                 case "AiShip":

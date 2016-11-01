@@ -12,7 +12,6 @@ namespace HelloGame.Client
     public partial class InitialSetup : UserControl
     {
         public ClientNetwork ClientNetwork { private get; set; }
-        public Server.GameServer Server { private get; set; }
         public GameManager GameManager { get; set; }
         public CancellationTokenSource Cancellation { private get; set; }
 
@@ -43,24 +42,6 @@ namespace HelloGame.Client
             Settings.Default.SpawnServer = cbCreateServer.Checked;
             Settings.Default.ClanId = (int) clan;
             Settings.Default.Save();
-
-            if (cbCreateServer.Checked)
-            {
-                try
-                {
-                    var cts = new CancellationTokenSource();
-                    Task.Run(async () => { await Server.Start(cts); })
-                        .ContinueWith(t =>
-                        {
-                            ;
-                        }, TaskContinuationOptions.OnlyOnFaulted);
-                }
-                catch (Exception exception)
-                {
-                    lbLog.Text = "Staring server failed: " + exception.Message;
-                    return;
-                }
-            }
 
             string name = Settings.Default.PlayerName;
 

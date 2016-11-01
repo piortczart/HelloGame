@@ -6,19 +6,14 @@ using Ninject.Modules;
 
 namespace HelloGame.Common
 {
-    public enum HelloGameCommonBindingsType
-    {
-        Client,
-        Server
-    }
-
     public class HelloGameCommonNinjectBindings : NinjectModule
     {
         readonly bool _isServer;
         readonly bool _pauseTime;
         readonly GeneralSettings _generalSettings;
 
-        public HelloGameCommonNinjectBindings(GeneralSettings generalSettings, HelloGameCommonBindingsType bindingsType, bool pauseTime = false)
+        public HelloGameCommonNinjectBindings(GeneralSettings generalSettings, HelloGameCommonBindingsType bindingsType,
+            bool pauseTime = false)
         {
             _isServer = bindingsType == HelloGameCommonBindingsType.Server;
             _pauseTime = pauseTime;
